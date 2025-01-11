@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{2F8EE0BB-317E-4209-8C94-BC4363ADBC62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{23CCB6A6-A4EB-40E9-BE1B-3A49AFC81B71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinancialBox.API", "FinancialBox.API\FinancialBox.API.csproj", "{D7D2BF40-798E-477F-B0A5-C5B82DC77A27}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7D2BF40-798E-477F-B0A5-C5B82DC77A27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D2BF40-798E-477F-B0A5-C5B82DC77A27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D2BF40-798E-477F-B0A5-C5B82DC77A27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D2BF40-798E-477F-B0A5-C5B82DC77A27}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D7D2BF40-798E-477F-B0A5-C5B82DC77A27} = {2F8EE0BB-317E-4209-8C94-BC4363ADBC62}
+	EndGlobalSection
+EndGlobal
