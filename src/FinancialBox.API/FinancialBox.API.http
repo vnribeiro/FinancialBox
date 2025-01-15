@@ -1,6 +1,0 @@
-@FinancialBox.API_HostAddress = http://localhost:5185
-
-GET {{FinancialBox.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
