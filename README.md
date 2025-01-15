@@ -61,7 +61,7 @@ This project is designed with a focus on **Clean Architecture** and **best pract
 ### Financial Goal (Caixa)
 | Property                 | Type         | Description                                         |
 |--------------------------|--------------|-----------------------------------------------------|
-| `Id`                    | `int/Guid`   | Unique identifier.                                 |
+| `Id`                    | `Guid`   | Unique identifier.                                 |
 | `Title`                 | `string`     | Title of the financial goal.                      |
 | `TargetAmount`          | `decimal`    | Target amount to be saved.                        |
 | `Deadline`              | `datetime?`  | Optional deadline for the goal.                   |
@@ -74,7 +74,7 @@ This project is designed with a focus on **Clean Architecture** and **best pract
 ### Transaction
 | Property         | Type         | Description                                         |
 |------------------|--------------|-----------------------------------------------------|
-| `Id`            | `int/Guid`   | Unique identifier.                                 |
+| `Id`            | `Guid`   | Unique identifier.                                 |
 | `Amount`        | `decimal`    | Transaction amount (positive for deposits).        |
 | `Type`          | `enum`       | Transaction type (Deposit, Withdraw).             |
 | `TransactionDate` | `datetime`  | Date of the transaction (can be in the past).      |
