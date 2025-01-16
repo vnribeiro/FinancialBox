@@ -1,11 +1,19 @@
+using Asp.Versioning.ApiExplorer;
+using FinancialBox.API.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder
+    .Services
+    .AddApiVersioningConfiguration()
+    .AddSwaggerConfiguration();
+
+builder
+    .AddEnvironmentConfiguration();
 
 var app = builder.Build();
 
@@ -13,7 +21,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            c.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                $"Financial Box API {description.GroupName.ToUpperInvariant()}"
+            );
+        }
+    });
 }
 
 app.UseHttpsRedirection();

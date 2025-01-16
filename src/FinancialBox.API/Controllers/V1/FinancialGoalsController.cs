@@ -1,9 +1,11 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinancialBox.API.Controllers
+namespace FinancialBox.API.Controllers.V1
 {
     [ApiController]
-    [Route("[controller]")]
+    [ApiVersion(1.0)]
+    [Route("api/v{apiVersion:apiVersion}/financial-goals")]
     public class FinancialGoalsController : ControllerBase
     {
         private readonly ILogger<FinancialGoalsController> _logger;
