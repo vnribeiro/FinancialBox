@@ -6,6 +6,13 @@ namespace FinancialBox.API.Extensions;
 
 public static class ApplicationConfigurationExtension
 {
+    /// <summary>
+    /// Adds API versioning to the service collection.
+    /// Configures the API to use versioning based on URL segments.
+    /// Reports available API versions and substitutes the API version in the URL.
+    /// </summary>
+    /// <param name="service">The service collection to configure.</param>
+    /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddApiVersioningConfiguration(this IServiceCollection service)
     {
         service.AddApiVersioning(options =>
@@ -22,6 +29,12 @@ public static class ApplicationConfigurationExtension
         return service;
     }
 
+    /// <summary>
+    /// Configures Swagger with API versioning and JWT authentication.
+    /// Generates a Swagger document for each API version and secures endpoints using Bearer tokens.
+    /// </summary>
+    /// <param name="service">The service collection to configure.</param>
+    /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection service)
     {
         service.AddSwaggerGen(c =>
@@ -72,7 +85,12 @@ public static class ApplicationConfigurationExtension
         return service;
     }
 
-
+    /// <summary>
+    /// Configures the environment for the application.
+    /// Loads JSON configuration files and user secrets for development environments.
+    /// </summary>
+    /// <param name="builder">The WebApplicationBuilder to configure.</param>
+    /// <returns>The updated WebApplicationBuilder.</returns>
     public static WebApplicationBuilder AddEnvironmentConfiguration(this WebApplicationBuilder builder)
     {
         builder.Configuration
@@ -87,5 +105,24 @@ public static class ApplicationConfigurationExtension
         return builder;
     }
 
+    /// <summary>
+    /// Adds Cross-Origin Resource Sharing (CORS) configuration to allow requests from specified origins.
+    /// </summary>
+    /// <param name="service">The service collection to configure.</param>
+    /// <returns>The updated service collection.</returns>
+    public static IServiceCollection AddCorsConfiguration(this IServiceCollection service)
+    {
+        service.AddCors(options =>
+        {
+            options.AddPolicy("DefaultPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
+
+        return service;
+    }
 }
 

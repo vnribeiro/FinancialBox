@@ -35,6 +35,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("DefaultPolicy");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
