@@ -8,7 +8,7 @@ This project is being developed as part of a training program, focusing on build
 ---
 
 ## 🚀 Features
-### Caixa Management
+### Box Management
 - Create, Update, Delete, List, and View financial goals.
 - Simulate Caixa growth based on monthly contributions and returns. *(PLUS)*
 - Upload a cover image for each Caixa. *(PLUS)*
