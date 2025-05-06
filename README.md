@@ -75,15 +75,13 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 
 ## 🛠️ Tecnologias e Arquitetura
 
-Este projeto foi estruturado com base nas boas práticas e padrões modernos de desenvolvimento.
-
 ### Stack
 
 - **ASP.NET Core API**
 - **Blazor (WebAssembly)**
 - **SQLite** com **Entity Framework Core**
 
-### Arquitetura e Bibliotecas
+### Arquitetura
 
 - **Clean Architecture**
 - **CQRS**
@@ -109,7 +107,7 @@ Este projeto foi estruturado com base nas boas práticas e padrões modernos de 
 
 ### Caixas
 
-- Status possíveis: `InProgress`, `Completed`, `Canceled`, `Paused`.
+- Status possíveis: `InProgress`, `Completed`, `Canceled`, `OnHold`.
 - Pode conter prazo final e contribuição mensal ideal.
 - Todas as transações relacionadas devem ser rastreadas.
 
@@ -141,6 +139,16 @@ Este projeto foi estruturado com base nas boas práticas e padrões modernos de 
 | `TransactionDate`  | `datetime`   | Data da transação (pode ser retroativa).            |
 | `CreatedAt`        | `datetime`   | Data de criação do registro.                        |
 | `IsDeleted`        | `bool`       | Indica exclusão lógica (soft delete).               |
+
+---
+
+## 🧩 Diagrama UML de Classes
+
+O seguinte diagrama UML representa visualmente as principais classes e enumerações do sistema:
+
+<p align="center">
+  <img src="./FinancialBox_UML_Class_Diagram.png" alt="Diagrama de Classes do FinancialBox" width="600"/>
+</p>
 
 ---
 
