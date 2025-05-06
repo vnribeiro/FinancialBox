@@ -10,16 +10,16 @@ This project is being developed as part of a training program, focusing on build
 ## 🚀 Features
 ### Box Management
 - Create, Update, Delete, List, and View financial goals.
-- Simulate Caixa growth based on monthly contributions and returns. *(PLUS)*
-- Upload a cover image for each Caixa. *(PLUS)*
-- Precalculate Caixa total value during new transactions using database transactions. *(PLUS)*
+- Simulate Caixa growth based on monthly contributions and returns.
+- Upload a cover image for each Caixa.
+- Precalculate Caixa total value during new transactions using database transactions.
 
 ### Transaction Management
 - Create, Delete, List, and View transactions.
 - Validate data for precision (up to 2 decimal places) and prevent negative values.
 - Supported transaction types: Deposit and Withdraw.
 
-### Reports *(PLUS)*
+### Reports
 - Generate detailed reports on Caixa evolution over time.
 
 ---
