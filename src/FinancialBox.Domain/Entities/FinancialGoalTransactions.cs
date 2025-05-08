@@ -10,4 +10,7 @@ public class FinancialGoalTransactions
     public DateTime TransactionDate { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsDeleted { get; set; }
+
+    public Guid FinancialGoalId { get; set; }
+    public FinancialGoal FinancialGoal { get; set; } = null!;
 }

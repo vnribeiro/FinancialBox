@@ -1,5 +1,6 @@
 using Asp.Versioning.ApiExplorer;
 using FinancialBox.API.Extensions;
+using FinancialBox.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder
     .Services
     .AddApiVersioningConfiguration()
     .AddSwaggerConfiguration();
+
+builder.Services
+    .AddInfrastructure(builder.Configuration);
 
 builder
     .AddEnvironmentConfiguration();
