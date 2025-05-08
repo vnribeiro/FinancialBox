@@ -1,14 +1,13 @@
 ﻿using FinancialBox.Domain.Enums;
+using FinancialBox.Shared;
 
 namespace FinancialBox.Domain.Entities;
 
-public class FinancialGoalTransactions
+public class FinancialGoalTransactions : BaseEntity
 {
-    public Guid Id { get; set; }
     public decimal Amount { get; set; }
     public TransactionType Type { get; set; }
     public DateTime TransactionDate { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsDeleted { get; set; }
 
     public Guid FinancialGoalId { get; set; }

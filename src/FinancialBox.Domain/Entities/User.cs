@@ -1,13 +1,13 @@
-﻿namespace FinancialBox.Domain.Entities
+﻿using FinancialBox.Shared;
+
+namespace FinancialBox.Domain.Entities
 {
-    public class User
+    public class User : BaseEntity
     {
-        public Guid Id { get; set; }
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PasswordHash { get; set; } = null!;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
 
         public ICollection<FinancialGoal> FinancialGoals { get; set; } = new List<FinancialGoal>();
     }
