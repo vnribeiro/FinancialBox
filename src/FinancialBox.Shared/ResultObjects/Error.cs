@@ -1,9 +1,17 @@
 ﻿namespace FinancialBox.Shared.ResultObjects
 {
-    public class Error(string message)
+    public class Error
     {
-        public string Message { get; } = message;
+        public IReadOnlyList<string> Messages { get; }
 
-        public override string ToString() => Message;
+        public Error(params string[] messages)
+        {
+            Messages = messages?.ToList() ?? [];
+        }
+
+        public override string ToString()
+        {
+            return string.Join(" | ", Messages);
+        }
     }
 }

@@ -5,9 +5,11 @@
         public static TResult Match<T, TResult>(
             this Result<T> result,
             Func<T, TResult> onSuccess,
-            Func<Error, TResult> onFailure)
+            Func<IReadOnlyList<string>, TResult> onFailure)
         {
-            return result.IsSuccess ? onSuccess(result.Value!) : onFailure(result.Error!);
+            return result.IsSuccess
+                ? onSuccess(result.Value!)
+                : onFailure(result.Error?.Messages ?? new List<string> { "Unknown error" });
         }
     }
 }
