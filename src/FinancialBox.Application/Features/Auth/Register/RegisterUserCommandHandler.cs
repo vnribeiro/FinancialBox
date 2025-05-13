@@ -10,7 +10,7 @@ namespace FinancialBox.Application.Features.Auth.Register
 
         }
 
-        public Task<Result<RegisterUserDto>> Handle(RegisterUserCommand request)
+        public Task<Result<RegisterUserDto>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var dto = new RegisterUserDto { Name = request.Name };
             return Task.FromResult(Result<RegisterUserDto>.Success(dto));

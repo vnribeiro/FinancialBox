@@ -10,7 +10,7 @@ namespace FinancialBox.Application.Features.Auth.Login
             
         }
 
-        public Task<Result<LoginUserDto>> Handle(LoginUserCommand request)
+        public Task<Result<LoginUserDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var dto = new LoginUserDto { Name = request.Name };
             return Task.FromResult(Result<LoginUserDto>.Success(dto));

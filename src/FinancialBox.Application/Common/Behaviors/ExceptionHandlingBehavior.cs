@@ -12,7 +12,10 @@ namespace FinancialBox.Application.Common.Behaviors
             _logger = logger;
         }
 
-        public async Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next)
+        public async Task<TResponse> Handle(
+            TRequest request,
+            Func<CancellationToken, Task<TResponse>> next,
+            CancellationToken cancellationToken)
         {
             var requestName = typeof(TRequest).Name;
 
@@ -20,7 +23,7 @@ namespace FinancialBox.Application.Common.Behaviors
             {
                 _logger.LogInformation("Handling request: {RequestName}", requestName);
 
-                var response = await next();
+                var response = await next(cancellationToken);
 
                 _logger.LogInformation("Successfully handled request: {RequestName}", requestName);
 

@@ -25,9 +25,9 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(typeof(ApiResponse<LoginUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<LoginUserDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<LoginUserDto>>> Login([FromBody] LoginUserCommand command)
+    public async Task<ActionResult<ApiResponse<LoginUserDto>>> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             onSuccess: data => Ok(ApiResponse<LoginUserDto>.FromSuccess(data)),
@@ -37,9 +37,9 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<RegisterUserDto>>> Register([FromBody] RegisterUserCommand command)
+    public async Task<ActionResult<ApiResponse<RegisterUserDto>>> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             onSuccess: data => Ok(ApiResponse<RegisterUserDto>.FromSuccess(data)),

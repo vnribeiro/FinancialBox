@@ -2,6 +2,8 @@
 {
     public interface IPipelineBehavior<in TRequest, TResponse>
     {
-        Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next);
+        Task<TResponse> Handle(TRequest request, 
+            Func<CancellationToken, Task<TResponse>> next, 
+            CancellationToken cancellationToken);
     }
 }

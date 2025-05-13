@@ -13,7 +13,7 @@ namespace FinancialBox.Application.Common.Mediator
             _provider = provider;
         }
 
-        public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request)
+        public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken)
         {
             var requestType = request.GetType();
             var responseType = typeof(TResponse);
@@ -22,18 +22,20 @@ namespace FinancialBox.Application.Common.Mediator
             dynamic handler = _provider.GetRequiredService(handlerType);
 
             var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, responseType);
-            var behaviors = _provider.GetServices(behaviorType).Cast<dynamic>().ToList();
+            var behaviors = _provider.GetServices(behaviorType).Cast<object>().ToList();
 
-            Func<Task<TResponse>> pipeline = () => handler.Handle((dynamic)request);
+            Func<CancellationToken, Task<TResponse>> pipeline = ct => handler.Handle((dynamic)request, ct);
 
-            foreach (var behavior in behaviors.AsEnumerable().Reverse())
+            foreach (var behaviorObj in behaviors.AsEnumerable().Reverse())
             {
+                dynamic behavior = behaviorObj;
+
                 var next = pipeline;
-                pipeline = () => behavior.Handle((dynamic)request, next);
+
+                pipeline = ct => behavior.Handle((dynamic)request, next, ct);
             }
 
-            return await pipeline();
+            return await pipeline(cancellationToken);
         }
     }
-
 }
