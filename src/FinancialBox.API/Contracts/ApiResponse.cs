@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.Shared.ResultObjects
+﻿namespace FinancialBox.API.Contracts
 {
     public class ApiResponse<T>
     {
