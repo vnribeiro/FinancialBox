@@ -5,6 +5,7 @@ using FinancialBox.API.Extensions;
 using FinancialBox.Application.Features.Commands.Auth.Login;
 using FinancialBox.Application.Features.Commands.Auth.Register;
 using FinancialBox.BuildingBlocks.Mediator;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -29,7 +30,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<LoginUserResponse>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<LoginUserResponse>>> Login([FromBody] LoginUserDto dto, CancellationToken cancellationToken)
     {
-        var command = new LoginUserCommand(dto.Name);
+        var command = dto.Adapt<LoginUserCommand>();
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
@@ -42,7 +43,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserDto dto, CancellationToken cancellationToken)
     {
-        var command = new RegisterUserCommand(dto.Name);
+        var command = dto.Adapt<RegisterUserCommand>();
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
