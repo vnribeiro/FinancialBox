@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services
-    .AddApi(builder)
+    .AddPresentation(builder)
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 

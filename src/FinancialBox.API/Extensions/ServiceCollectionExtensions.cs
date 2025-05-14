@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection to configure.</param>
     /// <param name="builder">The WebApplicationBuilder instance.</param>
     /// <returns>The updated service collection.</returns>
-    public static IServiceCollection AddApi(this IServiceCollection services, WebApplicationBuilder builder)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, WebApplicationBuilder builder)
     {
         // Registers Swagger + JWT support
         services.AddSwaggerConfiguration();
