@@ -1,8 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using FinancialBox.Application.Features.Auth.Login;
-using FinancialBox.Application.Features.Auth.Register;
-using FinancialBox.Application.Interceptors.Behaviors;
+﻿using FinancialBox.Application.Features.Commands.Auth.Login;
 using FinancialBox.Application.Interceptors.Mediator;
+using FinancialBox.Application.Mappings;
 using FinancialBox.BuildingBlocks.Behaviors;
 using FinancialBox.BuildingBlocks.Mediator;
 using FluentValidation;
@@ -16,6 +14,9 @@ namespace FinancialBox.Application.Extensions
         {
             // Get the assembly of the Application layer
             var applicationAssembly = typeof(LoginUserCommand).Assembly;
+
+            // Register the mappings from mapster
+            MapsterConfig.RegisterMappings();
 
             // Register custom Mediator implementation
             services.AddScoped<IMediator, Mediator>();

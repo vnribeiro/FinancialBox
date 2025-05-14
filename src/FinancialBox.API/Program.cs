@@ -9,17 +9,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder
-    .Services
-    .AddApiVersioningConfiguration()
-    .AddSwaggerConfiguration();
-
 builder.Services
+    .AddApi(builder)
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
-
-builder
-    .AddEnvironmentConfiguration();
 
 var app = builder.Build();
 

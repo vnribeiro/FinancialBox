@@ -1,8 +1,9 @@
 using Asp.Versioning;
 using FinancialBox.API.Contracts;
+using FinancialBox.API.Dtos.Auth;
 using FinancialBox.API.Extensions;
-using FinancialBox.Application.Features.Auth.Login;
-using FinancialBox.Application.Features.Auth.Register;
+using FinancialBox.Application.Features.Commands.Auth.Login;
+using FinancialBox.Application.Features.Commands.Auth.Register;
 using FinancialBox.BuildingBlocks.Mediator;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,26 +25,28 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(typeof(ApiResponse<LoginUserDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<LoginUserDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<LoginUserDto>>> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ApiResponse<LoginUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<LoginUserResponse>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<LoginUserResponse>>> Login([FromBody] LoginUserDto dto, CancellationToken cancellationToken)
     {
+        var command = new LoginUserCommand(dto.Name);
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
-            onSuccess: data => Ok(ApiResponse<LoginUserDto>.FromSuccess(data)),
-            onFailure: errors => BadRequest(ApiResponse<LoginUserDto>.FromErrors(errors)));
+            onSuccess: data => Ok(ApiResponse<LoginUserResponse>.FromSuccess(data)),
+            onFailure: errors => BadRequest(ApiResponse<LoginUserResponse>.FromErrors(errors)));
     }
 
     [HttpPost("register")]
-    [ProducesResponseType(typeof(ApiResponse<RegisterUserDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<RegisterUserDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<RegisterUserDto>>> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserDto dto, CancellationToken cancellationToken)
     {
+        var command = new RegisterUserCommand(dto.Name);
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
-            onSuccess: data => Ok(ApiResponse<RegisterUserDto>.FromSuccess(data)),
-            onFailure: errors => BadRequest(ApiResponse<RegisterUserDto>.FromErrors(errors)));
+            onSuccess: data => Ok(ApiResponse<RegisterUserResponse>.FromSuccess(data)),
+            onFailure: errors => BadRequest(ApiResponse<RegisterUserResponse>.FromErrors(errors)));
     }
 }

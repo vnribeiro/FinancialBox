@@ -1,17 +1,16 @@
-﻿namespace FinancialBox.BuildingBlocks.Result
+﻿namespace FinancialBox.BuildingBlocks.Result;
+
+public class Error
 {
-    public class Error
+    public IReadOnlyList<string> Messages { get; }
+
+    public Error(params string[] messages)
     {
-        public IReadOnlyList<string> Messages { get; }
+        Messages = messages?.ToList() ?? [];
+    }
 
-        public Error(params string[] messages)
-        {
-            Messages = messages?.ToList() ?? [];
-        }
-
-        public override string ToString()
-        {
-            return string.Join(" | ", Messages);
-        }
+    public override string ToString()
+    {
+        return string.Join(" | ", Messages);
     }
 }
