@@ -3,8 +3,9 @@ using FinancialBox.API.Contracts;
 using FinancialBox.API.Extensions;
 using FinancialBox.Application.Features.Auth.Login;
 using FinancialBox.Application.Features.Auth.Register;
-using FinancialBox.Shared.Contracts.Mediator;
+using FinancialBox.BuildingBlocks.Mediator;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace FinancialBox.API.Controllers.V1;
 

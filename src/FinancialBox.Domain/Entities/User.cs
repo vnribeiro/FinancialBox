@@ -1,4 +1,4 @@
-﻿using FinancialBox.Shared;
+﻿using FinancialBox.BuildingBlocks;
 
 namespace FinancialBox.Domain.Entities
 {

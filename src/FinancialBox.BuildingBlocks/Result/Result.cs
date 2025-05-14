@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.Shared.ResultObjects
+﻿namespace FinancialBox.BuildingBlocks.Result
 {
     public class Result<T>
     {

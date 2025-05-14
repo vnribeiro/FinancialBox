@@ -1,9 +1,9 @@
-﻿using FinancialBox.Shared.Contracts.Mediator;
-using FinancialBox.Shared.ResultObjects;
+﻿using FinancialBox.BuildingBlocks.Mediator;
+using FinancialBox.BuildingBlocks.Result;
 
 namespace FinancialBox.Application.Features.Auth.Register
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<RegisterUserDto>>
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserDto>
     {
         public RegisterUserCommandHandler()
         {

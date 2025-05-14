@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.Shared
+﻿namespace FinancialBox.BuildingBlocks
 {
     public abstract class BaseEntity
     {

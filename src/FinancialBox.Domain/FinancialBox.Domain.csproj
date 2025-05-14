@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FinancialBox.Shared\FinancialBox.Shared.csproj" />
+    <ProjectReference Include="..\FinancialBox.BuildingBlocks\FinancialBox.BuildingBlocks.csproj" />
   </ItemGroup>
 
 </Project>

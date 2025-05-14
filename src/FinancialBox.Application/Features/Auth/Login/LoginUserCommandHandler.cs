@@ -1,9 +1,9 @@
-﻿using FinancialBox.Shared.Contracts.Mediator;
-using FinancialBox.Shared.ResultObjects;
+﻿using FinancialBox.BuildingBlocks.Mediator;
+using FinancialBox.BuildingBlocks.Result;
 
 namespace FinancialBox.Application.Features.Auth.Login
 {
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<LoginUserDto>>
+    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserDto>
     {
         public LoginUserCommandHandler()
         {

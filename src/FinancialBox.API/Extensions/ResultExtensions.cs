@@ -1,4 +1,4 @@
-﻿using FinancialBox.Shared.ResultObjects;
+﻿using FinancialBox.BuildingBlocks.Result;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinancialBox.API.Extensions

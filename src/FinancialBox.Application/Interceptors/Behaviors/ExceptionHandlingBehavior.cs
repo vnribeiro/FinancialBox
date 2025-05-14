@@ -1,9 +1,12 @@
-﻿using FinancialBox.Shared.Contracts.Behaviors;
+﻿using FinancialBox.BuildingBlocks.Behaviors;
+using FinancialBox.BuildingBlocks.Mediator;
+using FinancialBox.BuildingBlocks.Result;
 using Microsoft.Extensions.Logging;
 
-namespace FinancialBox.Application.Common.Behaviors
+namespace FinancialBox.Application.Interceptors.Behaviors
 {
     public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IRequest<Result<TResponse>>
     {
         private readonly ILogger<ExceptionHandlingBehavior<TRequest, TResponse>> _logger;
 
@@ -12,10 +15,10 @@ namespace FinancialBox.Application.Common.Behaviors
             _logger = logger;
         }
 
-        public async Task<TResponse> Handle(
+        public async Task<Result<TResponse>> Handle(
             TRequest request,
-            Func<CancellationToken, Task<TResponse>> next,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            Func<Task<Result<TResponse>>> next)
         {
             var requestName = typeof(TRequest).Name;
 
@@ -23,7 +26,7 @@ namespace FinancialBox.Application.Common.Behaviors
             {
                 _logger.LogInformation("Handling request: {RequestName}", requestName);
 
-                var response = await next(cancellationToken);
+                var response = await next();
 
                 _logger.LogInformation("Successfully handled request: {RequestName}", requestName);
 
@@ -32,7 +35,7 @@ namespace FinancialBox.Application.Common.Behaviors
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while handling request: {RequestName}", requestName);
-                throw;
+                return Result<TResponse>.Failure("An unexpected error occurred.");
             }
         }
     }

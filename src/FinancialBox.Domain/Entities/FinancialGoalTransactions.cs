@@ -1,5 +1,5 @@
-﻿using FinancialBox.Domain.Enums;
-using FinancialBox.Shared;
+﻿using FinancialBox.BuildingBlocks;
+using FinancialBox.Domain.Enums;
 
 namespace FinancialBox.Domain.Entities;
 
