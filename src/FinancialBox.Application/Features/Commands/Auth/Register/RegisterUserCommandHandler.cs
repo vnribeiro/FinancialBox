@@ -1,5 +1,4 @@
-﻿using FinancialBox.Application.Features.Commands.Auth.Login;
-using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Result;
 using Mapster;
 
