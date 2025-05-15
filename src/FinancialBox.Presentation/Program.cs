@@ -1,7 +1,7 @@
 using Asp.Versioning.ApiExplorer;
-using FinancialBox.API.Extensions;
 using FinancialBox.Application.Extensions;
 using FinancialBox.Infrastructure.Extensions;
+using FinancialBox.Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

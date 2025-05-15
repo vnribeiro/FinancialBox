@@ -2,5 +2,5 @@
 
 namespace FinancialBox.Application.Features.Commands.Auth.Register;
 
-public record RegisterUserCommand(string Name) : ICommand<RegisterUserResponse>;
+public sealed record RegisterUserCommand(string Name) : ICommand<RegisterUserResponse>;
 

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinancialBox.BuildingBlocks\FinancialBox.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\FinancialBox.Domain\FinancialBox.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

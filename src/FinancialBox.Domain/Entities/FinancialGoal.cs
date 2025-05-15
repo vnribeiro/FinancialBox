@@ -1,9 +1,9 @@
-﻿using FinancialBox.BuildingBlocks;
+﻿using FinancialBox.BuildingBlocks.DomainObjects;
 using FinancialBox.Domain.Enums;
 
 namespace FinancialBox.Domain.Entities;
 
-public class FinancialGoal : BaseEntity
+public class FinancialGoal : BaseEntity, IAggregateRoot
 {
     public string Title { get; set; } = string.Empty;
     public decimal TargetAmount { get; set; }

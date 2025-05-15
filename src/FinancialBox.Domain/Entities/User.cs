@@ -1,8 +1,8 @@
-﻿using FinancialBox.BuildingBlocks;
+﻿using FinancialBox.BuildingBlocks.DomainObjects;
 
 namespace FinancialBox.Domain.Entities;
 
-public class User : BaseEntity
+public class User : BaseEntity, IAggregateRoot
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

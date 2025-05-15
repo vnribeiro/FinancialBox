@@ -1,11 +1,9 @@
 using Asp.Versioning;
 using FinancialBox.API.Contracts;
-using FinancialBox.API.Dtos.Auth;
 using FinancialBox.API.Extensions;
 using FinancialBox.Application.Features.Commands.Auth.Login;
 using FinancialBox.Application.Features.Commands.Auth.Register;
 using FinancialBox.BuildingBlocks.Mediator;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -28,9 +26,8 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(typeof(ApiResponse<LoginUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<LoginUserResponse>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<LoginUserResponse>>> Login([FromBody] LoginUserDto dto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<LoginUserResponse>>> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
     {
-        var command = dto.Adapt<LoginUserCommand>();
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
@@ -41,9 +38,8 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserDto dto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
-        var command = dto.Adapt<RegisterUserCommand>();
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(

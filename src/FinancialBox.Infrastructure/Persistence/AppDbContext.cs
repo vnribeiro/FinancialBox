@@ -1,4 +1,5 @@
-﻿using FinancialBox.Domain.Entities;
+﻿using FinancialBox.BuildingBlocks.DomainObjects;
+using FinancialBox.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence;
@@ -13,5 +14,24 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Set UpdatedAt for modified entities automatically
+        var entries = ChangeTracker.Entries<BaseEntity>()
+            .Where(e => e.State == EntityState.Modified);
+
+        foreach (var entry in entries)
+        {
+            var prop = entry.Metadata.FindProperty(nameof(BaseEntity.UpdatedAt));
+
+            if (prop is not null)
+            {
+                entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = DateTime.UtcNow;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }

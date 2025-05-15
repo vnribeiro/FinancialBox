@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks;
+﻿using FinancialBox.BuildingBlocks.DomainObjects;
 using FinancialBox.Domain.Enums;
 
 namespace FinancialBox.Domain.Entities;

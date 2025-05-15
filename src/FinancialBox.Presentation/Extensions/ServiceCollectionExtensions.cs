@@ -1,9 +1,8 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using FinancialBox.API.Mappings;
 using Microsoft.OpenApi.Models;
 
-namespace FinancialBox.API.Extensions;
+namespace FinancialBox.Presentation.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -13,7 +12,6 @@ public static class ServiceCollectionExtensions
     /// - CORS
     /// - API Versioning
     /// - Environment settings
-    /// - API Mapster mappings (DTO → Command)
     /// </summary>
     /// <param name="services">The service collection to configure.</param>
     /// <param name="builder">The WebApplicationBuilder instance.</param>
@@ -31,9 +29,6 @@ public static class ServiceCollectionExtensions
 
         // Loads environment configs and user secrets (in dev)
         builder.AddEnvironmentConfiguration();
-
-        // Registers Mapster mappings from DTOs to Commands
-        ApiMapsterConfig.RegisterMappings();                
 
         return services;
     }

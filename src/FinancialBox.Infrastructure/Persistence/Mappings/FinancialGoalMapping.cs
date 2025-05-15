@@ -8,35 +8,47 @@ public class FinancialGoalMapping : IEntityTypeConfiguration<FinancialGoal>
 {
     public void Configure(EntityTypeBuilder<FinancialGoal> builder)
     {
-        builder.ToTable("FinancialGoals");
+        builder
+            .ToTable("FinancialGoals");
 
         builder
             .HasKey(g => g.Id);
 
-        builder.Property(g => g.Title)
+        builder
+            .Property(g => g.Title)
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(g => g.TargetAmount)
+        builder
+            .Property(g => g.TargetAmount)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
-        builder.Property(g => g.IdealMonthlyContribution)
+        builder
+            .Property(g => g.IdealMonthlyContribution)
             .HasColumnType("decimal(18,2)");
 
-        builder.Property(g => g.CoverImagePath)
+        builder
+            .Property(g => g.CoverImagePath)
             .HasMaxLength(255);
 
-        builder.Property(g => g.CreatedAt)
+        builder
+            .Property(g => g.CreatedAt)
             .IsRequired();
 
-        builder.Property(g => g.Status)
+        builder
+            .Property(g => g.UpdatedAt);
+
+        builder
+            .Property(g => g.Status)
             .IsRequired();
 
-        builder.Property(g => g.IsDeleted)
+        builder
+            .Property(g => g.IsDeleted)
             .HasDefaultValue(false);
 
-        builder.HasMany(g => g.Transactions)
+        builder
+            .HasMany(g => g.Transactions)
             .WithOne(t => t.FinancialGoal)
             .HasForeignKey(t => t.FinancialGoalId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using FinancialBox.BuildingBlocks.Persistence;
+using FinancialBox.Infrastructure.Persistence.Repositories;
+using FinancialBox.Domain.Repositories;
 
 namespace FinancialBox.Infrastructure.Extensions;
 
@@ -14,6 +17,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(configuration.GetConnectionString(DatabaseName)));
+
+        // Register the DbContext with a scoped lifetime
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
