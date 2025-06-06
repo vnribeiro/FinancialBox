@@ -1,13 +1,12 @@
 using Asp.Versioning;
-using FinancialBox.API.Contracts;
-using FinancialBox.API.Extensions;
 using FinancialBox.Application.Features.Commands.Auth.Login;
 using FinancialBox.Application.Features.Commands.Auth.Register;
 using FinancialBox.BuildingBlocks.Mediator;
+using FinancialBox.Presentation.Contracts;
+using FinancialBox.Presentation.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
-
-namespace FinancialBox.API.Controllers.V1;
+namespace FinancialBox.Presentation.Controllers.V1;
 
 [ApiController]
 [ApiVersion(1.0)]

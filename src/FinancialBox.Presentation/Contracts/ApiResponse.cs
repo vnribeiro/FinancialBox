@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.API.Contracts;
+﻿namespace FinancialBox.Presentation.Contracts;
 
 public class ApiResponse<T>
 {

@@ -1,7 +1,7 @@
 ﻿using FinancialBox.BuildingBlocks.Result;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinancialBox.API.Extensions;
+namespace FinancialBox.Presentation.Extensions;
 
 public static class ResultExtensions
 {

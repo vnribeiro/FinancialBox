@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinancialBox.API.Controllers.V1;
+namespace FinancialBox.Presentation.Controllers.V1;
 
 [ApiController]
 [ApiVersion(1.0)]
