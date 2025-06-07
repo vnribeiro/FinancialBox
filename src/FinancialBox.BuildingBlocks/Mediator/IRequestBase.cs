@@ -1,3 +1,3 @@
 ﻿namespace FinancialBox.BuildingBlocks.Mediator;
 
-public interface IRequest<TResponse> : IRequestBase;
+public interface IRequestBase;

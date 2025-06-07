@@ -5,7 +5,7 @@ using Mapster;
 
 namespace FinancialBox.Application.Features.Commands.Auth.Register;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
+public class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, RegisterUserResponse>
 {
     public RegisterUserCommandHandler() {}
 

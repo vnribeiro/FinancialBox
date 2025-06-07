@@ -24,10 +24,17 @@ namespace FinancialBox.Application.Extensions
             // Register FluentValidation validators from the Application layer
             services.AddValidatorsFromAssembly(applicationAssembly);
 
-            // Automatically register all IRequestHandler<TRequest, TResponse> implementations
+            // Register all ICommandHandler<,> implementations
             services.Scan(scan => scan
                 .FromAssemblies(applicationAssembly)
-                .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
+                .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+            // Register all IQueryHandler<,> implementations
+            services.Scan(scan => scan
+                .FromAssemblies(applicationAssembly)
+                .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 

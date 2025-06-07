@@ -14,16 +14,19 @@ public class Mediator : IMediator
         _provider = provider;
     }
 
-    public async Task<Result<T>> Send<T>(IRequest<Result<T>> request, CancellationToken cancellationToken)
+    public async Task<Result<TResponse>> Send<TResponse>(IRequest<Result<TResponse>> request, CancellationToken cancellationToken)
     {
         var requestType = request.GetType();
-        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(T));
-        var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(T));
+        var handlerType = request is ICommand<TResponse>
+            ? typeof(ICommandHandler<,>).MakeGenericType(requestType, typeof(TResponse))
+            : typeof(IQueryHandler<,>).MakeGenericType(requestType, typeof(TResponse));
+
+        var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
 
         dynamic handler = _provider.GetRequiredService(handlerType);
         var behaviors = _provider.GetServices(behaviorType).Cast<dynamic>().ToList();
 
-        Func<Task<Result<T>>> pipeline = () => handler.Handle((dynamic)request, cancellationToken);
+        Func<Task<Result<TResponse>>> pipeline = () => handler.Handle((dynamic)request, cancellationToken);
 
         foreach (var behavior in behaviors.AsEnumerable().Reverse())
         {

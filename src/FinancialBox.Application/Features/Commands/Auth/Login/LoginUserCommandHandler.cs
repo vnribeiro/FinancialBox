@@ -5,7 +5,7 @@ using Mapster;
 
 namespace FinancialBox.Application.Features.Commands.Auth.Login;
 
-public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResponse>
+public class LoginUserCommandHandler : ICommandHandler<LoginUserCommand, LoginUserResponse>
 {
     public LoginUserCommandHandler() {}
 

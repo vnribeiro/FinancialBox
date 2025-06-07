@@ -2,4 +2,5 @@
 
 namespace FinancialBox.BuildingBlocks.Mediator;
 
-public interface IQuery<TResponse> : IRequest<Result<TResponse>>;
+public interface IQuery : IRequestBase;
+public interface IQuery<TResponse> : IQuery, IRequest<Result<TResponse>>;
