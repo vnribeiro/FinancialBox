@@ -2,5 +2,4 @@
 
 namespace FinancialBox.BuildingBlocks.Mediator;
 
-public interface ICommand : IRequestBase;
-public interface ICommand<TResponse> : ICommand, IRequest<Result<TResponse>>;
+public interface ICommand<TResponse> : IRequest<Result<TResponse>>;
