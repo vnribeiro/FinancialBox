@@ -125,7 +125,8 @@ public static class ServiceCollectionExtensions
             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
             .AddEnvironmentVariables();
 
-        if (!builder.Environment.IsDevelopment()) return builder;
+        if (!builder.Environment.IsDevelopment()) 
+            return builder;
 
         builder.Configuration.AddUserSecrets<Program>();
 

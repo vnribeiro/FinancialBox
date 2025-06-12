@@ -29,9 +29,7 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.Match(
-            onSuccess: data => Ok(ApiResponse<LoginUserResponse>.FromSuccess(data)),
-            onFailure: errors => BadRequest(ApiResponse<LoginUserResponse>.FromErrors(errors)));
+        return result.Match(onSuccess: Ok, onFailure: BadRequest);
     }
 
     [HttpPost("register")]
@@ -41,8 +39,6 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.Match(
-            onSuccess: data => Ok(ApiResponse<RegisterUserResponse>.FromSuccess(data)),
-            onFailure: errors => BadRequest(ApiResponse<RegisterUserResponse>.FromErrors(errors)));
+        return result.Match(onSuccess: Ok, onFailure: BadRequest);
     }
 }
