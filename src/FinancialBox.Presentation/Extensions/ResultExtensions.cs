@@ -11,8 +11,8 @@ public static class ResultExtensions
         Func<ApiResponse<T>, ActionResult> onSuccess,
         Func<ApiResponse<IReadOnlyList<string>>, ActionResult> onFailure)
     {
-        return result.IsSuccess
-            ? onSuccess(ApiResponse<T>.FromSuccess(result.Value!))
-            : onFailure(ApiResponse<IReadOnlyList<string>>.FromErrors(result.Error?.Messages ?? ["Unknown error"]));
+        return result.IsSuccess ?
+            onSuccess(ApiResponse<T>.FromSuccess(result.Value!)) :
+            onFailure(ApiResponse<IReadOnlyList<string>>.FromErrors(result.Error?.Messages ?? ["Unknown error"]));
     }
 }
