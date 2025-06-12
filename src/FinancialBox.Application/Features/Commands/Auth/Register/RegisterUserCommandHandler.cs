@@ -13,6 +13,6 @@ public class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, R
     {
         var user = request.Adapt<User>();
         var response = user.Adapt<RegisterUserResponse>();
-        return Task.FromResult(Result<RegisterUserResponse>.Success(response));
+        return Task.FromResult(Result<RegisterUserResponse>.Failure(Error.NotFound("wdw")));
     }
 }

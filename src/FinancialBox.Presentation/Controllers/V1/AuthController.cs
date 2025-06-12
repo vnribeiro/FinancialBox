@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.MatchPlain(onSuccess: _ => NoContent(), onFailure: NotFound);
+        return result.ToApiResponseResult(Ok);
     }
 
     [HttpPost("register")]
@@ -39,6 +39,6 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.MatchApiResponse(onSuccess: Ok, onFailure: BadRequest);
+        return result.ToApiResponseResult(Ok);
     }
 }

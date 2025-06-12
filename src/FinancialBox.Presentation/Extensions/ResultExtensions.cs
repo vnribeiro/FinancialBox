@@ -6,23 +6,33 @@ namespace FinancialBox.Presentation.Extensions;
 
 public static class ResultExtensions
 {
-    public static ActionResult<ApiResponse<T>> MatchApiResponse<T>(
+    public static ActionResult<ApiResponse<T>> ToApiResponseResult<T>(
         this Result<T> result,
-        Func<ApiResponse<T>, ActionResult> onSuccess,
-        Func<ApiResponse<T>, ActionResult> onFailure)
+        Func<ApiResponse<T>, ActionResult> onSuccess)
     {
-        return result.IsSuccess ? 
-            onSuccess(ApiResponse<T>.FromSuccess(result.Value!)) : 
-            onFailure((ApiResponse<T>.FromErrors(result.Error?.Messages ?? ["Unknown error"])));
+        if (result.IsSuccess)
+            return onSuccess(ApiResponse<T>.FromSuccess(result.Value!));
+
+        var errorResponse = ApiResponse<T>.FromErrors(result.Error?.Messages ?? ["Unknown error"]);
+
+        return new ObjectResult(errorResponse)
+        {
+            StatusCode = result.Error?.StatusCode ?? 500
+        };
     }
 
-    public static ActionResult MatchPlain<T>(
+    public static ActionResult ToActionResult<T>(
         this Result<T> result,
-        Func<T, ActionResult> onSuccess,
-        Func<IReadOnlyList<string>, ActionResult> onFailure)
+        Func<T, ActionResult> onSuccess)
     {
-        return result.IsSuccess ? 
-            onSuccess(result.Value!) : 
-            onFailure(result.Error?.Messages ?? new List<string> { "Unknown error" });
+        if(result.IsSuccess)
+            return onSuccess(result.Value!);
+
+        var errorResponse = ApiResponse<T>.FromErrors(result.Error?.Messages ?? ["Unknown error"]);
+
+        return new ObjectResult(errorResponse)
+        {
+            StatusCode = result.Error?.StatusCode ?? 500
+        };
     }
 }
