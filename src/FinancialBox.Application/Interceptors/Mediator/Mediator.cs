@@ -14,7 +14,7 @@ public class Mediator : IMediator
         _provider = provider;
     }
 
-    public async Task<Result<TResponse>> Send<TResponse>(IRequest<Result<TResponse>> request, CancellationToken cancellationToken)
+    public async Task<Result<TResponse>> SendAsync<TResponse>(IRequest<Result<TResponse>> request, CancellationToken cancellationToken)
     {
         var requestType = request.GetType();
         var isCommand = request is ICommand<TResponse>;
@@ -22,10 +22,12 @@ public class Mediator : IMediator
 
         if (!isCommand && !isQuery)
         {
-            throw new InvalidOperationException(
-                $"Request '{requestType.Name}' is not compatible with expected TResponse '{typeof(TResponse).Name}'. " +
-                $"Ensure you are calling Send<{typeof(TResponse).Name}> and your request implements ICommand<{typeof(TResponse).Name}> or IQuery<{typeof(TResponse).Name}>."
+            var error = Error.BadRequest(
+                $"Invalid request '{requestType.Name}' for response '{typeof(TResponse).Name}'. " +
+                $"It must implement ICommand<{typeof(TResponse).Name}> or IQuery<{typeof(TResponse).Name}>."
             );
+
+            return Result<TResponse>.Failure(error);
         }
 
         var handlerType = isCommand

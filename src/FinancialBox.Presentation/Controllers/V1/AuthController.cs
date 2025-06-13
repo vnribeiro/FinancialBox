@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<LoginUserResponse>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<LoginUserResponse>>> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.ToApiResponseResult(Ok);
     }
@@ -37,7 +37,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.ToApiResponseResult(Ok);
     }
