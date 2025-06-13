@@ -2,6 +2,7 @@ using Asp.Versioning.ApiExplorer;
 using FinancialBox.Application.Extensions;
 using FinancialBox.Infrastructure.Extensions;
 using FinancialBox.Presentation.Extensions;
+using FinancialBox.Presentation.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,9 @@ if (app.Environment.IsDevelopment())
         }
     });
 }
+
+// Use custom error handling middleware
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseCors("DefaultPolicy");
 

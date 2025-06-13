@@ -35,7 +35,7 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while handling request: {RequestName}", requestName);
-            return Result<TResponse>.Failure("An unexpected error occurred.");
+            return Result<TResponse>.Failure(Error.InternalServerError());
         }
     }
 }
