@@ -1,12 +1,12 @@
-﻿using FinancialBox.Application.Features.Auth.Commands.Login;
+﻿using FinancialBox.Application.Core.Mappings;
+using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Interceptors.Mediator;
-using FinancialBox.Application.Mappings;
 using FinancialBox.BuildingBlocks.Behaviors;
 using FinancialBox.BuildingBlocks.Mediator;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FinancialBox.Application.Extensions
+namespace FinancialBox.Application.Core.Extensions
 {
     public static class ServiceCollectionExtensions
     {

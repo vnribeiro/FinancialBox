@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.DomainObjects;
+﻿using FinancialBox.BuildingBlocks.Primitives;
 
 namespace FinancialBox.BuildingBlocks.Persistence;
 

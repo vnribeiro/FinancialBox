@@ -7,7 +7,6 @@ namespace FinancialBox.Application.Interceptors.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<Result<TResponse>>
-    where TResponse : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 

@@ -1,6 +1,5 @@
 ﻿using FinancialBox.BuildingBlocks.Persistence;
-using FinancialBox.Domain.Entities;
 
-namespace FinancialBox.Domain.Repositories;
+namespace FinancialBox.Domain.FinancialGoals;
 
 public interface IFinancialGoalRepository : IRepository<FinancialGoal>;

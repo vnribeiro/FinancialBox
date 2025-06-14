@@ -1,6 +1,7 @@
-﻿using FinancialBox.BuildingBlocks.DomainObjects;
+﻿using FinancialBox.BuildingBlocks.Primitives;
+using FinancialBox.Domain.FinancialGoals;
 
-namespace FinancialBox.Domain.Entities;
+namespace FinancialBox.Domain.Users;
 
 public class User : BaseEntity, IAggregateRoot
 {

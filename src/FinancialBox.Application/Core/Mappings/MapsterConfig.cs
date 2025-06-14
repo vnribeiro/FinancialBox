@@ -1,9 +1,9 @@
 ﻿using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Features.Auth.Commands.Register;
-using FinancialBox.Domain.Entities;
+using FinancialBox.Domain.Users;
 using Mapster;
 
-namespace FinancialBox.Application.Mappings;
+namespace FinancialBox.Application.Core.Mappings;
 
 public static class MapsterConfig
 {

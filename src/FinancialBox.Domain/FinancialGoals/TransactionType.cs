@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.Domain.Enums;
+﻿namespace FinancialBox.Domain.FinancialGoals;
 
 public enum TransactionType
 {

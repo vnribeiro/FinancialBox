@@ -1,7 +1,6 @@
-﻿using System.ComponentModel;
-using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Result;
-using FinancialBox.Domain.Entities;
+using FinancialBox.Domain.Users;
 using Mapster;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;

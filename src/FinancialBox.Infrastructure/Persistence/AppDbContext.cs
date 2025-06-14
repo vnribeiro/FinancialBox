@@ -1,5 +1,6 @@
-﻿using FinancialBox.BuildingBlocks.DomainObjects;
-using FinancialBox.Domain.Entities;
+﻿using FinancialBox.BuildingBlocks.Primitives;
+using FinancialBox.Domain.FinancialGoals;
+using FinancialBox.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence;

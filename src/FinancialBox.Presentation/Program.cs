@@ -1,5 +1,5 @@
 using Asp.Versioning.ApiExplorer;
-using FinancialBox.Application.Extensions;
+using FinancialBox.Application.Core.Extensions;
 using FinancialBox.Infrastructure.Extensions;
 using FinancialBox.Presentation.Extensions;
 using FinancialBox.Presentation.Middleware;

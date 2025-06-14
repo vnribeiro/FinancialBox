@@ -1,5 +1,5 @@
-﻿using FinancialBox.BuildingBlocks.DomainObjects;
-using FinancialBox.BuildingBlocks.Persistence;
+﻿using FinancialBox.BuildingBlocks.Persistence;
+using FinancialBox.BuildingBlocks.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;

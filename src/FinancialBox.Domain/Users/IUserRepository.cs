@@ -1,6 +1,5 @@
 ﻿using FinancialBox.BuildingBlocks.Persistence;
-using FinancialBox.Domain.Entities;
 
-namespace FinancialBox.Domain.Repositories;
+namespace FinancialBox.Domain.Users;
 
 public interface IUserRepository : IRepository<User>;

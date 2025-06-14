@@ -25,7 +25,11 @@ public class Mediator : IMediator
 
         if (handler is null)
         {
-            var error = Error.NotFound($"No handler registered for '{requestType.Name}'.");
+            var error = Error.InternalServerError(
+                $"Handler resolution failed: No handler registered for '{requestType.Name}'. " +
+                $"This likely indicates a service registration or DI configuration issue."
+            );
+
             return Result<TResponse>.Failure(error);
         }
 

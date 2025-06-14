@@ -4,7 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using FinancialBox.BuildingBlocks.Persistence;
 using FinancialBox.Infrastructure.Persistence.Repositories;
-using FinancialBox.Domain.Repositories;
+using FinancialBox.Domain.Users;
+using FinancialBox.Domain.FinancialGoals;
 
 namespace FinancialBox.Infrastructure.Extensions;
 

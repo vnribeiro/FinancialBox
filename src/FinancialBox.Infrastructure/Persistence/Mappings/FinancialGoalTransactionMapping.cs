@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using FinancialBox.Domain.Entities;
+using FinancialBox.Domain.FinancialGoals;
 
 namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
