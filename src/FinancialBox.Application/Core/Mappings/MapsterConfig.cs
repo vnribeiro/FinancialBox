@@ -9,10 +9,14 @@ public static class MapsterConfig
 {
     public static void RegisterMappings()
     {
-        TypeAdapterConfig<LoginUserCommand, User>.NewConfig();
+        TypeAdapterConfig<LoginUserCommand, User>.NewConfig()
+            .MapToConstructor(true);
+
         TypeAdapterConfig<User, LoginUserResponse>.NewConfig();
 
-        TypeAdapterConfig<RegisterUserCommand, User>.NewConfig();
+        TypeAdapterConfig<RegisterUserCommand, User>.NewConfig()
+            .MapToConstructor(true);
+
         TypeAdapterConfig<User, RegisterUserResponse>.NewConfig();
     }
 }

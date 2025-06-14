@@ -13,6 +13,6 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUs
     {
         var user = request.Adapt<User>();
         var response = user.Adapt<LoginUserResponse>();
-        return Task.FromResult(Result<LoginUserResponse>.Failure(Error.Conflict("aa")));
+        return Task.FromResult(Result<LoginUserResponse>.Success(response));
     }
 }
