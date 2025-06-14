@@ -3,9 +3,9 @@ using FinancialBox.BuildingBlocks.Result;
 using FinancialBox.Domain.Entities;
 using Mapster;
 
-namespace FinancialBox.Application.Features.Commands.Auth.Login;
+namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
-public class LoginUserCommandHandler : ICommandHandler<LoginUserCommand, LoginUserResponse>
+public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResponse>
 {
     public LoginUserCommandHandler() {}
 

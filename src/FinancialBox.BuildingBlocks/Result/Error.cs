@@ -25,7 +25,7 @@ public class Error
     {
         Type = type;
         StatusCode = (int)type;
-        Messages = messages.Length != 0 ? messages.ToList() : DefaultMessagesFor(type);
+        Messages = messages.Length > 0 ? messages.ToList() : DefaultMessagesFor(type);
     }
 
     private static List<string> DefaultMessagesFor(ErrorType type) => type switch

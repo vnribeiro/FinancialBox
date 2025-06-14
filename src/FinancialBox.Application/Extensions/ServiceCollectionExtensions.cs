@@ -1,4 +1,4 @@
-﻿using FinancialBox.Application.Features.Commands.Auth.Login;
+﻿using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Interceptors.Mediator;
 using FinancialBox.Application.Mappings;
 using FinancialBox.BuildingBlocks.Behaviors;
@@ -24,17 +24,10 @@ namespace FinancialBox.Application.Extensions
             // Register FluentValidation validators from the Application layer
             services.AddValidatorsFromAssembly(applicationAssembly);
 
-            // Register all ICommandHandler<,> implementations
+            // Register all IRequestHandler<TRequest, TResponse> implementations
             services.Scan(scan => scan
                 .FromAssemblies(applicationAssembly)
-                .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<,>)))
-                .AsImplementedInterfaces()
-                .WithScopedLifetime());
-
-            // Register all IQueryHandler<,> implementations
-            services.Scan(scan => scan
-                .FromAssemblies(applicationAssembly)
-                .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
+                .AddClasses(c => c.AssignableTo(typeof(IRequestHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 

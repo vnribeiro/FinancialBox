@@ -7,6 +7,7 @@ namespace FinancialBox.Application.Interceptors.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<Result<TResponse>>
+    where TResponse : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -17,8 +18,8 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
     public async Task<Result<TResponse>> Handle(
         TRequest request,
-        CancellationToken cancellationToken,
-        Func<Task<Result<TResponse>>> next)
+        Func<Task<Result<TResponse>>> next,
+        CancellationToken cancellationToken)
     {
         if (!_validators.Any())
             return await next();
@@ -36,6 +37,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             return await next();
 
         var messages = failures.Select(f => f.ErrorMessage).ToList();
-        return Result<TResponse>.Failure(messages);
+        return Result<TResponse>.Failure(Error.BadRequest(string.Join(" | ", messages)));
     }
 }
+

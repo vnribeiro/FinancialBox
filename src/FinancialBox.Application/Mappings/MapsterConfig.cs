@@ -1,5 +1,5 @@
-﻿using FinancialBox.Application.Features.Commands.Auth.Login;
-using FinancialBox.Application.Features.Commands.Auth.Register;
+﻿using FinancialBox.Application.Features.Auth.Commands.Login;
+using FinancialBox.Application.Features.Auth.Commands.Register;
 using FinancialBox.Domain.Entities;
 using Mapster;
 

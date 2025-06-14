@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 namespace FinancialBox.Application.Interceptors.Behaviors;
 
 public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<Result<TResponse>>
+    where TRequest : IRequest<Result<TResponse>> 
+    where TResponse : notnull
 {
     private readonly ILogger<ExceptionHandlingBehavior<TRequest, TResponse>> _logger;
 
@@ -17,8 +18,8 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
 
     public async Task<Result<TResponse>> Handle(
         TRequest request,
-        CancellationToken cancellationToken,
-        Func<Task<Result<TResponse>>> next)
+        Func<Task<Result<TResponse>>> next,
+        CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
 

@@ -1,11 +1,12 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
+﻿using System.ComponentModel;
+using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Result;
 using FinancialBox.Domain.Entities;
 using Mapster;
 
-namespace FinancialBox.Application.Features.Commands.Auth.Register;
+namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
-public class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, RegisterUserResponse>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
     public RegisterUserCommandHandler() {}
 

@@ -14,39 +14,33 @@ public class Mediator : IMediator
         _provider = provider;
     }
 
-    public async Task<Result<TResponse>> SendAsync<TResponse>(IRequest<Result<TResponse>> request, CancellationToken cancellationToken)
+    public async Task<Result<TResponse>> SendAsync<TResponse>(
+        IRequest<Result<TResponse>> request,
+        CancellationToken cancellationToken)
     {
         var requestType = request.GetType();
-        var isCommand = request is ICommand<TResponse>;
-        var isQuery = request is IQuery<TResponse>;
 
-        if (!isCommand && !isQuery)
+        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
+        var handler = _provider.GetService(handlerType);
+
+        if (handler is null)
         {
-            var error = Error.BadRequest(
-                $"Invalid request '{requestType.Name}' for response '{typeof(TResponse).Name}'. " +
-                $"It must implement ICommand<{typeof(TResponse).Name}> or IQuery<{typeof(TResponse).Name}>."
-            );
-
+            var error = Error.NotFound($"No handler registered for '{requestType.Name}'.");
             return Result<TResponse>.Failure(error);
         }
 
-        var handlerType = isCommand
-            ? typeof(ICommandHandler<,>).MakeGenericType(requestType, typeof(TResponse))
-            : typeof(IQueryHandler<,>).MakeGenericType(requestType, typeof(TResponse));
-
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
+        var behaviors = _provider.GetServices(behaviorType).Cast<object>().ToList();
 
-        dynamic handler = _provider.GetRequiredService(handlerType);
-        var behaviors = _provider.GetServices(behaviorType).Cast<dynamic>().ToList();
-
-        Func<Task<Result<TResponse>>> pipeline = () => handler.Handle((dynamic)request, cancellationToken);
+        Func<Task<Result<TResponse>>> pipeline = () => ((dynamic)handler).Handle((dynamic)request, cancellationToken);
 
         foreach (var behavior in behaviors.AsEnumerable().Reverse())
         {
             var next = pipeline;
-            pipeline = () => behavior.Handle((dynamic)request, cancellationToken, next);
+            pipeline = () => ((dynamic)behavior).Handle((dynamic)request, next, cancellationToken);
         }
 
         return await pipeline();
     }
 }
+

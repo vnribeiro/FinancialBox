@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace FinancialBox.Application.Features.Commands.Auth.Login;
+namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
-public class LoginUserValidator : AbstractValidator<LoginUserCommand>
+public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
 {
-    public LoginUserValidator()
+    public RegisterUserValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
