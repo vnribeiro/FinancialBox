@@ -1,4 +1,6 @@
-﻿namespace FinancialBox.BuildingBlocks.Result;
+﻿using FinancialBox.BuildingBlocks.Mediator;
+
+namespace FinancialBox.BuildingBlocks.Result;
 
 public class Result<T>
 {
@@ -15,6 +17,9 @@ public class Result<T>
 
     public static Result<T> Success(T value) =>
         new(value, true);
+
+    public static Result<Unit> Success() =>
+        new(Unit.Value, true);
 
     public static Result<T> Failure(string message) =>
         new(default, false, Error.BadRequest(message));
