@@ -5,14 +5,14 @@ using Mapster;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result>
 {
     public RegisterUserCommandHandler() {}
 
-    public Task<Result<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public Task<Result> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var user = request.Adapt<User>();
         var response = user.Adapt<RegisterUserResponse>();
-        return Task.FromResult(Result<RegisterUserResponse>.Failure(Error.NotFound("wdw")));
+        return Task.FromResult(Result.Success());
     }
 }

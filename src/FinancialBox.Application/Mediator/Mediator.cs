@@ -1,9 +1,8 @@
 ﻿using FinancialBox.BuildingBlocks.Behaviors;
 using FinancialBox.BuildingBlocks.Mediator;
-using FinancialBox.BuildingBlocks.Result;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FinancialBox.Application.Interceptors.Mediator;
+namespace FinancialBox.Application.Core.Mediator;
 
 public class Mediator : IMediator
 {
@@ -14,29 +13,20 @@ public class Mediator : IMediator
         _provider = provider;
     }
 
-    public async Task<Result<TResponse>> SendAsync<TResponse>(
-        IRequest<Result<TResponse>> request,
-        CancellationToken cancellationToken)
+    public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
-
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
+
         var handler = _provider.GetService(handlerType);
 
         if (handler is null)
-        {
-            var error = Error.InternalServerError(
-                $"Handler resolution failed: No handler registered for '{requestType.Name}'. " +
-                $"This likely indicates a service registration or DI configuration issue."
-            );
-
-            return Result<TResponse>.Failure(error);
-        }
+            throw new InvalidOperationException($"Handler not registered for '{requestType.Name}'. Check your DI configuration.");
 
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
         var behaviors = _provider.GetServices(behaviorType).Cast<object>().ToList();
 
-        Func<Task<Result<TResponse>>> pipeline = () => ((dynamic)handler).Handle((dynamic)request, cancellationToken);
+        Func<Task<TResponse>> pipeline = () => ((dynamic)handler).Handle((dynamic)request, cancellationToken);
 
         foreach (var behavior in behaviors.AsEnumerable().Reverse())
         {
@@ -47,4 +37,3 @@ public class Mediator : IMediator
         return await pipeline();
     }
 }
-

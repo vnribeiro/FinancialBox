@@ -1,31 +1,52 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
+﻿namespace FinancialBox.BuildingBlocks.Result;
 
-namespace FinancialBox.BuildingBlocks.Result;
+public class Result
+{
+    public bool IsSuccess { get; }
+    public bool IsFailure => !IsSuccess;
+    public Error? Error { get; }
+
+    private Result(bool isSuccess, Error? error = null)
+    {
+        IsSuccess = isSuccess;
+        Error = error;
+    }
+
+    public static Result Success() => 
+        new(true);
+
+    public static Result Failure(string message) => 
+        new(false, Error.InvalidRequest(message));
+
+    public static Result Failure(IEnumerable<string> messages) => 
+        new(false, Error.InvalidRequest(messages.ToArray()));
+
+    public static Result Failure(Error error) => 
+        new(false, error);
+}
 
 public class Result<T>
 {
     public bool IsSuccess { get; }
-    public T? Value { get; }
+    public bool IsFailure => !IsSuccess;
+    public T? Data { get; }
     public Error? Error { get; }
 
-    private Result(T? value, bool isSuccess, Error? error = null)
+    private Result(T? data, bool isSuccess, Error? error = null)
     {
         IsSuccess = isSuccess;
-        Value = value;
+        Data = data;
         Error = error;
     }
 
-    public static Result<T> Success(T value) =>
-        new(value, true);
-
-    public static Result<Unit> Success() =>
-        new(Unit.Value, true);
+    public static Result<T> Success(T data) =>
+        new(data, true);
 
     public static Result<T> Failure(string message) =>
-        new(default, false, Error.BadRequest(message));
+        new(default, false, Error.InvalidRequest(message));
 
     public static Result<T> Failure(IEnumerable<string> messages) =>
-        new(default, false, Error.BadRequest(messages.ToArray()));
+        new(default, false, Error.InvalidRequest(messages.ToArray()));
 
     public static Result<T> Failure(Error error) =>
         new(default, false, error);

@@ -1,10 +1,7 @@
-﻿using FinancialBox.BuildingBlocks.Result;
-
-namespace FinancialBox.BuildingBlocks.Mediator;
+﻿namespace FinancialBox.BuildingBlocks.Mediator;
 
 public interface IRequestHandler<in TRequest, TResponse>
-    where TRequest : IRequest<Result<TResponse>>
-    where TResponse : notnull
+    where TRequest : IRequest<TResponse>
 {
-    Task<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken);
+    Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 }

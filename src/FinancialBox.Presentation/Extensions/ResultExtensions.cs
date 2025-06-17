@@ -6,12 +6,12 @@ namespace FinancialBox.Presentation.Extensions;
 
 public static class ResultExtensions
 {
-    public static ActionResult<ApiResponse<T>> ToApiResponseResult<T>(
+    public static ActionResult<ApiResponse<T>> Match<T>(
         this Result<T> result,
         Func<ApiResponse<T>, ActionResult> onSuccess)
     {
         if (result.IsSuccess)
-            return onSuccess(ApiResponse<T>.FromSuccess(result.Value!));
+            return onSuccess(ApiResponse<T>.FromSuccess(result.Data!));
 
         var errorResponse = ApiResponse<T>.FromErrors(result.Error?.Messages ?? ["Unknown error"]);
 
@@ -21,18 +21,20 @@ public static class ResultExtensions
         };
     }
 
-    public static ActionResult ToActionResult<T>(
-        this Result<T> result,
-        Func<T, ActionResult> onSuccess)
+    public static ActionResult Match(
+        this Result result,
+        Func<ActionResult> onSuccess)
     {
-        if(result.IsSuccess)
-            return onSuccess(result.Value!);
+        if (result.IsSuccess)
+            return onSuccess();
 
-        var errorResponse = ApiResponse<T>.FromErrors(result.Error?.Messages ?? ["Unknown error"]);
+        var errorMessages = result.Error?.Messages ?? ["Unknown error"];
+        var statusCode = result.Error?.StatusCode ?? 500;
+        var errorResponse = ApiResponse.FromErrors(errorMessages);
 
         return new ObjectResult(errorResponse)
         {
-            StatusCode = result.Error?.StatusCode ?? 500
+            StatusCode = statusCode
         };
     }
 }

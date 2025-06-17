@@ -3,10 +3,10 @@ using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Result;
 using Microsoft.Extensions.Logging;
 
-namespace FinancialBox.Application.Interceptors.Behaviors;
+namespace FinancialBox.Application.Behaviors;
 
 public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<Result<TResponse>>
+    where TRequest : IRequest<TResponse>
 {
     private readonly ILogger<ExceptionHandlingBehavior<TRequest, TResponse>> _logger;
 
@@ -15,9 +15,9 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
         _logger = logger;
     }
 
-    public async Task<Result<TResponse>> Handle(
+    public async Task<TResponse> Handle(
         TRequest request,
-        Func<Task<Result<TResponse>>> next,
+        Func<Task<TResponse>> next,
         CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
@@ -35,7 +35,27 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while handling request: {RequestName}", requestName);
-            return Result<TResponse>.Failure(Error.InternalServerError());
+
+            var error = Error.UnexpectedServerError();
+
+            if (typeof(TResponse) == typeof(Result))
+            {
+                return (TResponse)(object)Result.Failure(error)!;
+            }
+
+            if (typeof(TResponse).IsGenericType &&
+                typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+            {
+                var genericType = typeof(TResponse).GetGenericArguments()[0];
+                var method = typeof(Result<>)
+                    .MakeGenericType(genericType)
+                    .GetMethod(nameof(Result<object>.Failure), [typeof(Error)]);
+
+                var result = method!.Invoke(null, [error]);
+                return (TResponse)result!;
+            }
+
+            throw;
         }
     }
 }

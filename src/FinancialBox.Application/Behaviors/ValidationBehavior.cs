@@ -3,10 +3,10 @@ using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Result;
 using FluentValidation;
 
-namespace FinancialBox.Application.Interceptors.Behaviors;
+namespace FinancialBox.Application.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<Result<TResponse>>
+    where TRequest : IRequest<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -15,9 +15,9 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         _validators = validators;
     }
 
-    public async Task<Result<TResponse>> Handle(
+    public async Task<TResponse> Handle(
         TRequest request,
-        Func<Task<Result<TResponse>>> next,
+        Func<Task<TResponse>> next,
         CancellationToken cancellationToken)
     {
         if (!_validators.Any())
@@ -35,8 +35,26 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         if (!failures.Any())
             return await next();
 
-        var messages = failures.Select(f => f.ErrorMessage).ToList();
-        return Result<TResponse>.Failure(messages);
+        var messages = failures.Select(f => f.ErrorMessage).ToArray();
+
+        if (typeof(TResponse) == typeof(Result))
+        {
+            var result = Result.Failure(messages);
+            return (TResponse)(object)result!;
+        }
+
+        if (typeof(TResponse).IsGenericType &&
+            typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+        {
+            var genericType = typeof(TResponse).GetGenericArguments()[0];
+            var method = typeof(Result<>)
+                .MakeGenericType(genericType)
+                .GetMethod(nameof(Result<object>.Failure), [typeof(string[])]);
+
+            var result = method!.Invoke(null, [messages]);
+            return (TResponse)result!;
+        }
+
+        return await next();
     }
 }
-

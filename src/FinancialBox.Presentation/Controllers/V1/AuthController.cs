@@ -29,16 +29,16 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.SendAsync(command, cancellationToken);
 
-        return result.ToApiResponseResult(Ok);
+        return result.Match(Ok);
     }
 
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.SendAsync(command, cancellationToken);
 
-        return result.ToApiResponseResult(Ok);
+        return result.Match(NoContent);
     }
 }

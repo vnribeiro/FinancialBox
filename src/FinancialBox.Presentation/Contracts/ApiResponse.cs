@@ -1,5 +1,14 @@
 ﻿namespace FinancialBox.Presentation.Contracts;
 
+public class ApiResponse
+{
+    public bool Success { get; set; }
+    public List<string> Errors { get; set; } = [];
+
+    public static ApiResponse FromErrors(IEnumerable<string> errors) =>
+        new() { Success = false, Errors = errors.ToList() };
+}
+
 public class ApiResponse<T>
 {
     public bool Success { get; init; }

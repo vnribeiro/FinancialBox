@@ -3,7 +3,7 @@ using FinancialBox.Application.Features.Auth.Commands.Register;
 using FinancialBox.Domain.Users;
 using Mapster;
 
-namespace FinancialBox.Application.Core.Mappings;
+namespace FinancialBox.Application.Mappings;
 
 public static class MapsterConfig
 {
