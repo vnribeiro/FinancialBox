@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Primitives;
+﻿using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.Domain.FinancialGoals;
 
 namespace FinancialBox.Domain.Users;

@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Result;
+﻿using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.Presentation.Contracts;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,9 +1,8 @@
-﻿using FinancialBox.BuildingBlocks.Behaviors;
+﻿using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.BuildingBlocks.Mediator;
-using FinancialBox.BuildingBlocks.Result;
 using FluentValidation;
 
-namespace FinancialBox.Application.Behaviors;
+namespace FinancialBox.Application.Pipeline;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

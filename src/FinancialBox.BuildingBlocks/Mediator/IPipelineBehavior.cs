@@ -1,6 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
-
-namespace FinancialBox.BuildingBlocks.Behaviors;
+﻿namespace FinancialBox.BuildingBlocks.Mediator;
 
 public interface IPipelineBehavior<in TRequest, TResponse>
     where TRequest : IRequest<TResponse>

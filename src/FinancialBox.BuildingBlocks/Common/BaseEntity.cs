@@ -1,6 +1,6 @@
-﻿namespace FinancialBox.BuildingBlocks.Primitives;
+﻿namespace FinancialBox.BuildingBlocks.Common;
 
-public abstract class BaseEntity : IEntity
+public abstract class BaseEntity
 {
     public Guid Id { get; protected set; }
     public DateTime CreatedAt { get; protected set; }

@@ -1,8 +1,7 @@
-﻿using FinancialBox.BuildingBlocks.Behaviors;
-using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.BuildingBlocks.Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FinancialBox.Application.Core.Mediator;
+namespace FinancialBox.Application.Dispatching;
 
 public class Mediator : IMediator
 {

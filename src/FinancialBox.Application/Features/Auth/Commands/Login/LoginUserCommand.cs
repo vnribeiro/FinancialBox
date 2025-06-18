@@ -1,5 +1,5 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
-using FinancialBox.BuildingBlocks.Result;
+﻿using FinancialBox.BuildingBlocks.Common;
+using FinancialBox.BuildingBlocks.Mediator;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
