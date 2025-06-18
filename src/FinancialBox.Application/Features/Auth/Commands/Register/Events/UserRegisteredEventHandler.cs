@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.BuildingBlocks.DomainEvents;
 using FinancialBox.Domain.Users.Events;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register.Events;

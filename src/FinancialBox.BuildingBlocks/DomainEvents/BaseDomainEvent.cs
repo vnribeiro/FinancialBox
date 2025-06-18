@@ -1,6 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
-
-namespace FinancialBox.BuildingBlocks.Common;
+﻿namespace FinancialBox.BuildingBlocks.DomainEvents;
 
 public abstract record BaseDomainEvent : IDomainEvent
 {

@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.BuildingBlocks.Mediator;
+﻿namespace FinancialBox.BuildingBlocks.DomainEvents;
 
 public interface IDomainEvent
 {

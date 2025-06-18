@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.BuildingBlocks.DomainEvents;
 
 namespace FinancialBox.BuildingBlocks.Common;
 

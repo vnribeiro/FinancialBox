@@ -1,4 +1,5 @@
-﻿using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.BuildingBlocks.DomainEvents;
+using FinancialBox.BuildingBlocks.Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FinancialBox.Application.Dispatching;
