@@ -1,7 +1,7 @@
 ﻿using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.Domain.Users.Events;
 
-namespace FinancialBox.Application.Features.Auth.Register.Events;
+namespace FinancialBox.Application.Features.Auth.Commands.Register.Events;
 
 public class UserRegisteredEventHandler : IDomainEventHandler<UserRegisteredEvent>
 {

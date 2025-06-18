@@ -1,5 +1,6 @@
 ﻿using FinancialBox.Application.Dispatching;
-using FinancialBox.Application.Features.Auth.Login.Commands;
+using FinancialBox.Application.Features.Auth.Comands.Login;
+using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Mappings;
 using FinancialBox.BuildingBlocks.Mediator;
 using FluentValidation;

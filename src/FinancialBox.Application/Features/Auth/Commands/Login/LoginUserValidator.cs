@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace FinancialBox.Application.Features.Auth.Login.Commands;
+namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
 public class LoginUserValidator : AbstractValidator<LoginUserCommand>
 {

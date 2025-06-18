@@ -1,10 +1,10 @@
-﻿using FinancialBox.Application.Features.Auth.Register.Responses;
+﻿using FinancialBox.Application.Features.Auth.Commands.Register.Responses;
 using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Persistence;
 using FinancialBox.Domain.Users;
 
-namespace FinancialBox.Application.Features.Auth.Register.Commands;
+namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<RegisterUserResponse>>
 {
