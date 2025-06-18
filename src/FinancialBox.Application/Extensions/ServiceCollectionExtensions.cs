@@ -1,5 +1,4 @@
-﻿using FinancialBox.Application.Dispatching;
-using FinancialBox.Application.Features.Auth.Commands.Login;
+﻿using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.BuildingBlocks.DomainEvents;
 using FinancialBox.BuildingBlocks.Mediator;
 using FluentValidation;
