@@ -1,5 +1,4 @@
-﻿using FinancialBox.Application.Features.Auth.Commands.Register.Responses;
-using FinancialBox.BuildingBlocks.Common;
+﻿using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.BuildingBlocks.Persistence;
 using FinancialBox.Domain.Users;

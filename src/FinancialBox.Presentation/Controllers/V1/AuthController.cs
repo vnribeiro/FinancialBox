@@ -1,9 +1,6 @@
 using Asp.Versioning;
-using FinancialBox.Application.Features.Auth.Comands.Login;
-using FinancialBox.Application.Features.Auth.Comands.Login.Responses;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Features.Auth.Commands.Register;
-using FinancialBox.Application.Features.Auth.Commands.Register.Responses;
 using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.Presentation.Contracts;
 using FinancialBox.Presentation.Extensions;

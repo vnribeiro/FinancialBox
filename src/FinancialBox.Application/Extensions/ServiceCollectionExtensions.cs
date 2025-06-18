@@ -1,7 +1,5 @@
 ﻿using FinancialBox.Application.Dispatching;
-using FinancialBox.Application.Features.Auth.Comands.Login;
 using FinancialBox.Application.Features.Auth.Commands.Login;
-using FinancialBox.Application.Mappings;
 using FinancialBox.BuildingBlocks.Mediator;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +12,6 @@ namespace FinancialBox.Application.Extensions
         {
             // Get the assembly of the Application layer
             var applicationAssembly = typeof(LoginUserCommand).Assembly;
-
-            // Register the mappings from mapster
-            MapsterConfig.RegisterMappings();
 
             // Register custom Mediator implementation
             services.AddScoped<IMediator, Mediator>();

@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.Application.Features.Auth.Comands.Login.Responses;
+﻿namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
 public sealed record LoginUserResponse(string FirstName, string LastName, string Email, string PasswordHash);
 
