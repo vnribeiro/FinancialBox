@@ -32,7 +32,7 @@ public class Result<T>
     public T? Data { get; }
     public Error? Error { get; }
 
-    private Result(T? data, bool isSuccess, Error? error = null)
+    private Result(bool isSuccess, T? data, Error? error = null)
     {
         IsSuccess = isSuccess;
         Data = data;
@@ -40,14 +40,14 @@ public class Result<T>
     }
 
     public static Result<T> Success(T data) =>
-        new(data, true);
+        new(true, data);
 
     public static Result<T> Failure(string message) =>
-        new(default, false, Error.InvalidRequest(message));
+        new(false, default, Error.InvalidRequest(message));
 
     public static Result<T> Failure(IEnumerable<string> messages) =>
-        new(default, false, Error.InvalidRequest(messages.ToArray()));
+        new(false, default, Error.InvalidRequest(messages.ToArray()));
 
     public static Result<T> Failure(Error error) =>
-        new(default, false, error);
+        new(false, default, error);
 }

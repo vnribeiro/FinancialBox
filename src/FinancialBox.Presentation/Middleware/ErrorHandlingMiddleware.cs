@@ -1,4 +1,4 @@
-﻿using FinancialBox.Presentation.Contracts;
+﻿using FinancialBox.Presentation.Responses;
 using System.Text.Json;
 
 namespace FinancialBox.Presentation.Middleware;

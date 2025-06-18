@@ -1,5 +1,5 @@
 ﻿using FinancialBox.BuildingBlocks.Common;
-using FinancialBox.Presentation.Contracts;
+using FinancialBox.Presentation.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinancialBox.Presentation.Extensions;
