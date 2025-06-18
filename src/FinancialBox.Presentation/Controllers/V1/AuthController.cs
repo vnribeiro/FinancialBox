@@ -1,6 +1,8 @@
 using Asp.Versioning;
-using FinancialBox.Application.Features.Auth.Commands.Login;
-using FinancialBox.Application.Features.Auth.Commands.Register;
+using FinancialBox.Application.Features.Auth.Login.Commands;
+using FinancialBox.Application.Features.Auth.Login.Responses;
+using FinancialBox.Application.Features.Auth.Register.Commands;
+using FinancialBox.Application.Features.Auth.Register.Responses;
 using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.Presentation.Contracts;
 using FinancialBox.Presentation.Extensions;
@@ -35,10 +37,10 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<RegisterUserResponse>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.SendAsync(command, cancellationToken);
 
-        return result.Match(NoContent);
+        return result.Match(Ok);
     }
 }

@@ -1,9 +1,10 @@
-﻿using FinancialBox.BuildingBlocks.Common;
+﻿using FinancialBox.Application.Features.Auth.Login.Responses;
+using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.Domain.Users;
 using Mapster;
 
-namespace FinancialBox.Application.Features.Auth.Commands.Login;
+namespace FinancialBox.Application.Features.Auth.Login.Commands;
 
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<LoginUserResponse>>
 {

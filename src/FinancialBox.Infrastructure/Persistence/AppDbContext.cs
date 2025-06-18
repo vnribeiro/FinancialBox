@@ -14,6 +14,23 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        // Set all string properties to use varchar(255) by default,
+        // unless explicitly configured in entity mappings
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            var stringProperties = entityType.GetProperties()
+                .Where(p => p.ClrType == typeof(string));
+
+            foreach (var property in stringProperties)
+            {
+                if (property.GetColumnType() is null)
+                {
+                    property.SetColumnType("varchar(255)");
+                }
+            }
+        }
+
         base.OnModelCreating(modelBuilder);
     }
 

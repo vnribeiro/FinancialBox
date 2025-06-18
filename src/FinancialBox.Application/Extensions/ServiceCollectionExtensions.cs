@@ -1,5 +1,5 @@
 ﻿using FinancialBox.Application.Dispatching;
-using FinancialBox.Application.Features.Auth.Commands.Login;
+using FinancialBox.Application.Features.Auth.Login.Commands;
 using FinancialBox.Application.Mappings;
 using FinancialBox.BuildingBlocks.Mediator;
 using FluentValidation;
@@ -34,6 +34,13 @@ namespace FinancialBox.Application.Extensions
             services.Scan(scan => scan
                 .FromAssemblies(applicationAssembly)
                 .AddClasses(x => x.AssignableTo(typeof(IPipelineBehavior<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+            // Register all IDomainEventHandler<TEvent> implementations
+            services.Scan(scan => scan
+                .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+                .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 

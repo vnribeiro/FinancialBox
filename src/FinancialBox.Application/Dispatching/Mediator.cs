@@ -35,4 +35,19 @@ public class Mediator : IMediator
 
         return await pipeline();
     }
+
+    public async Task PublishAsync<TEvent>(TEvent notification, CancellationToken cancellationToken = default)
+        where TEvent : IDomainEvent
+    {
+        var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(notification.GetType());
+        var handlers = _provider.GetServices(handlerType);
+
+        foreach (var handler in handlers)
+        {
+            if (handler == null)
+                throw new InvalidOperationException($"Handler instance is null for '{notification.GetType().Name}'. Check your DI configuration.");
+
+            await ((dynamic)handler).Handle((dynamic)notification, cancellationToken);
+        }
+    }
 }

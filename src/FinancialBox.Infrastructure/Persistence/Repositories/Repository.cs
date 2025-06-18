@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;
 
-public abstract class Repository<T>(AppDbContext context) : 
+public abstract class Repository<T>(AppDbContext context) :
     IRepository<T> where T : class, IAggregateRoot
 {
     private readonly DbSet<T> _dbSet = context.Set<T>();
@@ -24,15 +24,14 @@ public abstract class Repository<T>(AppDbContext context) :
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
-    {
-        var obj = await _dbSet.AddAsync(entity, cancellationToken);
-        return obj.Entity;
+    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+    { 
+        await _dbSet.AddAsync(entity, cancellationToken);
     }
-    
-    public T Update(T entity)
-    {
-        return _dbSet.Update(entity).Entity;
+
+    public void Update(T entity)
+    { 
+        _dbSet.Update(entity);
     }
 
     public void Remove(T entity)

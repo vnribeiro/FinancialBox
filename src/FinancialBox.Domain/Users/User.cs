@@ -1,5 +1,6 @@
 ﻿using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.Domain.FinancialGoals;
+using FinancialBox.Domain.Users.Events;
 
 namespace FinancialBox.Domain.Users;
 
@@ -20,6 +21,13 @@ public class User : BaseEntity, IAggregateRoot
         LastName = lastName;
         Email = email;
         PasswordHash = passwordHash;
+    }
+
+    public static User Register(string firstName, string lastName, string email, string passwordHash)
+    {
+        var user = new User(firstName, lastName, email, passwordHash);
+        user.AddDomainEvent(new UserRegisteredEvent(user.Id, user.Email));
+        return user;
     }
 
     public void UpdateName(string firstName, string lastName)
