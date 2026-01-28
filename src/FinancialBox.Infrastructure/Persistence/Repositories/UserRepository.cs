@@ -1,4 +1,5 @@
-﻿using FinancialBox.Domain.Users;
+﻿using FinancialBox.Application.Persistence;
+using FinancialBox.Domain.Users;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;
 

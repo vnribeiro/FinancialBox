@@ -33,9 +33,9 @@ namespace FinancialBox.Application.Extensions
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
-            // Register all IDomainEventHandler<TEvent> implementations
+            // Register all IDomainEventHandler<TEvent> implementations from Application
             services.Scan(scan => scan
-                .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+                .FromAssemblies(applicationAssembly)
                 .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());

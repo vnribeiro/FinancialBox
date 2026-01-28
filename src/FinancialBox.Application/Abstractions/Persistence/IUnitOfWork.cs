@@ -1,4 +1,4 @@
-﻿namespace FinancialBox.BuildingBlocks.Persistence;
+﻿namespace FinancialBox.Application.Persistence;
 
 public interface IUnitOfWork
 {

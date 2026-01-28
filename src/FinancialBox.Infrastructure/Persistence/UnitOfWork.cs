@@ -1,6 +1,6 @@
 ﻿using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.BuildingBlocks.Mediator;
-using FinancialBox.BuildingBlocks.Persistence;
+using FinancialBox.Application.Persistence;
 
 namespace FinancialBox.Infrastructure.Persistence;
 
