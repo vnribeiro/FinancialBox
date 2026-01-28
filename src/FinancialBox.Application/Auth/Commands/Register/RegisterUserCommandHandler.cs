@@ -1,3 +1,4 @@
+using FinancialBox.Application.Abstractions.Persistence;
 using FinancialBox.BuildingBlocks.Common;
 using FinancialBox.BuildingBlocks.Mediator;
 using FinancialBox.Domain.Users;

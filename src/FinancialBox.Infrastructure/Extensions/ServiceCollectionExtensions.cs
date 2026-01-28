@@ -1,8 +1,8 @@
-﻿using FinancialBox.Infrastructure.Persistence;
+﻿using FinancialBox.Application.Abstractions.Persistence;
+using FinancialBox.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using FinancialBox.Application.Persistence;
 using FinancialBox.Infrastructure.Persistence.Repositories;
 using FinancialBox.Domain.Users;
 using FinancialBox.Domain.FinancialGoals;

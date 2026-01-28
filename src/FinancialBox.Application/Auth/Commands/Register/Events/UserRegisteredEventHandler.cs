@@ -1,3 +1,6 @@
+using FinancialBox.BuildingBlocks.DomainEvents;
+using FinancialBox.Domain.Users.Events;
+
 namespace FinancialBox.Application.Auth.Commands.Register.Events;
 
 public class UserRegisteredEventHandler : IDomainEventHandler<UserRegisteredEvent>

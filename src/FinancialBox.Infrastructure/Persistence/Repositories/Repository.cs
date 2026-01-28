@@ -1,5 +1,5 @@
-﻿using FinancialBox.BuildingBlocks.Common;
-using FinancialBox.Application.Persistence;
+﻿using FinancialBox.Application.Abstractions.Persistence;
+using FinancialBox.BuildingBlocks.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;

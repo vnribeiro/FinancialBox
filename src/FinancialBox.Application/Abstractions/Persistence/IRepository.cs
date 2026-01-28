@@ -1,6 +1,6 @@
 ﻿using FinancialBox.BuildingBlocks.Common;
 
-namespace FinancialBox.Application.Persistence;
+namespace FinancialBox.Application.Abstractions.Persistence;
 
 public interface IRepository<T> where T : class, IAggregateRoot
 {
