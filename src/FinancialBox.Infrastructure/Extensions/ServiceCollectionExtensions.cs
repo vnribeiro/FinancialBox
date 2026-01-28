@@ -1,4 +1,4 @@
-﻿using FinancialBox.Application.Abstractions.Persistence;
+using FinancialBox.Application.Contracts.Persistence;
 using FinancialBox.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

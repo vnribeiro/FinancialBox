@@ -1,6 +1,6 @@
-﻿using FinancialBox.Application.Abstractions.Persistence;
-using FinancialBox.BuildingBlocks.Common;
-using FinancialBox.BuildingBlocks.Mediator;
+using FinancialBox.Application.Contracts.Persistence;
+using FinancialBox.Domain.Common;
+using FinancialBox.Application.Contracts.Messaging;
 
 namespace FinancialBox.Infrastructure.Persistence;
 

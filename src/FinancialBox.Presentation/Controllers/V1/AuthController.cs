@@ -1,7 +1,7 @@
 using Asp.Versioning;
-using FinancialBox.Application.Auth.Commands.Login;
-using FinancialBox.Application.Auth.Commands.Register;
-using FinancialBox.BuildingBlocks.Mediator;
+using FinancialBox.Application.Features.Auth.Commands.Login;
+using FinancialBox.Application.Features.Auth.Commands.Register;
+using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Presentation.Extensions;
 using FinancialBox.Presentation.Responses;
 using Microsoft.AspNetCore.Mvc;

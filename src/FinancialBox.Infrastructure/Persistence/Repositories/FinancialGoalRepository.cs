@@ -1,4 +1,4 @@
-﻿using FinancialBox.Application.Abstractions.Persistence;
+using FinancialBox.Application.Contracts.Persistence;
 using FinancialBox.Domain.FinancialGoals;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;

@@ -1,4 +1,4 @@
-﻿using FinancialBox.BuildingBlocks.Common;
+using FinancialBox.Domain.Common;
 using FinancialBox.Domain.FinancialGoals;
 using FinancialBox.Domain.Users.Events;
 

@@ -1,6 +1,6 @@
-﻿using FinancialBox.Application.Auth.Commands.Login;
-using FinancialBox.BuildingBlocks.DomainEvents;
-using FinancialBox.BuildingBlocks.Mediator;
+﻿using FinancialBox.Application.Contracts.Messaging;
+using FinancialBox.Application.DomainEvents;
+using FinancialBox.Application.Features.Auth.Commands.Login;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\FinancialBox.Application\FinancialBox.Application.csproj" />
     <ProjectReference Include="..\FinancialBox.Domain\FinancialBox.Domain.csproj" />
-    <ProjectReference Include="..\FinancialBox.BuildingBlocks\FinancialBox.BuildingBlocks.csproj" />
   </ItemGroup>
 
 </Project>
