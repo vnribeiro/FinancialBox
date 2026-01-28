@@ -17,11 +17,12 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task<bool> CommitAsync(CancellationToken cancellationToken)
     {
-        //var success = await _context.SaveChangesAsync(cancellationToken) > 0;
-        var success = true;
+        var success = await _context.SaveChangesAsync(cancellationToken) > 0;
 
         if (!success)
+        {
             return success;
+        }
 
         await PublishDomainEventsAsync(cancellationToken);
 
@@ -40,7 +41,9 @@ public class UnitOfWork : IUnitOfWork
             .ToList();
 
         foreach (var domainEvent in domainEvents)
+        {
             await _mediator.PublishAsync(domainEvent, cancellationToken);
+        }
 
         domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
     }
