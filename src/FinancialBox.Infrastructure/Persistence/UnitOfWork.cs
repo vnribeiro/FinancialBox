@@ -4,16 +4,10 @@ using FinancialBox.Application.Contracts.Messaging;
 
 namespace FinancialBox.Infrastructure.Persistence;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWork
 {
-    private readonly AppDbContext _context;
-    private readonly IMediator _mediator;
-
-    public UnitOfWork(AppDbContext context, IMediator mediator)
-    {
-        _context = context;
-        _mediator = mediator;
-    }
+    private readonly AppDbContext _context = context;
+    private readonly IMediator _mediator = mediator;
 
     public async Task<bool> CommitAsync(CancellationToken cancellationToken)
     {

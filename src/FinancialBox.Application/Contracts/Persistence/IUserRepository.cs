@@ -1,4 +1,4 @@
-using FinancialBox.Domain.Users;
+using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Application.Contracts.Persistence;
 

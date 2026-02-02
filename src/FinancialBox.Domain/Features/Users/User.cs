@@ -1,31 +1,32 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.FinancialGoals;
-using FinancialBox.Domain.Users.Events;
+using FinancialBox.Domain.Features.FinancialGoals;
+using FinancialBox.Domain.Features.Users.Events;
+using FinancialBox.Domain.Features.Users.ValueObjects;
 
-namespace FinancialBox.Domain.Users;
+namespace FinancialBox.Domain.Features.Users;
 
 public class User : BaseEntity, IAggregateRoot
 {
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
-    public string Email { get; private set; } = string.Empty;
-    public string PasswordHash { get; private set; } = string.Empty;
+    public Email Email { get; private set; } = null!;
+    public Password Password { get; private set; } = null!;
 
     public ICollection<FinancialGoal> FinancialGoals { get; private set; } = new List<FinancialGoal>();
 
     protected User() {}
 
-    public User(string firstName, string lastName, string email, string passwordHash)
+    public User(string firstName, string lastName, Email email, Password password)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        PasswordHash = passwordHash;
+        Password = password;
     }
 
-    public static User Register(string firstName, string lastName, string email, string passwordHash)
+    public static User Register(string firstName, string lastName, Email email, Password password)
     {
-        var user = new User(firstName, lastName, email, passwordHash);
+        var user = new User(firstName, lastName, email, password);
         user.AddDomainEvent(new UserRegisteredEvent(user.Id, user.Email));
         return user;
     }
@@ -34,19 +35,16 @@ public class User : BaseEntity, IAggregateRoot
     {
         FirstName = firstName;
         LastName = lastName;
-        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdatePassword(string newPasswordHash)
+    public void UpdatePassword(Password newPassword)
     {
-        PasswordHash = newPasswordHash;
-        UpdatedAt = DateTime.UtcNow;
+        Password = newPassword;
     }
 
-    public void UpdateEmail(string newEmail)
+    public void UpdateEmail(Email newEmail)
     {
         Email = newEmail;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public string GetFullName()

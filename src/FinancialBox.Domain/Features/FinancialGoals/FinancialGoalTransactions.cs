@@ -1,6 +1,7 @@
 using FinancialBox.Domain.Common;
+using FinancialBox.Domain.Features.FinancialGoals.Enums;
 
-namespace FinancialBox.Domain.FinancialGoals;
+namespace FinancialBox.Domain.Features.FinancialGoals;
 
 public class FinancialGoalTransactions : BaseEntity
 {

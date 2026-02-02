@@ -1,6 +1,7 @@
 using FinancialBox.Application.Common;
 using FinancialBox.Application.Contracts.Messaging;
-using FinancialBox.Domain.Users;
+using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
@@ -11,9 +12,12 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
 
     public  Task<Result<LoginUserResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var user = new User(request.FirstName, request.LastName, request.Email, request.PasswordHash);
+        var email = new Email(request.Email);
+        var password = Password.FromHash(request.Password);
 
-        var response = new LoginUserResponse(request.FirstName, request.LastName, request.Email, request.PasswordHash);
+        var user = new User(request.FirstName, request.LastName, email, password);
+
+        var response = new LoginUserResponse(request.FirstName, request.LastName, request.Email, password.Hash);
 
         return Task.FromResult(Result<LoginUserResponse>.Success(response));
     }
