@@ -12,6 +12,7 @@ namespace FinancialBox.Infrastructure.Extensions;
 public static class ServiceCollectionExtensions
 {
     private const string DatabaseName = "DefaultConnection";
+    private const string PasswordHashing = "PasswordHashing";
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
@@ -24,7 +25,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Register services
+        // Bind PasswordHashingOptions from configuration
+        services.Configure<PasswordHashingOptions>(configuration.GetSection(PasswordHashing));
         services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
 
         return services;
