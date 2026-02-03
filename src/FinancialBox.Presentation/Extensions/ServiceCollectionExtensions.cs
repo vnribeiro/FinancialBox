@@ -8,99 +8,122 @@ namespace FinancialBox.Presentation.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Central entry point to register all API-related configurations:
-    /// - Swagger
-    /// - CORS
-    /// - API Versioning
-    /// - Environment settings
+    /// Extension method to add presentation layer services to the service collection.
     /// </summary>
     /// <param name="services">The service collection to configure.</param>
-    /// <param name="builder">The WebApplicationBuilder instance.</param>
-    /// <returns>The updated service collection.</returns>
-    public static IServiceCollection AddPresentation(this IServiceCollection services, WebApplicationBuilder builder)
+    extension(IServiceCollection services)
     {
-        // Registers Swagger + JWT support
-        services.AddSwaggerConfiguration();
-
-        // Registers default CORS policy
-        services.AddCorsConfiguration();
-
-        // Enables URL-based API versioning
-        services.AddApiVersioningConfiguration();
-
-        // Loads environment configs and user secrets (in dev)
-        builder.AddEnvironmentConfiguration();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds API versioning to the service collection.
-    /// Configures the API to use versioning based on URL segments.
-    /// Reports available API versions and substitutes the API version in the URL.
-    /// </summary>
-    /// <param name="service">The service collection to configure.</param>
-    /// <returns>The updated service collection.</returns>
-    private static IServiceCollection AddApiVersioningConfiguration(this IServiceCollection service)
-    {
-        service.AddApiVersioning(options =>
+        /// <summary>
+        /// Central entry point to register all API-related configurations:
+        /// - Swagger
+        /// - CORS
+        /// - API Versioning
+        /// - Environment settings
+        /// </summary>
+        /// <param name="builder">The WebApplicationBuilder instance.</param>
+        /// <returns>The updated service collection.</returns>
+        public IServiceCollection AddPresentation(WebApplicationBuilder builder)
         {
-            options.DefaultApiVersion = new ApiVersion(1.0);
-            options.ReportApiVersions = true;
-            options.ApiVersionReader = new UrlSegmentApiVersionReader();
-        }).AddApiExplorer(options =>
+            // Registers Swagger + JWT support
+            services.AddSwaggerConfiguration();
+
+            // Registers default CORS policy
+            services.AddCorsConfiguration();
+
+            // Enables URL-based API versioning
+            services.AddApiVersioningConfiguration();
+
+            // Loads environment configs and user secrets (in dev)
+            builder.AddEnvironmentConfiguration();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds API versioning to the service collection.
+        /// Configures the API to use versioning based on URL segments.
+        /// Reports available API versions and substitutes the API version in the URL.
+        /// </summary>
+        /// <returns>The updated service collection.</returns>
+        private IServiceCollection AddApiVersioningConfiguration()
         {
-            options.GroupNameFormat = "'v'V";
-            options.SubstituteApiVersionInUrl = true;
-        });
-
-        return service;
-    }
-
-    /// <summary>
-    /// Configures Swagger with API versioning and JWT authentication.
-    /// Generates a Swagger document for each API version and secures endpoints using Bearer tokens.
-    /// </summary>
-    /// <param name="service">The service collection to configure.</param>
-    /// <returns>The updated service collection.</returns>
-    private static IServiceCollection AddSwaggerConfiguration(this IServiceCollection service)
-    {
-        service.AddSwaggerGen(options =>
-        {
-            var apiVersionDescriptionProvider = service
-                .BuildServiceProvider()
-                .GetRequiredService<IApiVersionDescriptionProvider>();
-
-            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+            services.AddApiVersioning(options =>
             {
-                options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                options.DefaultApiVersion = new ApiVersion(1.0);
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            }).AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'V";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Configures Swagger with API versioning and JWT authentication.
+        /// Generates a Swagger document for each API version and secures endpoints using Bearer tokens.
+        /// </summary>
+        /// <returns>The updated service collection.</returns>
+        private IServiceCollection AddSwaggerConfiguration()
+        {
+            services.AddSwaggerGen(options =>
+            {
+                var apiVersionDescriptionProvider = services
+                    .BuildServiceProvider()
+                    .GetRequiredService<IApiVersionDescriptionProvider>();
+
+                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                 {
-                    Title = $"Financial Box API {description.ApiVersion}",
-                    Version = description.ApiVersion.ToString(),
-                    Description = "API for managing financial goals, transactions, and reporting.",
-                    Contact = new OpenApiContact() { Name = "Vinícius Ribeiro", Email = "viniciuscostaa.ribeiro@outlook.com" },
-                    License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
+                    options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                    {
+                        Title = $"Financial Box API {description.ApiVersion}",
+                        Version = description.ApiVersion.ToString(),
+                        Description = "API for managing financial goals, transactions, and reporting.",
+                        Contact = new OpenApiContact() { Name = "Vinícius Ribeiro", Email = "viniciuscostaa.ribeiro@outlook.com" },
+                        License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
+                    });
+                }
+
+                // JWT Authentication for Swagger
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Enter the JWT token like this: Bearer {your token}",
+                    Name = "Authorization",
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
-            }
 
-            // JWT Authentication for Swagger
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Description = "Enter the JWT token like this: Bearer {your token}",
-                Name = "Authorization",
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
             });
 
-            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-            });
-        });
+            return services;
+        }
 
-        return service;
+        /// <summary>
+        /// Adds Cross-Origin Resource Sharing (CORS) configuration to allow requests from specified origins.
+        /// </summary>
+        /// <returns>The updated service collection.</returns>
+        private IServiceCollection AddCorsConfiguration()
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DefaultPolicy", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+            return services;
+        }
     }
 
     /// <summary>
@@ -122,26 +145,6 @@ public static class ServiceCollectionExtensions
         builder.Configuration.AddUserSecrets<Program>();
 
         return builder;
-    }
-
-    /// <summary>
-    /// Adds Cross-Origin Resource Sharing (CORS) configuration to allow requests from specified origins.
-    /// </summary>
-    /// <param name="service">The service collection to configure.</param>
-    /// <returns>The updated service collection.</returns>
-    private static IServiceCollection AddCorsConfiguration(this IServiceCollection service)
-    {
-        service.AddCors(options =>
-        {
-            options.AddPolicy("DefaultPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            });
-        });
-
-        return service;
     }
 }
 
