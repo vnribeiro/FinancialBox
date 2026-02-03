@@ -29,11 +29,9 @@ public class UserMapping : IEntityTypeConfiguration<User>
             email.Property(u => u.Address)
                 .IsRequired()
                 .HasMaxLength(255);
-        });
 
-        builder.
-            HasIndex("Email")
-            .IsUnique();
+            email.HasIndex(e => e.Address).IsUnique();
+        });
 
         builder.OwnsOne(u => u.Password, password =>
         {

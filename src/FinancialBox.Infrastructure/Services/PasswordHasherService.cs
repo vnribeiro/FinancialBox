@@ -15,7 +15,12 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
             throw new ArgumentException("Password cannot be empty.", nameof(password));
 
         var salt = RandomNumberGenerator.GetBytes(_options.SaltSize);
-        var subkey = Pbkdf2(password, salt, _options.Iterations, _options.SubkeySize);
+        var subkey = Rfc2898DeriveBytes.Pbkdf2(
+            password,
+            salt,
+            _options.Iterations,
+            Algorithm,
+            _options.SubkeySize);
 
         return $"PBKDF2${Algorithm.Name}${_options.Iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(subkey)}";
     }
@@ -25,21 +30,21 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
         if (!TryParseHash(hash, _options.SaltSize, _options.SubkeySize, out var iterations, out var salt, out var expectedSubkey))
             return false;
 
-        var actualSubkey = Pbkdf2(password, salt, iterations, expectedSubkey.Length);
-        return CryptographicOperations.FixedTimeEquals(actualSubkey, expectedSubkey);
-    }
+        var actualSubkey = Rfc2898DeriveBytes.Pbkdf2(
+            password,
+            salt,
+            iterations,
+            Algorithm,
+            expectedSubkey.Length);
 
-    private static byte[] Pbkdf2(string password, byte[] salt, int iterations, int subkeyLength)
-    {
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, Algorithm);
-        return pbkdf2.GetBytes(subkeyLength);
+        return CryptographicOperations.FixedTimeEquals(actualSubkey, expectedSubkey);
     }
 
     private static bool TryParseHash(string hash, int expectedSaltSize, int expectedSubkeySize, out int iterations, out byte[] salt, out byte[] subkey)
     {
         iterations = 0;
-        salt = Array.Empty<byte>();
-        subkey = Array.Empty<byte>();
+        salt = [];
+        subkey = [];
 
         var parts = hash.Split('$');
         if (parts.Length != 5)
@@ -66,4 +71,9 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
     }
 }
 
-internal sealed record PasswordHashingOptions(int Iterations, int SaltSize, int SubkeySize);
+internal sealed class PasswordHashingOptions
+{
+    public int Iterations { get; set; }
+    public int SaltSize { get; set; }
+    public int SubkeySize { get; set; }
+}
