@@ -66,4 +66,4 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
     }
 }
 
-internal record PasswordHashingOptions(int Iterations, int SaltSize, int SubkeySize);
+internal sealed record PasswordHashingOptions(int Iterations, int SaltSize, int SubkeySize);
