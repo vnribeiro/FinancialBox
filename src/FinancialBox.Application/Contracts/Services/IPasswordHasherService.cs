@@ -1,4 +1,4 @@
-namespace FinancialBox.Application.Contracts.Security;
+namespace FinancialBox.Application.Contracts.Services;
 
 public interface IPasswordHasherService
 {

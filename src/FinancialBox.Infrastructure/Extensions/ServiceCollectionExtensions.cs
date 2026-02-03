@@ -1,5 +1,5 @@
 using FinancialBox.Application.Contracts.Persistence;
-using FinancialBox.Application.Contracts.Security;
+using FinancialBox.Application.Contracts.Services;
 using FinancialBox.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using FinancialBox.Application.Contracts.Security;
+using FinancialBox.Application.Contracts.Services;
 using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Infrastructure.Services;
@@ -11,6 +11,9 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
 
     public string Hash(string password)
     {
+        if (string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Password cannot be empty.", nameof(password));
+
         var salt = RandomNumberGenerator.GetBytes(_options.SaltSize);
         var subkey = Pbkdf2(password, salt, _options.Iterations, _options.SubkeySize);
 
@@ -28,7 +31,7 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
 
     private static byte[] Pbkdf2(string password, byte[] salt, int iterations, int subkeyLength)
     {
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, Algorithm);
         return pbkdf2.GetBytes(subkeyLength);
     }
 
