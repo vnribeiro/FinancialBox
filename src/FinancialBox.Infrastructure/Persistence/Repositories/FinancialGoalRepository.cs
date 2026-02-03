@@ -3,5 +3,5 @@ using FinancialBox.Domain.Features.FinancialGoals;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;
 
-public class FinancialGoalRepository(AppDbContext context)
+internal class FinancialGoalRepository(AppDbContext context)
     : Repository<FinancialGoal>(context), IFinancialGoalRepository;

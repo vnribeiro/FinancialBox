@@ -24,14 +24,23 @@ public class UserMapping : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder
-            .Property(u => u.Email)
-            .IsRequired()
-            .HasMaxLength(255);
+        builder.OwnsOne(u => u.Email, email =>
+        {
+            email.Property(u => u.Address)
+                .IsRequired()
+                .HasMaxLength(255);
+        });
 
-        builder
-            .Property(u => u.PasswordHash)
-            .IsRequired();
+        builder.
+            HasIndex("Email")
+            .IsUnique();
+
+        builder.OwnsOne(u => u.Password, password =>
+        {
+            password.Property(u => u.Hash)
+                .HasColumnName("PasswordHash")
+                .IsRequired();
+        });
 
         builder
             .Property(u => u.CreatedAt)

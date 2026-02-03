@@ -7,7 +7,6 @@ namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<LoginUserResponse>>
 {
-
     public LoginUserCommandHandler() {}
 
     public  Task<Result<LoginUserResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -17,7 +16,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
 
         var user = new User(request.FirstName, request.LastName, email, password);
 
-        var response = new LoginUserResponse(request.FirstName, request.LastName, request.Email, password.Hash);
+        var response = new LoginUserResponse(request.FirstName, request.LastName, request.Email);
 
         return Task.FromResult(Result<LoginUserResponse>.Success(response));
     }

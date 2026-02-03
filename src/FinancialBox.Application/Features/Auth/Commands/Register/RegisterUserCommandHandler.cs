@@ -1,4 +1,5 @@
 using FinancialBox.Application.Contracts.Persistence;
+using FinancialBox.Application.Contracts.Security;
 using FinancialBox.Application.Common;
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Domain.Features.Users;
@@ -6,13 +7,17 @@ using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
-public class RegisterUserCommandHandler(IUnitOfWork unitOfWork, IUserRepository userRepository)
+public class RegisterUserCommandHandler(
+    IUnitOfWork unitOfWork,
+    IUserRepository userRepository,
+    IPasswordHasherService passwordHasher)
     : IRequestHandler<RegisterUserCommand, Result<RegisterUserResponse>>
 {
     public async Task<Result<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var email = new Email(request.Email);
-        var password = Password.FromHash(request.Password);
+        var passwordHash = passwordHasher.Hash(request.Password);
+        var password = Password.FromHash(passwordHash);
 
         var user = User.Register(request.FirstName, request.LastName, email, password);
         await userRepository.AddAsync(user, cancellationToken);

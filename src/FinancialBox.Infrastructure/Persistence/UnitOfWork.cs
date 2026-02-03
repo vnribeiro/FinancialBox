@@ -4,28 +4,21 @@ using FinancialBox.Application.Contracts.Messaging;
 
 namespace FinancialBox.Infrastructure.Persistence;
 
-public class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWork
+internal class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWork
 {
-    private readonly AppDbContext _context = context;
-    private readonly IMediator _mediator = mediator;
-
-    public async Task<bool> CommitAsync(CancellationToken cancellationToken)
+    public async Task CommitAsync(CancellationToken cancellationToken)
     {
-        var success = await _context.SaveChangesAsync(cancellationToken) > 0;
+        var hasChanges = await context.SaveChangesAsync(cancellationToken) > 0;
 
-        if (!success)
+        if (hasChanges)
         {
-            return success;
+            await PublishDomainEventsAsync(cancellationToken);
         }
-
-        await PublishDomainEventsAsync(cancellationToken);
-
-        return success;
     }
 
     private async Task PublishDomainEventsAsync(CancellationToken cancellationToken)
     {
-        var domainEntities = _context.ChangeTracker
+        var domainEntities = context.ChangeTracker
             .Entries<BaseEntity>()
             .Where(e => e.Entity.DomainEvents.Any())
             .ToList();
@@ -36,7 +29,7 @@ public class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWork
 
         foreach (var domainEvent in domainEvents)
         {
-            await _mediator.PublishAsync(domainEvent, cancellationToken);
+            await mediator.PublishAsync(domainEvent, cancellationToken);
         }
 
         domainEntities.ForEach(e => e.Entity.ClearDomainEvents());

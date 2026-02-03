@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;
 
-public abstract class Repository<T>(AppDbContext context) :
+internal abstract class Repository<T>(AppDbContext context) :
     IRepository<T> where T : class, IAggregateRoot
 {
     private readonly DbSet<T> _dbSet = context.Set<T>();

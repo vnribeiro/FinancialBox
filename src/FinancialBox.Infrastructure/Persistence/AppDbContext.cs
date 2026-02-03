@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<FinancialGoal> FinancialGoals { get; set; } = null!;
