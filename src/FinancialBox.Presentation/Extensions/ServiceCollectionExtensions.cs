@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
 
 namespace FinancialBox.Presentation.Extensions;
 
@@ -64,7 +65,7 @@ public static class ServiceCollectionExtensions
     /// <returns>The updated service collection.</returns>
     private static IServiceCollection AddSwaggerConfiguration(this IServiceCollection service)
     {
-        service.AddSwaggerGen(c =>
+        service.AddSwaggerGen(options =>
         {
             var apiVersionDescriptionProvider = service
                 .BuildServiceProvider()
@@ -72,7 +73,7 @@ public static class ServiceCollectionExtensions
 
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
             {
-                c.SwaggerDoc(description.GroupName, new OpenApiInfo
+                options.SwaggerDoc(description.GroupName, new OpenApiInfo
                 {
                     Title = $"Financial Box API {description.ApiVersion}",
                     Version = description.ApiVersion.ToString(),
@@ -83,7 +84,7 @@ public static class ServiceCollectionExtensions
             }
 
             // JWT Authentication for Swagger
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "Enter the JWT token like this: Bearer {your token}",
                 Name = "Authorization",
@@ -93,19 +94,9 @@ public static class ServiceCollectionExtensions
                 Type = SecuritySchemeType.ApiKey
             });
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    []
-                }
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
         });
 

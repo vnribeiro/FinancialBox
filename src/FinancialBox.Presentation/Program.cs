@@ -21,6 +21,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+
     app.UseSwaggerUI(c =>
     {
         var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
