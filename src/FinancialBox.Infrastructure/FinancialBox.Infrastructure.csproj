@@ -24,4 +24,8 @@
     <ProjectReference Include="..\FinancialBox.Domain\FinancialBox.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Persistence\DataBase\" />
+  </ItemGroup>
+
 </Project>
