@@ -11,9 +11,6 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
 
     public string Hash(string password)
     {
-        if(string.IsNullOrWhiteSpace(password))
-            throw new ArgumentException("Password cannot be empty.", nameof(password));
-
         var salt = RandomNumberGenerator.GetBytes(_options.SaltSize);
         var subkey = Pbkdf2(password, salt, _options.Iterations, _options.SubkeySize);
 
