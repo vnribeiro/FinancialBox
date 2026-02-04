@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using FinancialBox.Application.Contracts.Services;
@@ -12,7 +13,10 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GenerateToken(User user, IEnumerable<Claim>? extraClaims = null)
+    public string GenerateToken(
+        User user,
+        IEnumerable<string>? roles = null,
+        IEnumerable<Claim>? extraClaims = null)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -21,10 +25,16 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email.Address),
-            new(JwtRegisteredClaimNames.GivenName, user.FirstName),
-            new(JwtRegisteredClaimNames.FamilyName, user.LastName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        if (roles is not null)
+        {
+            foreach (var role in roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct())
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+        }
 
         if (extraClaims is not null)
             claims.AddRange(extraClaims);
