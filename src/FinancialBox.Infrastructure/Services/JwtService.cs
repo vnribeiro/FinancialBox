@@ -16,7 +16,7 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
         User user,
         IEnumerable<string> roles)
     {
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
@@ -33,7 +33,8 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
             issuer: _options.Issuer,
             audience: _options.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(_options.ExpirationTime),
+            notBefore: DateTime.UtcNow,
+            expires: DateTime.UtcNow.AddHours(_options.ExpirationHours),
             signingCredentials: signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

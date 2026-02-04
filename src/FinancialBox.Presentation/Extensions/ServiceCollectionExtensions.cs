@@ -2,6 +2,7 @@
 using Asp.Versioning.ApiExplorer;
 using FinancialBox.Application.Contracts.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.IdentityModel.Tokens.Jwt;
@@ -121,10 +122,21 @@ public static class ServiceCollectionExtensions
         /// <returns>The updated service collection.</returns>
         private IServiceCollection AddAuthenticationConfiguration(WebApplicationBuilder builder)
         {
-            var jwtOptions = new JwtOptions();
-            builder.Configuration.GetSection(JwtOptions.SectionName).Bind(jwtOptions);
+            var jwtSection = builder.Configuration.GetRequiredSection(JwtOptions.SectionName);
 
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
+            services.AddOptions<JwtOptions>()
+                .Bind(jwtSection)
+                .Validate(o => !string.IsNullOrWhiteSpace(o.Issuer), "Jwt:Issuer is required.")
+                .Validate(o => !string.IsNullOrWhiteSpace(o.Audience), "Jwt:Audience is required.")
+                .Validate(o => !string.IsNullOrWhiteSpace(o.Key), "Jwt:Key is required.")
+                .Validate(o => o.Key.Length >= 32, "Jwt:Key must be at least 256 bits.")
+                .Validate(o => o.ExpirationHours > 0, "Jwt:ExpirationHours must be greater than zero.")
+                .ValidateOnStart();
+
+            var jwtOptions = jwtSection.Get<JwtOptions>()
+                ?? throw new InvalidOperationException("Jwt configuration section is missing or invalid.");
+
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
 
             services.AddAuthentication(options =>
             {
@@ -132,8 +144,6 @@ public static class ServiceCollectionExtensions
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -145,11 +155,9 @@ public static class ServiceCollectionExtensions
                     ValidateLifetime = true,
                     NameClaimType = JwtRegisteredClaimNames.Sub,
                     RoleClaimType = ClaimTypes.Role,
-                    ClockSkew = TimeSpan.Zero,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
-
-            services.AddAuthorization();
 
             return services;
         }
