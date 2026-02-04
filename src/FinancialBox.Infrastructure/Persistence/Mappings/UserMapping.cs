@@ -42,6 +42,7 @@ public class UserMapping : IEntityTypeConfiguration<User>
 
         builder
             .Property(u => u.RoleId)
+            .HasDefaultValue(Guid.Parse("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"))
             .IsRequired();
 
         builder
