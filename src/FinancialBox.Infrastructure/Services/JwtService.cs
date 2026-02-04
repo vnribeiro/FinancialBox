@@ -27,13 +27,8 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        if (roles is not null)
-        {
-            foreach (var role in roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct())
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-        }
+        claims.AddRange(roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct().
+            Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             issuer: _options.Issuer,
