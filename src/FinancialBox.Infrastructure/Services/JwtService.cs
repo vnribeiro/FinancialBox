@@ -23,7 +23,8 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email.Address),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(ClaimTypes.Role, user.Role.Name)
         };
 
         claims.AddRange(roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct().

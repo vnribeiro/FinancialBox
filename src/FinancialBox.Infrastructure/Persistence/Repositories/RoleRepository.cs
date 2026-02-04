@@ -1,9 +1,8 @@
 using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Domain.Features.Users;
-using FinancialBox.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinancialBox.Infrastructure.Features.Users;
+namespace FinancialBox.Infrastructure.Persistence.Repositories;
 
 internal class RoleRepository(AppDbContext context) : IRoleRepository
 {
