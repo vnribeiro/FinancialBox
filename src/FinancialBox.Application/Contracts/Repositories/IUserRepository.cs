@@ -1,0 +1,8 @@
+using FinancialBox.Domain.Features.Users;
+
+namespace FinancialBox.Application.Contracts.Repositories;
+
+public interface IUserRepository : IRepository<User>
+{
+    Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+}

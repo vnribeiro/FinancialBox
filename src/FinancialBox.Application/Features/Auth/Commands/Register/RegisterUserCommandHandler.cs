@@ -1,6 +1,7 @@
-using FinancialBox.Application.Contracts.Persistence;
 using FinancialBox.Application.Common;
+using FinancialBox.Application.Contracts;
 using FinancialBox.Application.Contracts.Messaging;
+using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Application.Contracts.Services;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;

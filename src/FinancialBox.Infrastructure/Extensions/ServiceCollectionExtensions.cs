@@ -1,4 +1,4 @@
-using FinancialBox.Application.Contracts.Persistence;
+using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Application.Contracts.Services;
 using FinancialBox.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using FinancialBox.Infrastructure.Persistence.Repositories;
 using FinancialBox.Infrastructure.Services;
+using FinancialBox.Application.Contracts;
 
 namespace FinancialBox.Infrastructure.Extensions;
 
@@ -27,6 +28,8 @@ public static class ServiceCollectionExtensions
         // Bind PasswordHashingOptions from configuration
         services.Configure<PasswordHashingOptions>(configuration.GetSection(PasswordHashing));
         services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+
+        services.AddSingleton<IJwtService, JwtService>();
 
         return services;
     }

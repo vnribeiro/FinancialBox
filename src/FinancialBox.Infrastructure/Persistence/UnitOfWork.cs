@@ -1,6 +1,6 @@
-using FinancialBox.Application.Contracts.Persistence;
 using FinancialBox.Domain.Common;
 using FinancialBox.Application.Contracts.Messaging;
+using FinancialBox.Application.Contracts;
 
 namespace FinancialBox.Infrastructure.Persistence;
 

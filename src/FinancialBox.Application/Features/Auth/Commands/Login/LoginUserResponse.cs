@@ -1,3 +1,9 @@
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
-public sealed record LoginUserResponse(string FirstName, string LastName, string Email);
+public sealed record LoginUserResponse(
+    Guid UserId,
+    string FirstName,
+    string LastName,
+    string Email,
+    string AccessToken,
+    DateTime ExpiresAtUtc);

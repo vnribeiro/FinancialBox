@@ -1,7 +1,10 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Microsoft.Extensions.Options;
+using FinancialBox.Application.Contracts.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.Text;
 
 namespace FinancialBox.Presentation.Extensions;
 
@@ -24,17 +27,20 @@ public static class ServiceCollectionExtensions
         /// <returns>The updated service collection.</returns>
         public IServiceCollection AddPresentation(WebApplicationBuilder builder)
         {
+            // Loads environment configs and user secrets (in dev)
+            builder.AddEnvironmentConfiguration();
+
             // Registers Swagger + JWT support
             services.AddSwaggerConfiguration();
 
             // Registers default CORS policy
             services.AddCorsConfiguration();
 
+            // Registers authentication/authorization
+            services.AddAuthenticationConfiguration(builder);
+
             // Enables URL-based API versioning
             services.AddApiVersioningConfiguration();
-
-            // Loads environment configs and user secrets (in dev)
-            builder.AddEnvironmentConfiguration();
 
             return services;
         }
@@ -94,7 +100,7 @@ public static class ServiceCollectionExtensions
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
+                    Type = SecuritySchemeType.Http
                 });
 
                 options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
@@ -102,6 +108,42 @@ public static class ServiceCollectionExtensions
                     [new OpenApiSecuritySchemeReference("Bearer", document)] = []
                 });
             });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds JWT authentication configuration to the service collection.
+        /// </summary>
+        /// <returns>The updated service collection.</returns>
+        private IServiceCollection AddAuthenticationConfiguration(WebApplicationBuilder builder)
+        {
+            var jwtOptions = new JwtOptions();
+            builder.Configuration.GetSection(JwtOptions.SectionName).Bind(jwtOptions);
+
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
+                    ValidateLifetime = true,
+                };
+            });
+
+            services.AddAuthorization();
 
             return services;
         }
@@ -147,4 +189,3 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 }
-

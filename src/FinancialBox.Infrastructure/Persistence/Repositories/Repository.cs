@@ -1,4 +1,4 @@
-using FinancialBox.Application.Contracts.Persistence;
+using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 

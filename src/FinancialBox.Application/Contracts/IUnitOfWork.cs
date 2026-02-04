@@ -1,4 +1,4 @@
-namespace FinancialBox.Application.Contracts.Persistence;
+namespace FinancialBox.Application.Contracts;
 
 public interface IUnitOfWork
 {
