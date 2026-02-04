@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.Configure<PasswordHashingOptions>(configuration.GetSection(PasswordHashing));
         services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
 
+        // Register JwtService with options
         services.AddSingleton<IJwtService, JwtService>();
 
         return services;
