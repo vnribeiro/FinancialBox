@@ -41,16 +41,21 @@ public class UserMapping : IEntityTypeConfiguration<User>
         });
 
         builder
+            .Property(u => u.RoleId)
+            .IsRequired();
+
+        builder
+            .HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
             .Property(u => u.CreatedAt)
             .IsRequired();
 
         builder
             .Property(u => u.UpdatedAt);
-
-        builder.HasMany(u => u.FinancialGoals)
-            .WithOne(g => g.User)
-            .HasForeignKey(g => g.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

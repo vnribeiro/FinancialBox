@@ -3,7 +3,6 @@ using FinancialBox.Application.Contracts;
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Application.Contracts.Services;
-using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
@@ -11,6 +10,7 @@ namespace FinancialBox.Application.Features.Auth.Commands.Register;
 public class RegisterUserCommandHandler(
     IUnitOfWork unitOfWork,
     IUserRepository userRepository,
+    IRoleRepository roleRepository,
     IPasswordHasherService passwordHasher)
     : IRequestHandler<RegisterUserCommand, Result<RegisterUserResponse>>
 {
@@ -20,9 +20,14 @@ public class RegisterUserCommandHandler(
         var passwordHash = passwordHasher.Hash(request.Password);
         var password = Password.FromHash(passwordHash);
 
-        var user = User.Register(request.FirstName, request.LastName, email, password);
-        await userRepository.AddAsync(user, cancellationToken);
+        // var userRole = await roleRepository.GetByNameAsync("User", cancellationToken);
+        // if (userRole is null)
+        //     return Result<RegisterUserResponse>.Failure(Error.NotFound("Role 'User' not found"));
+
+        // var user = User.Register(request.FirstName, request.LastName, email, password, userRole.Id);
+        
+        //await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
-        return Result<RegisterUserResponse>.Success(new RegisterUserResponse(user.Id, user.Email.Address));
+        return Result<RegisterUserResponse>.Failure("new RegisterUserResponse(user.Id, user.Email.Address)");
     }
 }

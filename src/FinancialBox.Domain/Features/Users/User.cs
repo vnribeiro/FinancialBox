@@ -2,7 +2,6 @@ using FinancialBox.Domain.Common;
 using FinancialBox.Domain.Features.FinancialGoals;
 using FinancialBox.Domain.Features.Users.Events;
 using FinancialBox.Domain.Features.Users.ValueObjects;
-using System.Linq;
 
 namespace FinancialBox.Domain.Features.Users;
 
@@ -13,8 +12,10 @@ public class User : BaseEntity, IAggregateRoot
     public Email Email { get; private set; } = null!;
     public Password Password { get; private set; } = null!;
 
-    public ICollection<FinancialGoal> FinancialGoals { get; private set; } = new List<FinancialGoal>();
-    public ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
+    public Guid RoleId { get; private set; } = RoleConstants.UserRoleId;
+    public Role Role { get; private set; } = null!;
+
+    public ICollection<FinancialGoal> FinancialGoals { get; private set; } = [];
 
     protected User() {}
 
@@ -49,22 +50,14 @@ public class User : BaseEntity, IAggregateRoot
         Email = newEmail;
     }
 
-    public void AddRole(Role role)
+    public void SetRole(Guid roleId)
     {
-        if (UserRoles.Any(ur => ur.RoleId == role.Id))
-            return;
-
-        UserRoles.Add(new UserRole(Id, role.Id));
+        RoleId = roleId;
     }
 
-    public void RemoveRole(Role role)
+    public bool HasRole(Guid roleId)
     {
-        var link = UserRoles.FirstOrDefault(ur => ur.RoleId == role.Id);
-
-        if (link is not null)
-        {
-            UserRoles.Remove(link);
-        }
+        return RoleId == roleId;
     }
 
     public string GetFullName()
