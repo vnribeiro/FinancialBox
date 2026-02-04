@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace FinancialBox.Infrastructure.persistence.DataBase.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -11,6 +13,20 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "varchar(255)", maxLength: 100, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -20,12 +36,19 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
                     LastName = table.Column<string>(type: "varchar(255)", maxLength: 100, nullable: false),
                     Email_Address = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
                     PasswordHash = table.Column<string>(type: "varchar(255)", nullable: false),
+                    RoleId = table.Column<Guid>(type: "TEXT", nullable: false, defaultValue: new Guid("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e")),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,6 +102,15 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "CreatedAt", "Name", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { new Guid("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "User", null },
+                    { new Guid("d9aa09b9-0a41-4f9d-8c6b-6f4f3df7a6f9"), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Admin", null }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_FinancialGoals_UserId",
                 table: "FinancialGoals",
@@ -90,10 +122,21 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
                 column: "FinancialGoalId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Roles_Name",
+                table: "Roles",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email_Address",
                 table: "Users",
                 column: "Email_Address",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
         }
 
         /// <inheritdoc />
@@ -107,6 +150,9 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
         }
     }
 }

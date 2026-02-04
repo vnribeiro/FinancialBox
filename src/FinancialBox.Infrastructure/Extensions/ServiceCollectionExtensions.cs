@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         // Register the DbContext with a scoped lifetime
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Bind PasswordHashingOptions from configuration

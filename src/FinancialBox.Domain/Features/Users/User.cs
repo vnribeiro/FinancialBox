@@ -12,7 +12,7 @@ public class User : BaseEntity, IAggregateRoot
     public Email Email { get; private set; } = null!;
     public Password Password { get; private set; } = null!;
 
-    public Guid RoleId { get; private set; } = RoleConstants.UserRoleId;
+    public Guid RoleId { get; private set; }
     public Role Role { get; private set; } = null!;
 
     public ICollection<FinancialGoal> FinancialGoals { get; private set; } = [];

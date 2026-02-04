@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
+namespace FinancialBox.Infrastructure.persistence.DataBase.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260203233432_InitialCreate")]
+    [Migration("20260204042100_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -105,6 +105,45 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
                     b.ToTable("FinancialGoalTransactions", (string)null);
                 });
 
+            modelBuilder.Entity("FinancialBox.Domain.Features.Users.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d9aa09b9-0a41-4f9d-8c6b-6f4f3df7a6f9"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "User"
+                        });
+                });
+
             modelBuilder.Entity("FinancialBox.Domain.Features.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -124,10 +163,17 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<Guid>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue(new Guid("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"));
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -156,6 +202,12 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
 
             modelBuilder.Entity("FinancialBox.Domain.Features.Users.User", b =>
                 {
+                    b.HasOne("FinancialBox.Domain.Features.Users.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.OwnsOne("FinancialBox.Domain.Features.Users.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("UserId")
@@ -200,11 +252,18 @@ namespace FinancialBox.Infrastructure.Persistence.DataBase.Migrations
 
                     b.Navigation("Password")
                         .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("FinancialBox.Domain.Features.FinancialGoals.FinancialGoal", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("FinancialBox.Domain.Features.Users.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("FinancialBox.Domain.Features.Users.User", b =>

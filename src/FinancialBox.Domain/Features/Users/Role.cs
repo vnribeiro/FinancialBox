@@ -2,7 +2,7 @@ using FinancialBox.Domain.Common;
 
 namespace FinancialBox.Domain.Features.Users;
 
-public class Role : BaseEntity
+public class Role : BaseEntity, IAggregateRoot
 {
     public string Name { get; private set; } = string.Empty;
     public ICollection<User> Users { get; private set; } = [];
