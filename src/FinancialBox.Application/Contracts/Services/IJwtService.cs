@@ -7,8 +7,7 @@ public interface IJwtService
 {
     string GenerateToken(
         User user,
-        IEnumerable<string>? roles = null,
-        IEnumerable<Claim>? extraClaims = null);
+        IEnumerable<string> roles);
 }
 
 public sealed record JwtTokenResult(string AccessToken, DateTime ExpiresAtUtc);

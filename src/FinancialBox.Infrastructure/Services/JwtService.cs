@@ -15,8 +15,7 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
 
     public string GenerateToken(
         User user,
-        IEnumerable<string>? roles = null,
-        IEnumerable<Claim>? extraClaims = null)
+        IEnumerable<string> roles)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -35,9 +34,6 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
         }
-
-        if (extraClaims is not null)
-            claims.AddRange(extraClaims);
 
         var token = new JwtSecurityToken(
             issuer: _options.Issuer,

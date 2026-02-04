@@ -8,6 +8,8 @@ namespace FinancialBox.Infrastructure.Persistence;
 internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Role> Roles { get; set; } = null!;
+    public DbSet<UserRole> UserRoles { get; set; } = null!;
     public DbSet<FinancialGoal> FinancialGoals { get; set; } = null!;
     public DbSet<FinancialGoalTransactions> Transactions { get; set; } = null!;
 

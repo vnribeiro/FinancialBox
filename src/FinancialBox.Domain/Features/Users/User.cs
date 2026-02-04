@@ -2,6 +2,7 @@ using FinancialBox.Domain.Common;
 using FinancialBox.Domain.Features.FinancialGoals;
 using FinancialBox.Domain.Features.Users.Events;
 using FinancialBox.Domain.Features.Users.ValueObjects;
+using System.Linq;
 
 namespace FinancialBox.Domain.Features.Users;
 
@@ -13,6 +14,7 @@ public class User : BaseEntity, IAggregateRoot
     public Password Password { get; private set; } = null!;
 
     public ICollection<FinancialGoal> FinancialGoals { get; private set; } = new List<FinancialGoal>();
+    public ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
 
     protected User() {}
 
@@ -45,6 +47,14 @@ public class User : BaseEntity, IAggregateRoot
     public void UpdateEmail(Email newEmail)
     {
         Email = newEmail;
+    }
+
+    public void AssignRole(Role role)
+    {
+        if (UserRoles.Any(ur => ur.RoleId == role.Id))
+            return;
+
+        UserRoles.Add(new UserRole(Id, role.Id));
     }
 
     public string GetFullName()
