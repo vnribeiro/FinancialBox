@@ -21,7 +21,7 @@ public class RegisterUserCommandHandler(
         var passwordHash = passwordHasher.Hash(request.Password);
         var password = Password.FromHash(passwordHash);
 
-        var userRole = await roleRepository.GetByNameAsync("User", cancellationToken);
+        var userRole = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
 
         if (userRole is null)
         {
