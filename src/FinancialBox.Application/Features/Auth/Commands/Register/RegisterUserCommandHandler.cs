@@ -21,6 +21,13 @@ public class RegisterUserCommandHandler(
         var passwordHash = passwordHasher.Hash(request.Password);
         var password = Password.FromHash(passwordHash);
 
+        var existingUser = await userRepository.GetByEmailAsync(email.Address, cancellationToken);
+        if (existingUser is not null)
+        {
+            return Result<RegisterUserResponse>.Failure(
+                Error.ResourceConflict("Email already exists."));
+        }
+
         var userRole = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
 
         if (userRole is null)
