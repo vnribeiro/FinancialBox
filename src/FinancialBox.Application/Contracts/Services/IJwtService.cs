@@ -7,4 +7,4 @@ public interface IJwtService
     TokenResponse GenerateToken(User user);
 }
 
-public sealed record TokenResponse(string AccessToken, int ExpiresInSeconds);
+public sealed record TokenResponse(string AccessToken, DateTime ExpiresAtUtc);

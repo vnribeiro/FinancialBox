@@ -30,10 +30,8 @@ public sealed class LoginUserCommandHandler(
         var token = jwtService.GenerateToken(user);
 
         var response = new LoginUserResponse(
-            user.Id,
-            user.FirstName,
             token.AccessToken,
-            token.ExpiresInSeconds);
+            token.ExpiresAtUtc);
 
         return Result<LoginUserResponse>.Success(response);
     }

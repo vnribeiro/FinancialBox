@@ -28,15 +28,17 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
         claims.AddRange(roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct().
             Select(role => new Claim(ClaimTypes.Role, role)));
 
+        var expiresAtUtc = DateTime.UtcNow.AddHours(_options.ExpiresInHours);
+
         var token = new JwtSecurityToken(
             issuer: _options.Issuer,
             audience: _options.Audience,
             claims: claims,
             notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddSeconds(_options.ExpiresInSeconds),
+            expires: expiresAtUtc,
             signingCredentials: signingCredentials);
 
         var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        return new TokenResponse(accessToken, _options.ExpiresInSeconds);
+        return new TokenResponse(accessToken, expiresAtUtc);
     }
 }

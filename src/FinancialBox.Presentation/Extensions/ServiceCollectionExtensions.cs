@@ -130,7 +130,7 @@ public static class ServiceCollectionExtensions
                 .Validate(o => !string.IsNullOrWhiteSpace(o.Audience), "Jwt:Audience is required.")
                 .Validate(o => !string.IsNullOrWhiteSpace(o.Key), "Jwt:Key is required.")
                 .Validate(o => o.Key.Length >= 32, "Jwt:Key must be at least 256 bits.")
-                .Validate(o => o.ExpiresInSeconds > 0, "Jwt:ExpirationHours must be greater than zero.")
+                .Validate(o => o.ExpiresInHours > 0, "Jwt:ExpiresInHours must be greater than zero.")
                 .ValidateOnStart();
 
             var jwtOptions = jwtSection.Get<JwtOptions>()
