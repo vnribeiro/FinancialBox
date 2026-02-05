@@ -18,15 +18,14 @@ public class RegisterUserCommandHandler(
     public async Task<Result<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var email = new Email(request.Email);
+
+        if (await userRepository.EmailExistsAsync(email.Address, cancellationToken))
+        {
+            return Result<RegisterUserResponse>.Failure(Error.ResourceConflict("Email already exists."));
+        }
+
         var passwordHash = passwordHasher.Hash(request.Password);
         var password = Password.FromHash(passwordHash);
-
-        var existingUser = await userRepository.GetByEmailAsync(email.Address, cancellationToken);
-        if (existingUser is not null)
-        {
-            return Result<RegisterUserResponse>.Failure(
-                Error.ResourceConflict("Email already exists."));
-        }
 
         var userRole = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
 
