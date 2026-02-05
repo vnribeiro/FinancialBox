@@ -12,7 +12,7 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GenerateToken(User user)
+    public TokenResponse GenerateToken(User user)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -33,9 +33,10 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
             audience: _options.Audience,
             claims: claims,
             notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddHours(_options.ExpirationHours),
+            expires: DateTime.UtcNow.AddSeconds(_options.ExpiresInSeconds),
             signingCredentials: signingCredentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+        return new TokenResponse(accessToken, _options.ExpiresInSeconds);
     }
 }

@@ -17,23 +17,26 @@ public sealed class LoginUserCommandHandler(
         var email = new Email(request.Email);
         var user = await userRepository.GetByEmailAsync(email.Address, cancellationToken);
 
-        //if (user is null)
-        //    return Result<LoginUserResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
+        if (user is null){
+            return Result<LoginUserResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
+        }
+            
+        var passwordIsValid = passwordHasher.Verify(user.Password.Hash, request.Password);
 
-        //var passwordIsValid = passwordHasher.Verify(user.Password.Hash, request.Password);
-        //if (!passwordIsValid)
-        //    return Result<LoginUserResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
+        if (!passwordIsValid){
+             return Result<LoginUserResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
+        }
+           
+        var token = jwtService.GenerateToken(user);
 
-        //var token = jwtService.GenerateToken(user);
+        var response = new LoginUserResponse(
+            user.Id,
+            user.FirstName,
+            user.LastName,
+            user.Email.Address,
+            token.AccessToken,
+            token.ExpiresInSeconds);
 
-        //var response = new LoginUserResponse(
-        //    user.Id,
-        //    user.FirstName,
-        //    user.LastName,
-        //    user.Email.Address,
-        //    token.AccessToken,
-        //    token.ExpiresAtUtc);
-
-        return Result<LoginUserResponse>.Failure("");
+        return Result<LoginUserResponse>.Success(response);
     }
 }

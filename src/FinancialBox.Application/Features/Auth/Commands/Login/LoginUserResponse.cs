@@ -6,4 +6,4 @@ public sealed record LoginUserResponse(
     string LastName,
     string Email,
     string AccessToken,
-    DateTime ExpiresAtUtc);
+    int ExpiresInSeconds);
