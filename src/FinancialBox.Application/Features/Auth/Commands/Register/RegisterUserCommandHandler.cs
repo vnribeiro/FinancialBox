@@ -22,10 +22,10 @@ public class RegisterUserCommandHandler(
         var password = Password.FromHash(passwordHash);
 
         var userRole = await roleRepository.GetByNameAsync("User", cancellationToken);
+
         if (userRole is null)
         {
-            return Result<RegisterUserResponse>.Failure(
-                Error.ResourceNotFound("Role 'User' not found."));
+            return Result<RegisterUserResponse>.Failure(Error.ResourceNotFound("Role 'User' not found."));
         }
 
         var user = User.Register(request.FirstName, request.LastName, email, password);
@@ -33,7 +33,6 @@ public class RegisterUserCommandHandler(
 
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
-        return Result<RegisterUserResponse>.Success(
-            new RegisterUserResponse(user.Id, user.Email.Address));
+        return Result<RegisterUserResponse>.Success(new RegisterUserResponse(user.Id, user.Email.Address));
     }
 }
