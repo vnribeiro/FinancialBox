@@ -12,9 +12,7 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GenerateToken(
-        User user,
-        IEnumerable<string> roles)
+    public string GenerateToken(User user)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -24,9 +22,9 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email.Address),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(ClaimTypes.Role, user.Role.Name)
         };
-
+        
+        var roles = user.Roles.Select(r => r.Name);
         claims.AddRange(roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct().
             Select(role => new Claim(ClaimTypes.Role, role)));
 

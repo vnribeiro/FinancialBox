@@ -12,8 +12,7 @@ public class User : BaseEntity, IAggregateRoot
     public Email Email { get; private set; } = null!;
     public Password Password { get; private set; } = null!;
 
-    public Guid RoleId { get; private set; }
-    public Role Role { get; private set; } = null!;
+    public ICollection<Role> Roles { get; private set; } = [];
 
     public ICollection<FinancialGoal> FinancialGoals { get; private set; } = [];
 
@@ -50,14 +49,27 @@ public class User : BaseEntity, IAggregateRoot
         Email = newEmail;
     }
 
-    public void SetRole(Guid roleId)
+    public void AddRole(Role role)
     {
-        RoleId = roleId;
+        if (Roles.All(r => r.Id != role.Id))
+        {
+            Roles.Add(role);
+        }
     }
 
     public bool HasRole(Guid roleId)
     {
-        return RoleId == roleId;
+        return Roles.Any(r => r.Id == roleId);
+    }
+
+    public void RemoveRole(Guid roleId)
+    {
+        var role = Roles.FirstOrDefault(r => r.Id == roleId);
+        
+        if (role is not null)
+        {
+            Roles.Remove(role);
+        }
     }
 
     public string GetFullName()

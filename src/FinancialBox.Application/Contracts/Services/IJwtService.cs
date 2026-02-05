@@ -5,9 +5,5 @@ namespace FinancialBox.Application.Contracts.Services;
 
 public interface IJwtService
 {
-    string GenerateToken(
-        User user,
-        IEnumerable<string> roles);
+    string GenerateToken(User user);
 }
-
-public sealed record JwtTokenResult(string AccessToken, DateTime ExpiresAtUtc);

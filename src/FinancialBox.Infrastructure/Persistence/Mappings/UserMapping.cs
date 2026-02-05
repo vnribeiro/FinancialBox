@@ -41,15 +41,26 @@ public class UserMapping : IEntityTypeConfiguration<User>
         });
 
         builder
-            .Property(u => u.RoleId)
-            .HasDefaultValue(Guid.Parse("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"))
-            .IsRequired();
-
-        builder
-            .HasOne(u => u.Role)
+            .HasMany(u => u.Roles)
             .WithMany(r => r.Users)
-            .HasForeignKey(u => u.RoleId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .UsingEntity<Dictionary<string, object>>(
+                "UserRoles",
+                role => role
+                    .HasOne<Role>()
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                user => user
+                    .HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                join =>
+                {
+                    join.ToTable("UserRoles");
+                    join.HasKey("UserId", "RoleId");
+                    join.HasIndex("RoleId");
+                });
 
         builder
             .Property(u => u.CreatedAt)
