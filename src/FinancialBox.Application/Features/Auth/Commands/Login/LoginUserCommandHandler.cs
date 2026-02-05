@@ -17,7 +17,7 @@ public sealed class LoginUserCommandHandler(
         var email = new Email(request.Email);
         var user = await userRepository.GetByEmailAsync(email.Address, cancellationToken);
 
-        if (user is null){
+        if (user is null) {
             return Result<LoginUserResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
         }
             
