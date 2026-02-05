@@ -154,7 +154,31 @@ O seguinte diagrama UML representa visualmente as principais classes e enumeraç
 
 ## 🌐 Como Executar o Projeto
 
+### Pré-requisitos
+- .NET 10 SDK
+- Entity Framework CLI: `dotnet tool install --global dotnet-ef`
+
+### Passos
+
 1. Clone o repositório:
    ```bash
    git clone https://github.com/seuusuario/financialbox.git
    cd financialbox
+   ```
+
+2. Restaure as dependências:
+   ```bash
+   dotnet restore
+   ```
+
+3. Execute as migrations para criar o banco SQLite:
+   ```bash
+   dotnet ef database update --project src/FinancialBox.Infrastructure --startup-project src/FinancialBox.Presentation
+   ```
+
+4. Execute a aplicação:
+   ```bash
+   dotnet run --project src/FinancialBox.Presentation
+   ```
+
+5. Acesse a documentação da API: `https://localhost:5001/swagger`

@@ -32,8 +32,6 @@ public sealed class LoginUserCommandHandler(
         var response = new LoginUserResponse(
             user.Id,
             user.FirstName,
-            user.LastName,
-            user.Email.Address,
             token.AccessToken,
             token.ExpiresInSeconds);
 
