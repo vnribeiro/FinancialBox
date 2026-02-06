@@ -2,7 +2,7 @@
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.Contracts.Repositories;
 
-namespace FinancialBox.Application.Features.User.Queries.GetMe;
+namespace FinancialBox.Application.Features.Users.Queries.GetMe;
 
 public sealed class GetMeQueryHandler(IUserRepository userRepository)
     : IRequestHandler<GetMeQuery, Result<GetMeResponse>>

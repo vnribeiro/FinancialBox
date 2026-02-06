@@ -1,7 +1,8 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoal.Enums;
+using FinancialBox.Domain.Features.FinancialGoals.Enums;
+using FinancialBox.Domain.Features.Users;
 
-namespace FinancialBox.Domain.Features.FinancialGoal;
+namespace FinancialBox.Domain.Features.FinancialGoals;
 
 public class FinancialGoal : BaseEntity, IAggregateRoot
 {

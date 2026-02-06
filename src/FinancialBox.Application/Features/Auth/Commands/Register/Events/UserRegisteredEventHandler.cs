@@ -1,5 +1,5 @@
 using FinancialBox.Application.DomainEvents;
-using FinancialBox.Domain.Features.User.Events;
+using FinancialBox.Domain.Features.Users.Events;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register.Events;
 

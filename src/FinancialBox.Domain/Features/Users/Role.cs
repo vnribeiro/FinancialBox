@@ -1,6 +1,6 @@
 using FinancialBox.Domain.Common;
 
-namespace FinancialBox.Domain.Features.User;
+namespace FinancialBox.Domain.Features.Users;
 
 public class Role : BaseEntity, IAggregateRoot
 {  

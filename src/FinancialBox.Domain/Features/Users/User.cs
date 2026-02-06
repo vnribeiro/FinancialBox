@@ -1,9 +1,8 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoal;
-using FinancialBox.Domain.Features.User.Events;
-using FinancialBox.Domain.Features.User.ValueObjects;
+using FinancialBox.Domain.Features.Users.Events;
+using FinancialBox.Domain.Features.Users.ValueObjects;
 
-namespace FinancialBox.Domain.Features.User;
+namespace FinancialBox.Domain.Features.Users;
 
 public class User : BaseEntity, IAggregateRoot
 {
@@ -14,7 +13,7 @@ public class User : BaseEntity, IAggregateRoot
 
     public ICollection<Role> Roles { get; private set; } = [];
 
-    public ICollection<FinancialGoal> FinancialGoals { get; private set; } = [];
+    public ICollection<FinancialGoals.FinancialGoal> FinancialGoals { get; private set; } = [];
 
     protected User() {}
 

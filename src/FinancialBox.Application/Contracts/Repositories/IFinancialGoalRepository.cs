@@ -1,4 +1,4 @@
-using FinancialBox.Domain.Features.FinancialGoal;
+using FinancialBox.Domain.Features.FinancialGoals;
 
 namespace FinancialBox.Application.Contracts.Repositories;
 

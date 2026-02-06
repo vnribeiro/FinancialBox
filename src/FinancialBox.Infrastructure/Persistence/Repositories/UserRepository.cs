@@ -2,7 +2,7 @@ using FinancialBox.Application.Contracts.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using FinancialBox.Domain.Features.User;
+using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;
 

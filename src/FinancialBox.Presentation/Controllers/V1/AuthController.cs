@@ -3,18 +3,15 @@ using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Presentation.Extensions;
 using FinancialBox.Presentation.Responses;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using FinancialBox.Application.Features.Auth.Commands.Register;
-using FinancialBox.Application.Features.Auth.Commands.SignUp;
 
 namespace FinancialBox.Presentation.Controllers.V1;
 
 [ApiController]
 [ApiVersion(1.0)]
 [Route("api/v{apiVersion:apiVersion}/[controller]")]
-public class AuthController(ILogger<AuthController> logger, IMediator mediator) : ControllerBase
+public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("login")]
     [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status201Created)]

@@ -1,7 +1,7 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoal.Enums;
+using FinancialBox.Domain.Features.FinancialGoals.Enums;
 
-namespace FinancialBox.Domain.Features.FinancialGoal;
+namespace FinancialBox.Domain.Features.FinancialGoals;
 
 public class FinancialGoalTransactions : BaseEntity
 {
@@ -11,7 +11,7 @@ public class FinancialGoalTransactions : BaseEntity
     public bool IsDeleted { get; private set; }
 
     public Guid FinancialGoalId { get; private set; }
-    public FinancialGoal FinancialGoal { get; private set; } = null!;
+    public FinancialGoals.FinancialGoal FinancialGoal { get; private set; } = null!;
 
     protected FinancialGoalTransactions() {}
 

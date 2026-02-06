@@ -1,6 +1,5 @@
 using FinancialBox.Application.Common;
 using FinancialBox.Application.Contracts.Messaging;
-using FinancialBox.Application.Features.Auth.Commands.SignUp;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 

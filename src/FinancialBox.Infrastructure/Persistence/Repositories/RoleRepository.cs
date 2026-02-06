@@ -1,5 +1,5 @@
 using FinancialBox.Application.Contracts.Repositories;
-using FinancialBox.Domain.Features.User;
+using FinancialBox.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;

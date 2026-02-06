@@ -3,9 +3,8 @@ using FinancialBox.Application.Contracts;
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Application.Contracts.Services;
-using FinancialBox.Application.Features.Auth.Commands.SignUp;
-using FinancialBox.Domain.Features.User;
-using FinancialBox.Domain.Features.User.ValueObjects;
+using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
@@ -40,6 +39,6 @@ public class RegisterCommandHandler(
 
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
-        return Result<RegisterResponse>.Success(new RegisterUserResponse(user.Id, user.Email.Address));
+        return Result<RegisterResponse>.Success(new RegisterResponse(user.Id, user.Email.Address));
     }
 }

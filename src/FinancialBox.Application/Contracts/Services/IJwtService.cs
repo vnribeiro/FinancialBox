@@ -1,4 +1,4 @@
-using FinancialBox.Domain.Features.User;
+using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Application.Contracts.Services;
 
