@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using FinancialBox.Application.Contracts.Messaging;
-using FinancialBox.Application.Features.Auth.Commands.Register;
 using FinancialBox.Application.Features.User.Queries.GetMe;
 using FinancialBox.Presentation.Extensions;
 using FinancialBox.Presentation.Responses;
@@ -13,7 +12,7 @@ namespace FinancialBox.Presentation.Controllers.V1;
 [ApiController]
 [ApiVersion(1.0)]
 [Route("api/v{apiVersion:apiVersion}/[controller]")]
-public class UserController(ILogger<AuthController> logger, IMediator mediator) : Controller
+public class UsersController(ILogger<AuthController> logger, IMediator mediator) : Controller
 {
     [Authorize]
     [HttpGet("me")]

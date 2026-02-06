@@ -1,5 +1,5 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoals;
+using FinancialBox.Domain.Features.FinancialGoal;
 using FinancialBox.Domain.Features.User.Events;
 using FinancialBox.Domain.Features.User.ValueObjects;
 
@@ -77,3 +77,4 @@ public class User : BaseEntity, IAggregateRoot
         return $"{FirstName} {LastName}";
     }
 }
+

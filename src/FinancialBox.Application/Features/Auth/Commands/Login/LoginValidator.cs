@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
-public class LoginUserValidator : AbstractValidator<LoginUserCommand>
+public class LoginValidator : AbstractValidator<LoginCommand>
 {
-    public LoginUserValidator()
+    public LoginValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")

@@ -11,7 +11,7 @@ namespace FinancialBox.Application.Extensions
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             // Get the assembly of the Application layer
-            var applicationAssembly = typeof(LoginUserCommand).Assembly;
+            var applicationAssembly = typeof(LoginCommand).Assembly;
 
             // Register custom Mediator implementation
             services.AddScoped<IMediator, Mediator>();

@@ -1,5 +1,5 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoals;
+using FinancialBox.Domain.Features.FinancialGoal;
 using FinancialBox.Domain.Features.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,3 +54,4 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
         return await base.SaveChangesAsync(cancellationToken);
     }
 }
+

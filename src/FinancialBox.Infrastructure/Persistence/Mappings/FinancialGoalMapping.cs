@@ -1,4 +1,4 @@
-﻿using FinancialBox.Domain.Features.FinancialGoals;
+using FinancialBox.Domain.Features.FinancialGoal;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,4 +54,5 @@ public class FinancialGoalMapping : IEntityTypeConfiguration<FinancialGoal>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
 

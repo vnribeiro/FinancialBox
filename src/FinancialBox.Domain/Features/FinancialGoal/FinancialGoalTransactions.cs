@@ -1,7 +1,7 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoals.Enums;
+using FinancialBox.Domain.Features.FinancialGoal.Enums;
 
-namespace FinancialBox.Domain.Features.FinancialGoals;
+namespace FinancialBox.Domain.Features.FinancialGoal;
 
 public class FinancialGoalTransactions : BaseEntity
 {
@@ -29,3 +29,4 @@ public class FinancialGoalTransactions : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 }
+

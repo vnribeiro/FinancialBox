@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
-public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
+public class RegisterValidator : AbstractValidator<RegisterCommand>
 {
-    public RegisterUserValidator()
+    public RegisterValidator()
     {
         RuleFor(x => x.FirstName).NotEmpty().WithMessage("First name is required.").MinimumLength(2)
             .WithMessage("First name must be at least 2 characters long.").MaximumLength(50)

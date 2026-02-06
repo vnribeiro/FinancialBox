@@ -1,7 +1,7 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoals.Enums;
+using FinancialBox.Domain.Features.FinancialGoal.Enums;
 
-namespace FinancialBox.Domain.Features.FinancialGoals;
+namespace FinancialBox.Domain.Features.FinancialGoal;
 
 public class FinancialGoal : BaseEntity, IAggregateRoot
 {
@@ -57,3 +57,4 @@ public class FinancialGoal : BaseEntity, IAggregateRoot
         return remainingMonths > 0 ? TargetAmount / remainingMonths : null;
     }
 }
+
