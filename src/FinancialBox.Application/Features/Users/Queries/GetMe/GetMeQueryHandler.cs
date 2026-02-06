@@ -13,7 +13,7 @@ public sealed class GetMeQueryHandler(IUserRepository userRepository)
 
         if (user is null)
         {
-            return Result<GetMeResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
+            return Result<GetMeResponse>.Failure(Error.ResourceNotFound("User not found."));
         }
 
         var response = new GetMeResponse(
