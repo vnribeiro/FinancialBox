@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace FinancialBox.Domain.Features.Users.ValueObjects;
+namespace FinancialBox.Domain.Features.User.ValueObjects;
 
 public sealed class Email : IEquatable<Email>
 {

@@ -5,7 +5,7 @@ namespace FinancialBox.Presentation.Controllers.V1;
 
 [ApiController]
 [ApiVersion(1.0)]
-[Route("api/v{apiVersion:apiVersion}/transactions")]
+[Route("api/v{apiVersion:apiVersion}/[controller]")]
 public class TransactionsController : ControllerBase
 {
     private readonly ILogger<TransactionsController> _logger;

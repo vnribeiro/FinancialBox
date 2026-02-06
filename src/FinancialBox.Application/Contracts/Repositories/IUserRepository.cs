@@ -1,6 +1,6 @@
-using FinancialBox.Domain.Features.Users;
 using System;
 using System.Collections.Generic;
+using FinancialBox.Domain.Features.User;
 
 namespace FinancialBox.Application.Contracts.Repositories;
 

@@ -3,8 +3,8 @@ using FinancialBox.Application.Contracts;
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Application.Contracts.Services;
-using FinancialBox.Domain.Features.Users;
-using FinancialBox.Domain.Features.Users.ValueObjects;
+using FinancialBox.Domain.Features.User;
+using FinancialBox.Domain.Features.User.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 

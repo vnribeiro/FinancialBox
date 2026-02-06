@@ -1,6 +1,5 @@
 using FinancialBox.Domain.Common;
 using FinancialBox.Domain.Features.FinancialGoals.Enums;
-using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Domain.Features.FinancialGoals;
 

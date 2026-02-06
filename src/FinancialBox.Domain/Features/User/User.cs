@@ -1,9 +1,9 @@
 using FinancialBox.Domain.Common;
 using FinancialBox.Domain.Features.FinancialGoals;
-using FinancialBox.Domain.Features.Users.Events;
-using FinancialBox.Domain.Features.Users.ValueObjects;
+using FinancialBox.Domain.Features.User.Events;
+using FinancialBox.Domain.Features.User.ValueObjects;
 
-namespace FinancialBox.Domain.Features.Users;
+namespace FinancialBox.Domain.Features.User;
 
 public class User : BaseEntity, IAggregateRoot
 {
