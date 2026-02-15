@@ -13,7 +13,7 @@ namespace FinancialBox.Infrastructure.Extensions;
 public static class ServiceCollectionExtensions
 {
     private const string DatabaseName = "DefaultConnection";
-    private const string PasswordHashing = "PasswordHashing";
+    private const string SecureHash= "SecretHasher";
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -28,8 +28,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Bind PasswordHashingOptions from configuration
-        services.Configure<PasswordHashingOptions>(configuration.GetSection(PasswordHashing));
-        services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+        services.Configure<SecureHashOptions>(configuration.GetSection(SecureHash));
+        services.AddSingleton<ISecureHashService, SecureHashService>();
 
         // Register JwtService with options
         services.AddSingleton<IJwtService, JwtService>();

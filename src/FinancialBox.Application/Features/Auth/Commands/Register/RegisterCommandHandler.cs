@@ -14,7 +14,7 @@ public class RegisterCommandHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IEmailVerificationCodeRepository emailVerificationCodeRepository,
-    ISecretHasherService secretHasherService)
+    ISecureHashService secretHasherService)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ public class RegisterCommandHandler(
         var otp = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
         var otpHash = secretHasherService.Hash(otp);
 
-        await emailVerificationCodeRepository.AddAsync(new EmailVerificationCode(user.Id, otpHash, DateTime.UtcNow.AddMinutes(15)), cancellationToken);
+        await emailVerificationCodeRepository.AddAsync(new EmailVerification(user.Id, otpHash, DateTime.UtcNow.AddMinutes(15)), cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
         return Result<RegisterResponse>.Success(new RegisterResponse(user.Id, user.Email.Address));

@@ -4,19 +4,19 @@ using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Infrastructure.Services;
 
-internal sealed class SecretHasherService(IOptions<SecretHasherOptions> options) : ISecretHasherService
+internal sealed class SecureHashService(IOptions<SecureHashOptions> options) : ISecureHashService
 {
     private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA256;
-    private readonly SecretHasherOptions _options = options.Value;
+    private readonly SecureHashOptions _options = options.Value;
 
-    public string Hash(string password)
+    public string Hash(string secret)
     {
-        if (string.IsNullOrWhiteSpace(password))
-            throw new ArgumentException("Password cannot be empty.", nameof(password));
+        if (string.IsNullOrWhiteSpace(secret))
+            throw new ArgumentException("Password cannot be empty.", nameof(secret));
 
         var salt = RandomNumberGenerator.GetBytes(_options.SaltSize);
         var subkey = Rfc2898DeriveBytes.Pbkdf2(
-            password,
+            secret,
             salt,
             _options.Iterations,
             Algorithm,
@@ -25,13 +25,13 @@ internal sealed class SecretHasherService(IOptions<SecretHasherOptions> options)
         return $"PBKDF2${Algorithm.Name}${_options.Iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(subkey)}";
     }
 
-    public bool Verify(string hash, string password)
+    public bool Verify(string hash, string secret)
     {
         if (!TryParseHash(hash, _options.SaltSize, _options.SubkeySize, out var iterations, out var salt, out var expectedSubkey))
             return false;
 
         var actualSubkey = Rfc2898DeriveBytes.Pbkdf2(
-            password,
+            secret,
             salt,
             iterations,
             Algorithm,
@@ -71,7 +71,7 @@ internal sealed class SecretHasherService(IOptions<SecretHasherOptions> options)
     }
 }
 
-internal sealed class SecretHasherOptions
+internal sealed class SecureHashOptions
 {
     public int Iterations { get; set; }
     public int SaltSize { get; set; }

@@ -8,7 +8,7 @@ namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
 public sealed class LoginCommandHandler(
     IUserRepository userRepository,
-    ISecretHasherService secretHasherService,
+    ISecureHashService secretHasherService,
     IJwtService jwtService)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {
