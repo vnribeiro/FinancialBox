@@ -12,6 +12,7 @@ namespace FinancialBox.Application.Features.Auth.Commands.Register;
 public class RegisterCommandHandler(
     IUnitOfWork unitOfWork,
     IUserRepository userRepository,
+    IRoleRepository roleRepository,
     IEmailVerificationCodeRepository emailVerificationCodeRepository,
     ISecretHasherService secretHasherService)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
@@ -26,8 +27,9 @@ public class RegisterCommandHandler(
         var passwordHash = secretHasherService.Hash(request.Password);
         var password = Password.FromHash(passwordHash);
 
+        var role = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
         var user = User.Register(request.FirstName, request.LastName, email, password);
-        user.AddRole(new Role(Role.DefaultName));
+        user.AddRole(role!);
 
         await userRepository.AddAsync(user, cancellationToken);
 
