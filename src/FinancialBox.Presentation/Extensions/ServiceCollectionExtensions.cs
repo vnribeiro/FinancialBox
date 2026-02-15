@@ -1,7 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using FinancialBox.Application.Contracts.Services;
-using FinancialBox.Presentation.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -45,10 +44,6 @@ public static class ServiceCollectionExtensions
         {
             options.LowercaseUrls = true;
         });
-
-        // Registers service to access current user info in controllers/services
-        services.AddHttpContextAccessor();
-        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }
@@ -95,7 +90,7 @@ public static class ServiceCollectionExtensions
                     Title = $"Financial Box API {description.ApiVersion}",
                     Version = description.ApiVersion.ToString(),
                     Description = "API for managing financial goals, transactions, and reporting.",
-                    Contact = new OpenApiContact() { Name = "Vinícius Ribeiro", Email = "viniciuscostaa.ribeiro@outlook.com" },
+                    Contact = new OpenApiContact() { Name = "Vinï¿½cius Ribeiro", Email = "viniciuscostaa.ribeiro@outlook.com" },
                     License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
                 });
             }
