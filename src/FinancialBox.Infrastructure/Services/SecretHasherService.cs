@@ -4,10 +4,10 @@ using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Infrastructure.Services;
 
-internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> options) : IPasswordHasherService
+internal sealed class SecretHasherService(IOptions<SecretHasherOptions> options) : ISecretHasherService
 {
     private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA256;
-    private readonly PasswordHashingOptions _options = options.Value;
+    private readonly SecretHasherOptions _options = options.Value;
 
     public string Hash(string password)
     {
@@ -71,7 +71,7 @@ internal sealed class PasswordHasherService(IOptions<PasswordHashingOptions> opt
     }
 }
 
-internal sealed class PasswordHashingOptions
+internal sealed class SecretHasherOptions
 {
     public int Iterations { get; set; }
     public int SaltSize { get; set; }

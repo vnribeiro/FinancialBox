@@ -8,7 +8,7 @@ namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
 public sealed class LoginCommandHandler(
     IUserRepository userRepository,
-    IPasswordHasherService passwordHasher,
+    ISecretHasherService secretHasherService,
     IJwtService jwtService)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {
@@ -18,16 +18,15 @@ public sealed class LoginCommandHandler(
         var user = await userRepository.GetByEmailAsync(email.Address, cancellationToken);
 
         if (user is null)
-        {
             return Result<LoginResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
-        }
 
-        var passwordIsValid = passwordHasher.Verify(user.Password.Hash, request.Password);
+        var passwordIsValid = secretHasherService.Verify(user.Password.Hash, request.Password);
 
         if (!passwordIsValid)
-        {
             return Result<LoginResponse>.Failure(Error.AuthenticationRequired("Invalid email or password."));
-        }
+
+        if (!user.IsEmailConfirmed)
+            return Result<LoginResponse>.Failure(Error.AuthenticationRequired("Email address is not confirmed."));
 
         var token = jwtService.GenerateToken(user);
 

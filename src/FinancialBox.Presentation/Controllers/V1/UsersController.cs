@@ -14,7 +14,7 @@ namespace FinancialBox.Presentation.Controllers.V1;
 [Route("api/v{apiVersion:apiVersion}/[controller]")]
 public class UsersController(IMediator mediator, ICurrentUserService currentUserService) : Controller
 {
-    [Authorize]
+    [Authorize(Roles = "User")]
     [HttpGet("me")]
     [ProducesResponseType(typeof(ApiResponse<GetMeResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

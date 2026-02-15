@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using FinancialBox.Application.Common;
 using FinancialBox.Application.Contracts;
 using FinancialBox.Application.Contracts.Messaging;
@@ -11,8 +12,8 @@ namespace FinancialBox.Application.Features.Auth.Commands.Register;
 public class RegisterCommandHandler(
     IUnitOfWork unitOfWork,
     IUserRepository userRepository,
-    IRoleRepository roleRepository,
-    IPasswordHasherService passwordHasher)
+    IEmailVerificationCodeRepository emailVerificationCodeRepository,
+    ISecretHasherService secretHasherService)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -20,24 +21,21 @@ public class RegisterCommandHandler(
         var email = new Email(request.Email);
 
         if (await userRepository.EmailExistsAsync(email.Address, cancellationToken))
-        {
             return Result<RegisterResponse>.Failure(Error.ResourceConflict("Email already exists."));
-        }
 
-        var passwordHash = passwordHasher.Hash(request.Password);
+        var passwordHash = secretHasherService.Hash(request.Password);
         var password = Password.FromHash(passwordHash);
 
-        var userRole = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
-
-        if (userRole is null)
-        {
-            return Result<RegisterResponse>.Failure(Error.ResourceNotFound("Role 'User' not found."));
-        }
-
         var user = User.Register(request.FirstName, request.LastName, email, password);
-        user.AddRole(userRole);
+        user.AddRole(new Role(Role.DefaultName));
 
         await userRepository.AddAsync(user, cancellationToken);
+
+        var otp = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+        var otpHash = secretHasherService.Hash(otp);
+
+        await emailVerificationCodeRepository.AddAsync(new EmailVerificationCode(user.Id, otpHash, DateTime.UtcNow.AddMinutes(15)), cancellationToken);
+
         await unitOfWork.CommitAsync(cancellationToken);
         return Result<RegisterResponse>.Success(new RegisterResponse(user.Id, user.Email.Address));
     }

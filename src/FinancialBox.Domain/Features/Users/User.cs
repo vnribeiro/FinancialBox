@@ -1,4 +1,5 @@
 using FinancialBox.Domain.Common;
+using FinancialBox.Domain.Features.FinancialGoals;
 using FinancialBox.Domain.Features.Users.Events;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 
@@ -10,10 +11,10 @@ public class User : BaseEntity, IAggregateRoot
     public string LastName { get; private set; } = string.Empty;
     public Email Email { get; private set; } = null!;
     public Password Password { get; private set; } = null!;
+    public bool IsEmailConfirmed { get; private set; } = false;
 
     public ICollection<Role> Roles { get; private set; } = [];
-
-    public ICollection<FinancialGoals.FinancialGoal> FinancialGoals { get; private set; } = [];
+    public ICollection<FinancialGoal> FinancialGoals { get; private set; } = [];
 
     protected User() {}
 
