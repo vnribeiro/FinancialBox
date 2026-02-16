@@ -122,10 +122,7 @@ public static class ServiceCollectionExtensions
             .Validate(o => o.ExpiresInHours > 0, "Jwt:ExpiresInHours must be greater than zero.")
             .ValidateOnStart();
 
-        var jwtOptions = jwtSection.Get<JwtOptions>()
-            ?? throw new InvalidOperationException("Jwt configuration section is missing or invalid.");
-
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
+        var jwtOptions = jwtSection.Get<JwtOptions>()!;
 
         services.AddAuthentication(options =>
         {
@@ -136,7 +133,7 @@ public static class ServiceCollectionExtensions
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 ValidateIssuer = true,
                 ValidIssuer = jwtOptions.Issuer,
                 ValidateAudience = true,
