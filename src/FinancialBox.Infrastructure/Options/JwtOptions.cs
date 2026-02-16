@@ -1,4 +1,4 @@
-namespace FinancialBox.Application.Contracts.Services;
+namespace FinancialBox.Infrastructure.Options;
 
 public sealed class JwtOptions
 {

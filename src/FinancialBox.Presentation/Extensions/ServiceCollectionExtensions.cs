@@ -1,12 +1,14 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using FinancialBox.Application.Contracts.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FinancialBox.Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FinancialBox.Presentation.Extensions;
 
@@ -77,24 +79,11 @@ public static class ServiceCollectionExtensions
     /// <returns>The updated service collection.</returns>
     private static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
     {
+        // Registers a custom IConfigureOptions to generate Swagger docs for each API version
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
         services.AddSwaggerGen(options =>
         {
-            var apiVersionDescriptionProvider = services
-                .BuildServiceProvider()
-                .GetRequiredService<IApiVersionDescriptionProvider>();
-
-            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-            {
-                options.SwaggerDoc(description.GroupName, new OpenApiInfo
-                {
-                    Title = $"Financial Box API {description.ApiVersion}",
-                    Version = description.ApiVersion.ToString(),
-                    Description = "API for managing financial goals, transactions, and reporting.",
-                    Contact = new OpenApiContact() { Name = "Vin�cius Ribeiro", Email = "viniciuscostaa.ribeiro@outlook.com" },
-                    License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
-                });
-            }
-
             // JWT Authentication for Swagger
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
@@ -199,5 +188,33 @@ public static class ServiceCollectionExtensions
         builder.Configuration.AddUserSecrets<Program>();
 
         return builder;
+    }
+}
+
+/// <summary>
+/// Configures Swagger generation options to support API versioning in the Financial Box API documentation.
+/// </summary>
+/// <remarks>This class is typically used to register multiple Swagger documents, one for each API version,
+/// enabling versioned API documentation in Swagger UI. It is intended for use with ASP.NET Core dependency injection
+/// and SwaggerGen.</remarks>
+/// <param name="provider">The provider that supplies descriptions for each available API version. Cannot be null.</param>
+public sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+    : IConfigureOptions<SwaggerGenOptions>
+{
+    private readonly IApiVersionDescriptionProvider _apiVersionDescriptionProvider = provider;
+
+    public void Configure(SwaggerGenOptions options)
+    {
+        foreach (var description in _apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerDoc(description.GroupName, new OpenApiInfo
+            {
+                Title = $"Financial Box API {description.ApiVersion}",
+                Version = description.ApiVersion.ToString(),
+                Description = "API for managing financial goals, transactions, and reporting.",
+                Contact = new OpenApiContact() { Name = "Vinicius Ribeiro", Email = "contact.vnribeiro@gmail.com" },
+                License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
+            });
+        }
     }
 }

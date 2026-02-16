@@ -5,6 +5,7 @@ using FinancialBox.Application.Contracts.Services;
 using FinancialBox.Domain.Features.Users;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using JwtOptions = FinancialBox.Infrastructure.Options.JwtOptions;
 
 namespace FinancialBox.Infrastructure.Services;
 
