@@ -1,4 +1,4 @@
-﻿using FinancialBox.Application.Contracts.Messaging;
+using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.DomainEvents;
 using FinancialBox.Domain.DomainEvents;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,22 +17,25 @@ public class Mediator : IMediator
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
+
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
+        var handler = _provider.GetService(handlerType)
+            ?? throw new InvalidOperationException($"Handler not registered for '{requestType.Name}'. Check your DI configuration.");
 
-        var handler = _provider.GetService(handlerType);
-
-        if (handler is null)
-            throw new InvalidOperationException($"Handler not registered for '{requestType.Name}'. Check your DI configuration.");
+        var handlerWrapperType = typeof(RequestHandlerWrapper<,>).MakeGenericType(requestType, typeof(TResponse));
+        var handlerWrapper = (IRequestHandlerWrapper<TResponse>)Activator.CreateInstance(handlerWrapperType, handler)!;
 
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
-        var behaviors = _provider.GetServices(behaviorType).Cast<object>().ToList();
+        var behaviors = _provider.GetServices(behaviorType).ToList();
 
-        Func<Task<TResponse>> pipeline = () => ((dynamic)handler).Handle((dynamic)request, cancellationToken);
+        Func<Task<TResponse>> pipeline = () => handlerWrapper.Handle(request, cancellationToken);
 
         foreach (var behavior in behaviors.AsEnumerable().Reverse())
         {
             var next = pipeline;
-            pipeline = () => ((dynamic)behavior).Handle((dynamic)request, next, cancellationToken);
+            var behaviorWrapperType = typeof(PipelineBehaviorWrapper<,>).MakeGenericType(requestType, typeof(TResponse));
+            var behaviorWrapper = (IPipelineBehaviorWrapper<TResponse>)Activator.CreateInstance(behaviorWrapperType, behavior)!;
+            pipeline = () => behaviorWrapper.Handle(request, next, cancellationToken);
         }
 
         return await pipeline();
@@ -41,15 +44,16 @@ public class Mediator : IMediator
     public async Task PublishAsync<TEvent>(TEvent notification, CancellationToken cancellationToken = default)
         where TEvent : IDomainEvent
     {
-        var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(notification.GetType());
+        var eventType = notification.GetType();
+        var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);
         var handlers = _provider.GetServices(handlerType);
+
+        var wrapperType = typeof(DomainEventHandlerWrapper<>).MakeGenericType(eventType);
 
         foreach (var handler in handlers)
         {
-            if (handler == null)
-                throw new InvalidOperationException($"Handler instance is null for '{notification.GetType().Name}'. Check your DI configuration.");
-
-            await ((dynamic)handler).Handle((dynamic)notification, cancellationToken);
+            var wrapper = (IDomainEventHandlerWrapper)Activator.CreateInstance(wrapperType, handler)!;
+            await wrapper.Handle(notification, cancellationToken);
         }
     }
 }
