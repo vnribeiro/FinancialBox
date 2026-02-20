@@ -1,12 +1,7 @@
-using FinancialBox.Domain.DomainEvents;
-
 namespace FinancialBox.Domain.Common;
 
 public abstract class BaseEntity
 {
-    private readonly List<IDomainEvent> _domainEvents = [];
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-
     public Guid Id { get; protected set; }
     public DateTime CreatedAt { get; protected set; }
     public DateTime? UpdatedAt { get; protected set; }
@@ -22,12 +17,6 @@ public abstract class BaseEntity
         Id = id == Guid.Empty ? Guid.NewGuid() : id;
         CreatedAt = DateTime.UtcNow;
     }
-
-    protected void AddDomainEvent(IDomainEvent domainEvent)
-        => _domainEvents.Add(domainEvent);
-
-    public void ClearDomainEvents()
-        => _domainEvents.Clear();
 
     public override bool Equals(object? obj)
     {

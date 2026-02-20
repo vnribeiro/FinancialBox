@@ -5,7 +5,7 @@ using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Domain.Features.Users;
 
-public class User : BaseEntity, IAggregateRoot
+public class User : AggregateRoot
 {
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;

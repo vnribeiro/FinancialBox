@@ -4,7 +4,7 @@ using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Domain.Features.FinancialGoals;
 
-public class FinancialGoal : BaseEntity, IAggregateRoot
+public class FinancialGoal : AggregateRoot
 {
     public string Title { get; private set; } = string.Empty;
     public decimal TargetAmount { get; private set; }

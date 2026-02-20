@@ -1,4 +1,5 @@
 using FinancialBox.Domain.Common;
+using FinancialBox.Domain.DomainEvents;
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.Contracts;
 
@@ -8,30 +9,21 @@ internal class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWor
 {
     public async Task CommitAsync(CancellationToken cancellationToken)
     {
-        var hasChanges = await context.SaveChangesAsync(cancellationToken) > 0;
-
-        if (hasChanges)
-        {
-            await PublishDomainEventsAsync(cancellationToken);
-        }
-    }
-
-    private async Task PublishDomainEventsAsync(CancellationToken cancellationToken)
-    {
-        var domainEntities = context.ChangeTracker
-            .Entries<BaseEntity>()
+        var aggregates = context.ChangeTracker
+            .Entries<IAggregateRoot>()
             .Where(e => e.Entity.DomainEvents.Any())
+            .Select(e => e.Entity)
             .ToList();
 
-        var domainEvents = domainEntities
-            .SelectMany(e => e.Entity.DomainEvents)
+        var domainEvents = aggregates
+            .SelectMany(e => e.DomainEvents)
             .ToList();
+
+        aggregates.ForEach(e => e.ClearDomainEvents());
+
+        await context.SaveChangesAsync(cancellationToken);
 
         foreach (var domainEvent in domainEvents)
-        {
             await mediator.PublishAsync(domainEvent, cancellationToken);
-        }
-
-        domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
     }
 }

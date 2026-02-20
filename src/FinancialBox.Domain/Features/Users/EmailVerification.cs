@@ -2,7 +2,7 @@ using FinancialBox.Domain.Common;
 
 namespace FinancialBox.Domain.Features.Users;
 
-public class EmailVerification : BaseEntity, IAggregateRoot
+public class EmailVerification : AggregateRoot
 {
     private const int MaxAttempts = 5;
 

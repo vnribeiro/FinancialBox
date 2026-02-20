@@ -2,7 +2,7 @@ using FinancialBox.Domain.Common;
 
 namespace FinancialBox.Domain.Features.Users;
 
-public class Role : BaseEntity, IAggregateRoot
+public class Role : AggregateRoot
 {  
     public static string DefaultName => "User";
 
