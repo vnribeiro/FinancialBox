@@ -23,11 +23,11 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
 
         try
         {
-            _logger.LogInformation("Handling request: {RequestName}", requestName);
+            _logger.LogDebug("Handling request: {RequestName}", requestName);
 
             var response = await next();
 
-            _logger.LogInformation("Successfully handled request: {RequestName}", requestName);
+            _logger.LogDebug("Successfully handled request: {RequestName}", requestName);
 
             return response;
         }

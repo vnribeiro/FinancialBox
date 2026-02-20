@@ -54,6 +54,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             return (TResponse)result!;
         }
 
-        return await next();
+        throw new InvalidOperationException(
+            $"ValidationBehavior requires TResponse to be Result or Result<T>. Got: {typeof(TResponse).Name}");
     }
 }

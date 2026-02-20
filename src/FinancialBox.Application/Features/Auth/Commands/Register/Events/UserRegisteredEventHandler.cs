@@ -3,7 +3,7 @@ using FinancialBox.Domain.Features.Users.Events;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register.Events;
 
-public class UserRegisteredEventHandler : IDomainEventHandler<UserRegisteredEvent>
+public sealed class UserRegisteredEventHandler : IDomainEventHandler<UserRegisteredEvent>
 {
     //private readonly IEmailService _emailService;
 

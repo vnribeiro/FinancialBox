@@ -9,7 +9,7 @@ using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
-public class RegisterCommandHandler(
+public sealed class RegisterCommandHandler(
     IUnitOfWork unitOfWork,
     IUserRepository userRepository,
     IRoleRepository roleRepository,

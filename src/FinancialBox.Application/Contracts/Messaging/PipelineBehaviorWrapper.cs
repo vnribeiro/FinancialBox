@@ -2,7 +2,7 @@ namespace FinancialBox.Application.Contracts.Messaging;
 
 internal interface IPipelineBehaviorWrapper<TResponse>
 {
-    Task<TResponse> Handle(IRequest<TResponse> request, Func<Task<TResponse>> next, CancellationToken cancellationToken);
+    Task<TResponse> Handle(IRequest<TResponse> request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken);
 }
 
 internal sealed class PipelineBehaviorWrapper<TRequest, TResponse> : IPipelineBehaviorWrapper<TResponse>
@@ -13,6 +13,6 @@ internal sealed class PipelineBehaviorWrapper<TRequest, TResponse> : IPipelineBe
     public PipelineBehaviorWrapper(IPipelineBehavior<TRequest, TResponse> inner)
         => _inner = inner;
 
-    public Task<TResponse> Handle(IRequest<TResponse> request, Func<Task<TResponse>> next, CancellationToken cancellationToken)
+    public Task<TResponse> Handle(IRequest<TResponse> request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         => _inner.Handle((TRequest)request, next, cancellationToken);
 }

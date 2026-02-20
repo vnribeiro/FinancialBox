@@ -5,30 +5,23 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FinancialBox.Application;
 
-public class Mediator : IMediator
+public class Mediator(IServiceProvider provider) : IMediator
 {
-    private readonly IServiceProvider _provider;
-
-    public Mediator(IServiceProvider provider)
-    {
-        _provider = provider;
-    }
-
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
 
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
-        var handler = _provider.GetService(handlerType)
+        var handler = provider.GetService(handlerType)
             ?? throw new InvalidOperationException($"Handler not registered for '{requestType.Name}'. Check your DI configuration.");
 
         var handlerWrapperType = typeof(RequestHandlerWrapper<,>).MakeGenericType(requestType, typeof(TResponse));
         var handlerWrapper = (IRequestHandlerWrapper<TResponse>)Activator.CreateInstance(handlerWrapperType, handler)!;
 
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
-        var behaviors = _provider.GetServices(behaviorType).ToList();
+        var behaviors = provider.GetServices(behaviorType).ToList();
 
-        Func<Task<TResponse>> pipeline = () => handlerWrapper.Handle(request, cancellationToken);
+        RequestHandlerDelegate<TResponse> pipeline = () => handlerWrapper.Handle(request, cancellationToken);
 
         foreach (var behavior in behaviors.AsEnumerable().Reverse())
         {
@@ -46,7 +39,7 @@ public class Mediator : IMediator
     {
         var eventType = notification.GetType();
         var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);
-        var handlers = _provider.GetServices(handlerType);
+        var handlers = provider.GetServices(handlerType);
 
         var wrapperType = typeof(DomainEventHandlerWrapper<>).MakeGenericType(eventType);
 
