@@ -29,9 +29,6 @@ public static class ServiceCollectionExtensions
     /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddPresentation(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        // Loads environment configs and user secrets (in dev)
-        builder.AddEnvironmentConfiguration();
-
         // Configures Serilog with console and file sinks
         builder.AddLoggingConfiguration();
 
@@ -45,7 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddAuthenticationConfiguration(builder);
 
         // Registers default CORS policy
-        services.AddCorsConfiguration();
+        services.AddCorsConfiguration(builder.Configuration);
 
         // Configure routing to use lowercase URLs for consistency and SEO benefits
         builder.Services.AddRouting(options =>
@@ -54,27 +51,6 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
-    }
-
-    /// <summary>
-    /// Configures the environment for the application.
-    /// Loads JSON configuration files and user secrets for development environments.
-    /// </summary>
-    /// <param name="builder">The WebApplicationBuilder to configure.</param>
-    /// <returns>The updated WebApplicationBuilder.</returns>
-    private static WebApplicationBuilder AddEnvironmentConfiguration(this WebApplicationBuilder builder)
-    {
-        builder.Configuration
-            .AddJsonFile("appsettings.json", true, true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
-            .AddEnvironmentVariables();
-
-        if (!builder.Environment.IsDevelopment())
-            return builder;
-
-        builder.Configuration.AddUserSecrets<Program>();
-
-        return builder;
     }
 
     /// <summary>
@@ -196,17 +172,27 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Adds Cross-Origin Resource Sharing (CORS) configuration to allow requests from specified origins.
+    /// In production, origins are restricted to those defined in "Cors:AllowedOrigins".
+    /// In development (no origins configured), all origins are allowed.
     /// </summary>
     /// <returns>The updated service collection.</returns>
-    private static IServiceCollection AddCorsConfiguration(this IServiceCollection services)
+    private static IServiceCollection AddCorsConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
         services.AddCors(options =>
         {
             options.AddPolicy("DefaultPolicy", builder =>
             {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
+                if (allowedOrigins.Length > 0)
+                    builder.WithOrigins(allowedOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                else
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
             });
         });
 
