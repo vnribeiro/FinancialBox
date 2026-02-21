@@ -18,6 +18,7 @@ public static class ResultExtensions
             return onError(result.Error!);
 
         var errorResponse = ApiResponse<T>.FromErrors(result.Error?.Messages ?? ["Unknown error"]);
+        
         return new ObjectResult(errorResponse)
         {
             StatusCode = result.Error?.StatusCode ?? 500
