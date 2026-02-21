@@ -1,7 +1,8 @@
+using FinancialBox.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FinancialBox.Infrastructure.Persistence.Outbox;
+namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
 internal sealed class OutboxMessageMapping : IEntityTypeConfiguration<OutboxMessage>
 {
@@ -20,7 +21,8 @@ internal sealed class OutboxMessageMapping : IEntityTypeConfiguration<OutboxMess
 
         builder.Property(x => x.Payload)
             .IsRequired()
-            .HasColumnType("text");
+            .HasColumnType("text")
+            .HasMaxLength(4000);
 
         builder
             .Property(x => x.CreatedAtUtc)

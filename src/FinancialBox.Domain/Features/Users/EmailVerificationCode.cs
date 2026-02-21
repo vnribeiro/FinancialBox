@@ -2,7 +2,7 @@ using FinancialBox.Domain.Common;
 
 namespace FinancialBox.Domain.Features.Users;
 
-public class EmailVerification : AggregateRoot
+public class EmailVerificationCode : AggregateRoot
 {
     private const int MaxAttempts = 5;
 
@@ -13,9 +13,9 @@ public class EmailVerification : AggregateRoot
     public DateTime? UsedAt { get; private set; }
     public int Attempts { get; private set; }
 
-    protected EmailVerification() {}
+    protected EmailVerificationCode() {}
 
-    public EmailVerification(Guid userId, string codeHash, DateTime expiresAt)
+    public EmailVerificationCode(Guid userId, string codeHash, DateTime expiresAt)
     {
         if (userId == Guid.Empty)
         {

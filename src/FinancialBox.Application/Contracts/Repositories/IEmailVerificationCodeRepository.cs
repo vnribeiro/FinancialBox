@@ -2,7 +2,7 @@ using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Application.Contracts.Repositories;
 
-public interface IEmailVerificationRepository : IRepository<EmailVerification>
+public interface IEmailVerificationCodeRepository : IRepository<EmailVerificationCode>
 {
-    Task<EmailVerification?> GetLatestByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<EmailVerificationCode?> GetLatestByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 }

@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
 
         // Register the DbContext with a scoped lifetime
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
+        services.AddScoped<IEmailVerificationCodeRepository, EmailVerificationCodeRepository>();
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
