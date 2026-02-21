@@ -1,5 +1,5 @@
-using FinancialBox.Application.Common;
-using FinancialBox.Application.Contracts.Messaging;
+﻿using FinancialBox.Application.Common;
+using FinancialBox.Application.Abstractions.Pipeline;
 
 namespace FinancialBox.Application.Mediator;
 

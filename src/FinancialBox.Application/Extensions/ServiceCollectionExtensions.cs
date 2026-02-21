@@ -1,4 +1,4 @@
-﻿using FinancialBox.Application.Contracts.Messaging;
+﻿using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.DomainEvents;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FluentValidation;

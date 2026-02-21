@@ -1,6 +1,6 @@
-using FinancialBox.Domain.Common;
+﻿using FinancialBox.Domain.Common;
 
-namespace FinancialBox.Application.Contracts.Repositories;
+namespace FinancialBox.Application.Abstractions.Repositories;
 
 public interface IRepository<T> where T : class, IAggregateRoot
 {

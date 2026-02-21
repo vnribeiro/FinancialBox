@@ -1,6 +1,6 @@
-using FinancialBox.Application.Common;
+﻿using FinancialBox.Application.Common;
 
-namespace FinancialBox.Application.Contracts.Messaging;
+namespace FinancialBox.Application.Abstractions.Pipeline;
 
 public delegate Task<TResponse> RequestHandlerDelegate<TResponse>();
 

@@ -1,6 +1,6 @@
 ﻿using FinancialBox.Application.Common;
-using FinancialBox.Application.Contracts.Messaging;
-using FinancialBox.Application.Contracts.Repositories;
+using FinancialBox.Application.Abstractions.Pipeline;
+using FinancialBox.Application.Abstractions.Repositories;
 
 namespace FinancialBox.Application.Features.Users.Queries.GetMe;
 

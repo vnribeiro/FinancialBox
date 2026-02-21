@@ -1,5 +1,5 @@
-
-using FinancialBox.Application.Contracts.Repositories;
+﻿
+using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Domain.Features.FinancialGoals;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;

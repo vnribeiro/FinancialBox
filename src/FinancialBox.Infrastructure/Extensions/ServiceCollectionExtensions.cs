@@ -1,5 +1,5 @@
-using FinancialBox.Application.Contracts.Repositories;
-using FinancialBox.Application.Contracts.Services;
+﻿using FinancialBox.Application.Abstractions.Repositories;
+using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Infrastructure.Options;
 using FinancialBox.Infrastructure.Persistence;
 using FinancialBox.Infrastructure.Persistence.Outbox;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using FinancialBox.Infrastructure.Persistence.Repositories;
 using FinancialBox.Infrastructure.Services;
-using FinancialBox.Application.Contracts;
+using FinancialBox.Application.Abstractions;
 
 namespace FinancialBox.Infrastructure.Extensions;
 

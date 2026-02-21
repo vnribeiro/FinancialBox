@@ -1,12 +1,13 @@
-using FinancialBox.Application.Common;
-using FinancialBox.Application.Contracts.Messaging;
+﻿using FinancialBox.Application.Common;
+using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.DomainEvents;
 using FinancialBox.Domain.DomainEvents;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FinancialBox.Application.Mediator;
 
-public class Mediator(IServiceProvider provider) : IMediator
+public class Mediator(IServiceProvider provider, ILogger<Mediator> logger) : IMediator
 {
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
         where TResponse : IResult<TResponse>
@@ -41,13 +42,19 @@ public class Mediator(IServiceProvider provider) : IMediator
         var eventType = notification.GetType();
         var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);
         var handlers = provider.GetServices(handlerType);
-
         var wrapperType = typeof(DomainEventHandlerWrapper<>).MakeGenericType(eventType);
 
         foreach (var handler in handlers)
         {
-            var wrapper = (IDomainEventHandlerWrapper)Activator.CreateInstance(wrapperType, handler)!;
-            await wrapper.Handle(notification, cancellationToken);
+            try
+            {
+                var wrapper = (IDomainEventHandlerWrapper)Activator.CreateInstance(wrapperType, handler)!;
+                await wrapper.Handle(notification, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Handler {handler!.GetType().Name} failed for event {eventType.Name}");
+            }
         }
     }
 }

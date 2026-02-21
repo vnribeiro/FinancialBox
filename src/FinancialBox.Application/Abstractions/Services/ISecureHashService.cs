@@ -1,4 +1,4 @@
-namespace FinancialBox.Application.Contracts.Services;
+﻿namespace FinancialBox.Application.Abstractions.Services;
 
 public interface ISecureHashService
 {

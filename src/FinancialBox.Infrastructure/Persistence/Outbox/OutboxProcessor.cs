@@ -1,5 +1,5 @@
-using System.Text.Json;
-using FinancialBox.Application.Contracts.Messaging;
+﻿using System.Text.Json;
+using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Domain.DomainEvents;
 using FinancialBox.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;

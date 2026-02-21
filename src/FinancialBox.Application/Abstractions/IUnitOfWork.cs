@@ -1,4 +1,4 @@
-namespace FinancialBox.Application.Contracts;
+﻿namespace FinancialBox.Application.Abstractions;
 
 public interface IUnitOfWork
 {

@@ -1,6 +1,6 @@
-using FinancialBox.Domain.Features.Users;
+﻿using FinancialBox.Domain.Features.Users;
 
-namespace FinancialBox.Application.Contracts.Services;
+namespace FinancialBox.Application.Abstractions.Services;
 
 public interface IJwtService
 {

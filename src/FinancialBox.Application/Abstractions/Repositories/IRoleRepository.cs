@@ -1,6 +1,6 @@
-using FinancialBox.Domain.Features.Users;
+﻿using FinancialBox.Domain.Features.Users;
 
-namespace FinancialBox.Application.Contracts.Repositories;
+namespace FinancialBox.Application.Abstractions.Repositories;
 
 public interface IRoleRepository: IRepository<Role>
 {

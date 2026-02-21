@@ -1,6 +1,6 @@
 using FinancialBox.Domain.DomainEvents;
 
-namespace FinancialBox.Application.DomainEvents;
+namespace FinancialBox.Application.Mediator;
 
 internal interface IDomainEventHandlerWrapper
 {

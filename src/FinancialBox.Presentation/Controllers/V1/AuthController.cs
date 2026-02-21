@@ -1,5 +1,5 @@
-using Asp.Versioning;
-using FinancialBox.Application.Contracts.Messaging;
+﻿using Asp.Versioning;
+using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Presentation.Extensions;
 using FinancialBox.Presentation.Responses;

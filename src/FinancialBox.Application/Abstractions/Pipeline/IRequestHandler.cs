@@ -1,6 +1,6 @@
-using FinancialBox.Application.Common;
+﻿using FinancialBox.Application.Common;
 
-namespace FinancialBox.Application.Contracts.Messaging;
+namespace FinancialBox.Application.Abstractions.Pipeline;
 
 public interface IRequestHandler<in TRequest, TResponse>
     where TRequest : IRequest<TResponse>

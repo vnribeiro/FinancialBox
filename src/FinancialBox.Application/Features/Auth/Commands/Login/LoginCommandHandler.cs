@@ -1,7 +1,7 @@
-using FinancialBox.Application.Common;
-using FinancialBox.Application.Contracts.Messaging;
-using FinancialBox.Application.Contracts.Repositories;
-using FinancialBox.Application.Contracts.Services;
+﻿using FinancialBox.Application.Common;
+using FinancialBox.Application.Abstractions.Pipeline;
+using FinancialBox.Application.Abstractions.Repositories;
+using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;

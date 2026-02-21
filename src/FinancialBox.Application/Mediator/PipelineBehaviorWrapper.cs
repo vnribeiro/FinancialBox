@@ -1,15 +1,15 @@
-using FinancialBox.Application.Common;
-using FinancialBox.Application.Contracts.Messaging;
+﻿using FinancialBox.Application.Common;
+using FinancialBox.Application.Abstractions.Pipeline;
 
 namespace FinancialBox.Application.Mediator;
 
-internal sealed class PipelineBehaviorWrapper<TRequest, TResponse>(IPipelineBehavior<TRequest, TResponse> inner)
+internal sealed class PipelineBehaviorWrapper<TRequest, TResponse>(IPipelineBehavior<TRequest, TResponse> pipelineBehavior)
     : IPipelineBehaviorWrapper<TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IResult<TResponse>
 {
-    private readonly IPipelineBehavior<TRequest, TResponse> _inner = inner;
+    private readonly IPipelineBehavior<TRequest, TResponse> _pipelineBehavior = pipelineBehavior;
 
     public Task<TResponse> Handle(IRequest<TResponse> request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
-        => _inner.Handle((TRequest)request, next, cancellationToken);
+        => _pipelineBehavior.Handle((TRequest)request, next, cancellationToken);
 }

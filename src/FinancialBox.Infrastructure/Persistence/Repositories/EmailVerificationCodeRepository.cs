@@ -1,4 +1,4 @@
-using FinancialBox.Application.Contracts.Repositories;
+﻿using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
 

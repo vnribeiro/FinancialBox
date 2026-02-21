@@ -1,7 +1,7 @@
-using FinancialBox.Application.Common;
+﻿using FinancialBox.Application.Common;
 using FinancialBox.Domain.DomainEvents;
 
-namespace FinancialBox.Application.Contracts.Messaging;
+namespace FinancialBox.Application.Abstractions.Pipeline;
 
 public interface IMediator
 {

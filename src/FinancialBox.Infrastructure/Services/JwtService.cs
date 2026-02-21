@@ -1,7 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FinancialBox.Application.Contracts.Services;
+using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Domain.Features.Users;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

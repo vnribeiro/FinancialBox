@@ -1,5 +1,5 @@
-using System.Text.Json;
-using FinancialBox.Application.Contracts;
+﻿using System.Text.Json;
+using FinancialBox.Application.Abstractions;
 using FinancialBox.Domain.Common;
 using FinancialBox.Infrastructure.Persistence.Outbox;
 

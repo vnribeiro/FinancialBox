@@ -1,5 +1,5 @@
-using System.Security.Cryptography;
-using FinancialBox.Application.Contracts.Services;
+﻿using System.Security.Cryptography;
+using FinancialBox.Application.Abstractions.Services;
 using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Infrastructure.Services;
