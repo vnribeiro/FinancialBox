@@ -1,11 +1,11 @@
-using FinancialBox.Domain.Common;
-using FinancialBox.Domain.DomainEvents;
-using FinancialBox.Application.Contracts.Messaging;
+using System.Text.Json;
 using FinancialBox.Application.Contracts;
+using FinancialBox.Domain.Common;
+using FinancialBox.Infrastructure.Persistence.Outbox;
 
 namespace FinancialBox.Infrastructure.Persistence;
 
-internal class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWork
+internal sealed class UnitOfWork(AppDbContext context) : IUnitOfWork
 {
     public async Task CommitAsync(CancellationToken cancellationToken)
     {
@@ -15,15 +15,22 @@ internal class UnitOfWork(AppDbContext context, IMediator mediator) : IUnitOfWor
             .Select(e => e.Entity)
             .ToList();
 
-        var domainEvents = aggregates
+        var outboxMessages = aggregates
             .SelectMany(e => e.DomainEvents)
+            .Select(domainEvent => new OutboxMessage
+            {
+                Id = Guid.NewGuid(),
+                Type = domainEvent.GetType().AssemblyQualifiedName!,
+                Payload = JsonSerializer.Serialize(domainEvent, domainEvent.GetType()),
+                CreatedAtUtc = DateTime.UtcNow
+            })
             .ToList();
 
         aggregates.ForEach(e => e.ClearDomainEvents());
 
-        await context.SaveChangesAsync(cancellationToken);
+        if (outboxMessages.Count > 0)
+            await context.OutboxMessages.AddRangeAsync(outboxMessages, cancellationToken);
 
-        foreach (var domainEvent in domainEvents)
-            await mediator.PublishAsync(domainEvent, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

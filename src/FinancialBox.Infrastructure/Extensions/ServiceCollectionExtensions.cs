@@ -1,6 +1,8 @@
 using FinancialBox.Application.Contracts.Repositories;
 using FinancialBox.Application.Contracts.Services;
+using FinancialBox.Infrastructure.Options;
 using FinancialBox.Infrastructure.Persistence;
+using FinancialBox.Infrastructure.Persistence.Outbox;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +24,7 @@ public static class ServiceCollectionExtensions
 
         // Register the DbContext with a scoped lifetime
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IEmailVerificationCodeRepository, EmailVerificationCodeRepository>();
+        services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -33,6 +35,9 @@ public static class ServiceCollectionExtensions
 
         // Register JwtService with options
         services.AddSingleton<IJwtService, JwtService>();
+
+        services.Configure<OutboxOptions>(configuration.GetSection(OutboxOptions.SectionName));
+        services.AddHostedService<OutboxProcessor>();
 
         return services;
     }

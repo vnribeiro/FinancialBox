@@ -11,7 +11,7 @@ internal class RoleRepository(AppDbContext context)
 
     public Task<Role?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return _context.Set<Role>()
+        return _context.Roles
             .FirstOrDefaultAsync(role => role.Name == name, cancellationToken);
     }
 }

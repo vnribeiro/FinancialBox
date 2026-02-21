@@ -13,7 +13,7 @@ public sealed class RegisterCommandHandler(
     IUnitOfWork unitOfWork,
     IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IEmailVerificationCodeRepository emailVerificationCodeRepository,
+    IEmailVerificationRepository emailVerificationCodeRepository,
     ISecureHashService secretHasherService)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {

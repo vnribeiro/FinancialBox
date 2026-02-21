@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
-public class EmailVerificationCodeMapping : IEntityTypeConfiguration<EmailVerification>
+public class EmailVerificationMapping : IEntityTypeConfiguration<EmailVerification>
 {
     public void Configure(EntityTypeBuilder<EmailVerification> builder)
     {

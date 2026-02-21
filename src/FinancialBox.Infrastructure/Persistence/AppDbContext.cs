@@ -1,6 +1,7 @@
 using FinancialBox.Domain.Common;
 using FinancialBox.Domain.Features.FinancialGoals;
 using FinancialBox.Domain.Features.Users;
+using FinancialBox.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence;
@@ -8,10 +9,11 @@ namespace FinancialBox.Infrastructure.Persistence;
 internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; } = null!;
-    public DbSet<EmailVerification> EmailVerificationCodes { get; set; } = null!;
+    public DbSet<EmailVerification> EmailVerification{ get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<FinancialGoal> FinancialGoals { get; set; } = null!;
     public DbSet<FinancialGoalTransactions> Transactions { get; set; } = null!;
+    public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,18 +41,11 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // Set UpdatedAt for modified entities automatically
-        var entries = ChangeTracker.Entries<BaseEntity>()
+        var modifiedEntries = ChangeTracker.Entries<BaseEntity>()
             .Where(e => e.State == EntityState.Modified);
 
-        foreach (var entry in entries)
-        {
-            var prop = entry.Metadata.FindProperty(nameof(BaseEntity.UpdatedAt));
-
-            if (prop is not null)
-            {
-                entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = DateTime.UtcNow;
-            }
-        }
+        foreach (var entry in modifiedEntries)
+            entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = DateTime.UtcNow;
 
         return await base.SaveChangesAsync(cancellationToken);
     }

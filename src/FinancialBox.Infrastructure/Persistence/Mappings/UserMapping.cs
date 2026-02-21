@@ -30,7 +30,8 @@ public class UserMapping : IEntityTypeConfiguration<User>
                 .IsRequired()
                 .HasMaxLength(255);
 
-            email.HasIndex(e => e.Address).IsUnique();
+            email.HasIndex(e => e.Address)
+                .IsUnique();
         });
 
         builder.OwnsOne(u => u.Password, password =>
