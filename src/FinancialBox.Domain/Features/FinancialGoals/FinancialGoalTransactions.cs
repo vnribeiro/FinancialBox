@@ -26,7 +26,6 @@ public class FinancialGoalTransactions : BaseEntity
     public void MarkAsDeleted()
     {
         IsDeleted = true;
-        UpdatedAt = DateTime.UtcNow;
     }
 }
 

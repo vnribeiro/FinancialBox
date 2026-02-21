@@ -37,15 +37,13 @@ public class EmailVerificationCode : AggregateRoot
         return UsedAt is null && ExpiresAt >= utcNow && Attempts < MaxAttempts;
     }
 
-    public void RegisterFailedAttempt(DateTime utcNow)
+    public void RegisterFailedAttempt()
     {
         Attempts++;
-        UpdatedAt = utcNow;
     }
 
     public void MarkAsUsed(DateTime utcNow)
     {
         UsedAt = utcNow;
-        UpdatedAt = utcNow;
     }
 }

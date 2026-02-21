@@ -33,19 +33,16 @@ public class FinancialGoal : AggregateRoot
     public void UpdateTitle(string newTitle)
     {
         Title = newTitle;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsDeleted()
     {
         IsDeleted = true;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateCoverImage(string newPath)
     {
         CoverImagePath = newPath;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     private decimal? CalculateIdealMonthlyContribution()

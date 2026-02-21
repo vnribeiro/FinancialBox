@@ -2,6 +2,7 @@
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Infrastructure.Options;
 using FinancialBox.Infrastructure.Persistence;
+using FinancialBox.Infrastructure.Persistence.Interceptors;
 using FinancialBox.Infrastructure.Persistence.Outbox;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString(DatabaseName)));
+        services.AddSingleton<AuditInterceptor>();
+
+        services.AddDbContext<AppDbContext>((sp, options) =>
+        {
+            options.UseSqlite(configuration.GetConnectionString(DatabaseName));
+            options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+        });
 
         // Register the DbContext with a scoped lifetime
         services.AddScoped<IUserRepository, UserRepository>();

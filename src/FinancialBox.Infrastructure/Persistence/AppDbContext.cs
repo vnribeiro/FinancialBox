@@ -38,17 +38,5 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
 
         base.OnModelCreating(modelBuilder);
     }
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        // Set UpdatedAt for modified entities automatically
-        var modifiedEntries = ChangeTracker.Entries<BaseEntity>()
-            .Where(e => e.State == EntityState.Modified);
-
-        foreach (var entry in modifiedEntries)
-            entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = DateTime.UtcNow;
-
-        return await base.SaveChangesAsync(cancellationToken);
-    }
 }
 
