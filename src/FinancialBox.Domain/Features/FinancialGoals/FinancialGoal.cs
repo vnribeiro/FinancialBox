@@ -1,6 +1,5 @@
 using FinancialBox.Domain.Common;
 using FinancialBox.Domain.Features.FinancialGoals.Enums;
-using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Domain.Features.FinancialGoals;
 
@@ -15,7 +14,6 @@ public class FinancialGoal : AggregateRoot
     public bool IsDeleted { get; private set; }
 
     public Guid UserId { get; private set; }
-    public User User { get; private set; } = null!;
 
     public ICollection<FinancialGoalTransactions> Transactions { get; private set; } = new List<FinancialGoalTransactions>();
 

@@ -1,5 +1,4 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.FinancialGoals;
 using FinancialBox.Domain.Features.Users.Events;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 
@@ -14,7 +13,6 @@ public class User : AggregateRoot
     public bool IsEmailConfirmed { get; private set; } = false;
 
     public ICollection<Role> Roles { get; private set; } = [];
-    public ICollection<FinancialGoal> FinancialGoals { get; private set; } = [];
 
     protected User() {}
 

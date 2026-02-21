@@ -7,7 +7,6 @@ public class EmailVerificationCode : AggregateRoot
     private const int MaxAttempts = 5;
 
     public Guid UserId { get; private set; }
-    public User User { get; private set; } = null!;
     public string CodeHash { get; private set; } = string.Empty;
     public DateTime ExpiresAt { get; private set; }
     public DateTime? UsedAt { get; private set; }

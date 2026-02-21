@@ -1,6 +1,7 @@
 using FinancialBox.Domain.Features.FinancialGoals;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using FinancialBox.Domain.Features.Users;
 
 namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
@@ -46,6 +47,12 @@ public class FinancialGoalMapping : IEntityTypeConfiguration<FinancialGoal>
         builder
             .Property(g => g.IsDeleted)
             .HasDefaultValue(false);
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(g => g.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(g => g.Transactions)

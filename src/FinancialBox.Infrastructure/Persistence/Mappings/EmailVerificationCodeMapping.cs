@@ -46,7 +46,7 @@ public class EmailVerificationCodeMapping : IEntityTypeConfiguration<EmailVerifi
             .HasIndex(x => x.UserId);
 
         builder
-            .HasOne(x => x.User)
+            .HasOne<User>()
             .WithMany()
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -43,7 +43,7 @@ public class UserMapping : IEntityTypeConfiguration<User>
 
         builder
             .HasMany(u => u.Roles)
-            .WithMany(r => r.Users)
+            .WithMany()
             .UsingEntity<Dictionary<string, object>>(
                 "UserRoles",
                 role => role
