@@ -1,6 +1,6 @@
 namespace FinancialBox.Application.Common;
 
-public class Result
+public class Result : IResult<Result>
 {
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
@@ -12,20 +12,13 @@ public class Result
         Error = error;
     }
 
-    public static Result Success() => 
-        new(true);
-
-    public static Result Failure(string message) => 
-        new(false, Error.InvalidRequest(message));
-
-    public static Result Failure(IEnumerable<string> messages) => 
-        new(false, Error.InvalidRequest(messages.ToArray()));
-
-    public static Result Failure(Error error) => 
-        new(false, error);
+    public static Result Success() => new(true);
+    public static Result Failure(Error error) => new(false, error);
+    public static Result Failure(string message) => new(false, Error.InvalidRequest(message));
+    public static Result Failure(IEnumerable<string> messages) => new(false, Error.ValidationFailure(messages.ToArray()));
 }
 
-public class Result<T>
+public class Result<T> : IResult<Result<T>>
 {
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
@@ -39,15 +32,8 @@ public class Result<T>
         Error = error;
     }
 
-    public static Result<T> Success(T data) =>
-        new(true, data);
-
-    public static Result<T> Failure(string message) =>
-        new(false, default, Error.InvalidRequest(message));
-
-    public static Result<T> Failure(IEnumerable<string> messages) =>
-        new(false, default, Error.InvalidRequest(messages.ToArray()));
-
-    public static Result<T> Failure(Error error) =>
-        new(false, default, error);
+    public static Result<T> Success(T data) => new(true, data);
+    public static Result<T> Failure(Error error) => new(false, default, error);
+    public static Result<T> Failure(string message) => new(false, default, Error.InvalidRequest(message));
+    public static Result<T> Failure(IEnumerable<string> messages) => new(false, default, Error.ValidationFailure(messages.ToArray()));
 }

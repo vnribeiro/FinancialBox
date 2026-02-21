@@ -1,7 +1,12 @@
-namespace FinancialBox.Application.Contracts.Messaging;
+using FinancialBox.Application.Common;
+using FinancialBox.Application.Contracts.Messaging;
 
-internal sealed class PipelineBehaviorWrapper<TRequest, TResponse>(IPipelineBehavior<TRequest, TResponse> inner) : IPipelineBehaviorWrapper<TResponse>
+namespace FinancialBox.Application.Mediator;
+
+internal sealed class PipelineBehaviorWrapper<TRequest, TResponse>(IPipelineBehavior<TRequest, TResponse> inner)
+    : IPipelineBehaviorWrapper<TResponse>
     where TRequest : IRequest<TResponse>
+    where TResponse : IResult<TResponse>
 {
     private readonly IPipelineBehavior<TRequest, TResponse> _inner = inner;
 

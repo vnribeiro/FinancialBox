@@ -3,6 +3,7 @@ using FinancialBox.Application.DomainEvents;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using MediatorImpl = FinancialBox.Application.Mediator.Mediator;
 
 namespace FinancialBox.Application.Extensions
 {
@@ -14,7 +15,7 @@ namespace FinancialBox.Application.Extensions
             var applicationAssembly = typeof(LoginCommand).Assembly;
 
             // Register custom Mediator implementation
-            services.AddScoped<IMediator, Mediator>();
+            services.AddScoped<IMediator, MediatorImpl>();
 
             // Register FluentValidation validators from the Application layer
             services.AddValidatorsFromAssembly(applicationAssembly);

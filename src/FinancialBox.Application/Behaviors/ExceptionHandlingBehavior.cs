@@ -6,6 +6,7 @@ namespace FinancialBox.Application.Behaviors;
 
 public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
+    where TResponse : IResult<TResponse>
 {
     private readonly ILogger<ExceptionHandlingBehavior<TRequest, TResponse>> _logger;
 
@@ -35,26 +36,7 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
         {
             _logger.LogError(ex, "Error occurred while handling request: {RequestName}", requestName);
 
-            var error = Error.UnexpectedServerError();
-
-            if (typeof(TResponse) == typeof(Result))
-            {
-                return (TResponse)(object)Result.Failure(error)!;
-            }
-
-            if (typeof(TResponse).IsGenericType &&
-                typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
-            {
-                var genericType = typeof(TResponse).GetGenericArguments()[0];
-                var method = typeof(Result<>)
-                    .MakeGenericType(genericType)
-                    .GetMethod(nameof(Result<object>.Failure), [typeof(Error)]);
-
-                var result = method!.Invoke(null, [error]);
-                return (TResponse)result!;
-            }
-
-            throw;
+            return TResponse.Failure(Error.UnexpectedServerError());
         }
     }
 }

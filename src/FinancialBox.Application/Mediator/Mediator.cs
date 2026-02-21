@@ -1,19 +1,20 @@
+using FinancialBox.Application.Common;
 using FinancialBox.Application.Contracts.Messaging;
 using FinancialBox.Application.DomainEvents;
 using FinancialBox.Domain.DomainEvents;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FinancialBox.Application;
+namespace FinancialBox.Application.Mediator;
 
 public class Mediator(IServiceProvider provider) : IMediator
 {
     public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+        where TResponse : IResult<TResponse>
     {
         var requestType = request.GetType();
 
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
-        var handler = provider.GetService(handlerType)
-            ?? throw new InvalidOperationException($"Handler not registered for '{requestType.Name}'. Check your DI configuration.");
+        var handler = provider.GetService(handlerType) ?? throw new InvalidOperationException($"Handler not registered for '{requestType.Name}'. Check your DI configuration.");
 
         var handlerWrapperType = typeof(RequestHandlerWrapper<,>).MakeGenericType(requestType, typeof(TResponse));
         var handlerWrapper = (IRequestHandlerWrapper<TResponse>)Activator.CreateInstance(handlerWrapperType, handler)!;

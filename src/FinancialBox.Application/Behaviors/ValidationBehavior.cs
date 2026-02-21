@@ -6,6 +6,7 @@ namespace FinancialBox.Application.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
+    where TResponse : IResult<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -36,24 +37,6 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
         var messages = failures.Select(f => f.ErrorMessage).ToArray();
 
-        if (typeof(TResponse) == typeof(Result))
-        {
-            var result = Result.Failure(messages);
-            return (TResponse)(object)result!;
-        }
-
-        if (typeof(TResponse).IsGenericType &&
-            typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
-        {
-            var genericType = typeof(TResponse).GetGenericArguments()[0];
-            var method = typeof(Result<>)
-                .MakeGenericType(genericType)
-                .GetMethod(nameof(Result<object>.Failure), [typeof(string[])]);
-
-            var result = method!.Invoke(null, [messages]);
-            return (TResponse)result!;
-        }
-
-        throw new InvalidOperationException($"ValidationBehavior requires TResponse to be Result or Result<T>. Got: {typeof(TResponse).Name}");
+        return TResponse.Failure(Error.ValidationFailure(messages));
     }
 }
