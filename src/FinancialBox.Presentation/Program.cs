@@ -3,7 +3,6 @@ using FinancialBox.Application.Extensions;
 using FinancialBox.Infrastructure.Extensions;
 using FinancialBox.Presentation.Extensions;
 using FinancialBox.Presentation.Middleware;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();

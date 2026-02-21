@@ -9,6 +9,8 @@ using System.Text;
 using FinancialBox.Infrastructure.Options;
 using FinancialBox.Presentation.Swagger;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Events;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FinancialBox.Presentation.Extensions;
@@ -30,17 +32,20 @@ public static class ServiceCollectionExtensions
         // Loads environment configs and user secrets (in dev)
         builder.AddEnvironmentConfiguration();
 
+        // Configures Serilog with console and file sinks
+        builder.AddLoggingConfiguration();
+
         // Registers Swagger + JWT support
         services.AddSwaggerConfiguration();
 
-        // Registers default CORS policy
-        services.AddCorsConfiguration();
+        // Enables URL-based API versioning
+        services.AddApiVersioningConfiguration();
 
         // Registers authentication/authorization
         services.AddAuthenticationConfiguration(builder);
 
-        // Enables URL-based API versioning
-        services.AddApiVersioningConfiguration();
+        // Registers default CORS policy
+        services.AddCorsConfiguration();
 
         // Configure routing to use lowercase URLs for consistency and SEO benefits
         builder.Services.AddRouting(options =>
@@ -52,25 +57,44 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds API versioning to the service collection.
-    /// Configures the API to use versioning based on URL segments.
-    /// Reports available API versions and substitutes the API version in the URL.
+    /// Configures the environment for the application.
+    /// Loads JSON configuration files and user secrets for development environments.
     /// </summary>
-    /// <returns>The updated service collection.</returns>
-    private static IServiceCollection AddApiVersioningConfiguration(this IServiceCollection services)
+    /// <param name="builder">The WebApplicationBuilder to configure.</param>
+    /// <returns>The updated WebApplicationBuilder.</returns>
+    private static WebApplicationBuilder AddEnvironmentConfiguration(this WebApplicationBuilder builder)
     {
-        services.AddApiVersioning(options =>
-        {
-            options.DefaultApiVersion = new ApiVersion(1.0);
-            options.ReportApiVersions = true;
-            options.ApiVersionReader = new UrlSegmentApiVersionReader();
-        }).AddApiExplorer(options =>
-        {
-            options.GroupNameFormat = "'v'V";
-            options.SubstituteApiVersionInUrl = true;
-        });
+        builder.Configuration
+            .AddJsonFile("appsettings.json", true, true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+            .AddEnvironmentVariables();
 
-        return services;
+        if (!builder.Environment.IsDevelopment())
+            return builder;
+
+        builder.Configuration.AddUserSecrets<Program>();
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures Serilog for logging with console and file sinks.
+    /// </summary>
+    /// <param name="builder">The WebApplicationBuilder to configure.</param>
+    /// <returns>The updated WebApplicationBuilder.</returns>
+    private static WebApplicationBuilder AddLoggingConfiguration(this WebApplicationBuilder builder)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+            .WriteTo.Console()
+            .WriteTo.File("logs/app-.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
+
+        return builder;
     }
 
     /// <summary>
@@ -100,6 +124,28 @@ public static class ServiceCollectionExtensions
             {
                 [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds API versioning to the service collection.
+    /// Configures the API to use versioning based on URL segments.
+    /// Reports available API versions and substitutes the API version in the URL.
+    /// </summary>
+    /// <returns>The updated service collection.</returns>
+    private static IServiceCollection AddApiVersioningConfiguration(this IServiceCollection services)
+    {
+        services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1.0);
+            options.ReportApiVersions = true;
+            options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        }).AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'V";
+            options.SubstituteApiVersionInUrl = true;
         });
 
         return services;
@@ -165,26 +211,5 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
-    }
-
-    /// <summary>
-    /// Configures the environment for the application.
-    /// Loads JSON configuration files and user secrets for development environments.
-    /// </summary>
-    /// <param name="builder">The WebApplicationBuilder to configure.</param>
-    /// <returns>The updated WebApplicationBuilder.</returns>
-    private static WebApplicationBuilder AddEnvironmentConfiguration(this WebApplicationBuilder builder)
-    {
-        builder.Configuration
-            .AddJsonFile("appsettings.json", true, true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
-            .AddEnvironmentVariables();
-
-        if (!builder.Environment.IsDevelopment())
-            return builder;
-
-        builder.Configuration.AddUserSecrets<Program>();
-
-        return builder;
     }
 }
