@@ -16,7 +16,7 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
 
     public async Task<TResponse> Handle(
         TRequest request,
-        Func<Task<TResponse>> next,
+        RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;

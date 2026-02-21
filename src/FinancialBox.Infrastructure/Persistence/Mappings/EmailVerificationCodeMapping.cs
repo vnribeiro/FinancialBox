@@ -12,43 +12,43 @@ public class EmailVerificationCodeMapping : IEntityTypeConfiguration<EmailVerifi
             .ToTable("EmailVerificationCodes");
 
         builder
-            .HasKey(code => code.Id);
+            .HasKey(x => x.Id);
 
         builder
-            .Property(code => code.UserId)
+            .Property(x => x.UserId)
             .IsRequired();
 
         builder
-            .Property(code => code.CodeHash)
+            .Property(x => x.CodeHash)
             .IsRequired()
             .HasMaxLength(255);
 
         builder
-            .Property(code => code.ExpiresAt)
+            .Property(x => x.ExpiresAt)
             .IsRequired();
 
         builder
-            .Property(code => code.UsedAt);
+            .Property(x => x.UsedAt);
 
         builder
-            .Property(code => code.Attempts)
+            .Property(x => x.Attempts)
             .IsRequired()
             .HasDefaultValue(0);
 
         builder
-            .Property(code => code.CreatedAt)
+            .Property(x => x.CreatedAt)
             .IsRequired();
 
         builder
-            .Property(code => code.UpdatedAt);
+            .Property(x => x.UpdatedAt);
 
         builder
-            .HasIndex(code => code.UserId);
+            .HasIndex(x => x.UserId);
 
         builder
-            .HasOne(code => code.User)
+            .HasOne(x => x.User)
             .WithMany()
-            .HasForeignKey(code => code.UserId)
+            .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

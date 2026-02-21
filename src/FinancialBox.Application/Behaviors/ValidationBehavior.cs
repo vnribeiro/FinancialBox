@@ -16,7 +16,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
     public async Task<TResponse> Handle(
         TRequest request,
-        Func<Task<TResponse>> next,
+        RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
         if (!_validators.Any())
@@ -54,7 +54,6 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             return (TResponse)result!;
         }
 
-        throw new InvalidOperationException(
-            $"ValidationBehavior requires TResponse to be Result or Result<T>. Got: {typeof(TResponse).Name}");
+        throw new InvalidOperationException($"ValidationBehavior requires TResponse to be Result or Result<T>. Got: {typeof(TResponse).Name}");
     }
 }
