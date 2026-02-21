@@ -31,7 +31,7 @@ public class FinancialGoalMapping : IEntityTypeConfiguration<FinancialGoal>
 
         builder
             .Property(g => g.CoverImagePath)
-            .HasMaxLength(255);
+            .HasMaxLength(500);
 
         builder
             .Property(g => g.CreatedAt)
@@ -48,6 +48,7 @@ public class FinancialGoalMapping : IEntityTypeConfiguration<FinancialGoal>
             .Property(g => g.IsDeleted)
             .HasDefaultValue(false);
 
+        // Relationship to User is FK only — load User separately via IUserRepository when needed.
         builder
             .HasOne<User>()
             .WithMany()

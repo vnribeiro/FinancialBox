@@ -21,13 +21,12 @@ internal sealed class OutboxMessageMapping : IEntityTypeConfiguration<OutboxMess
 
         builder.Property(x => x.Payload)
             .IsRequired()
-            .HasColumnType("text")
-            .HasMaxLength(4000);
+            .HasColumnType("varchar(max)");
 
         builder
             .Property(x => x.CreatedAtUtc)
             .IsRequired();
-        
+
         builder
             .Property(x => x.ProcessedAtUtc);
 
@@ -37,7 +36,6 @@ internal sealed class OutboxMessageMapping : IEntityTypeConfiguration<OutboxMess
 
         builder
             .Property(x => x.Error)
-            .HasColumnType("text")
             .HasMaxLength(2000);
 
         builder

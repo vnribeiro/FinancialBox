@@ -38,9 +38,12 @@ public class UserMapping : IEntityTypeConfiguration<User>
         {
             password.Property(u => u.Hash)
                 .HasColumnName("PasswordHash")
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(100); // PBKDF2-SHA256 with current options produces ~90 chars
         });
 
+        // Many-to-many via join table UserRoles.
+        // Role does not expose a Users collection — query by role via IUserRepository.GetByRoleAsync.
         builder
             .HasMany(u => u.Roles)
             .WithMany()

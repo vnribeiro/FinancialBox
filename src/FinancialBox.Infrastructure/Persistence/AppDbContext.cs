@@ -30,7 +30,8 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
             {
                 if (property.GetColumnType() is null)
                 {
-                    property.SetColumnType("varchar(255)");
+                    var maxLength = property.GetMaxLength();
+                    property.SetColumnType(maxLength.HasValue ? $"varchar({maxLength})" : "varchar(255)");
                 }
             }
         }

@@ -45,6 +45,7 @@ public class EmailVerificationCodeMapping : IEntityTypeConfiguration<EmailVerifi
         builder
             .HasIndex(x => x.UserId);
 
+        // Relationship to User is FK only — load User separately via IUserRepository when needed.
         builder
             .HasOne<User>()
             .WithMany()
