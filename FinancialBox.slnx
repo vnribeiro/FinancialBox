@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Client/" />
+  <Folder Name="/Server/">
+    <Project Path="src/FinancialBox.Application/FinancialBox.Application.csproj" />
+    <Project Path="src/FinancialBox.Domain/FinancialBox.Domain.csproj" />
+    <Project Path="src/FinancialBox.Infrastructure/FinancialBox.Infrastructure.csproj" />
+    <Project Path="src/FinancialBox.Presentation/FinancialBox.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="src/FinancialBox.UnitTests/FinancialBox.UnitTests.csproj" Id="8be79a26-b299-4abd-9e59-dbd34f64775e" />
+  </Folder>
+</Solution>
