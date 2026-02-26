@@ -55,12 +55,14 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 ### ✅ Implementadas
 
 #### Autenticação
+
 - Registro de usuários com hash seguro de senha.
 - Login com geração de JWT Bearer token.
 - Confirmação de e-mail via código de verificação.
 - Reenvio de código de confirmação.
 
 #### Domínio
+
 - Modelo de `FinancialGoal` (Caixa) com cálculo automático de contribuição mensal ideal.
 - Modelo de `FinancialGoalTransactions` (Transação) com soft delete.
 - Value Objects: `Email` e `Password`.
@@ -182,6 +184,12 @@ classDiagram
         +DateTime? UpdatedAt
     }
 
+    class IAggregateRoot {
+        <<interface>>
+        +IReadOnlyCollection~IDomainEvent~ DomainEvents
+        +ClearDomainEvents()
+    }
+
     class AggregateRoot {
         <<abstract>>
         -List~IDomainEvent~ _domainEvents
@@ -236,6 +244,7 @@ classDiagram
         +Guid UserId
         +bool IsDeleted
         +ICollection~FinancialGoalTransactions~ Transactions
+        +Create(title, targetAmount, userId, deadline?)$ FinancialGoal
         +UpdateTitle(newTitle)
         +UpdateCoverImage(newPath)
         +MarkAsDeleted()
@@ -247,6 +256,7 @@ classDiagram
         +DateTime TransactionDate
         +bool IsDeleted
         +Guid FinancialGoalId
+        +FinancialGoal FinancialGoal
         +MarkAsDeleted()
     }
 
@@ -277,6 +287,7 @@ classDiagram
     }
 
     BaseEntity <|-- AggregateRoot
+    AggregateRoot ..|> IAggregateRoot
     AggregateRoot <|-- User
     AggregateRoot <|-- Role
     AggregateRoot <|-- EmailVerificationCode
@@ -287,9 +298,10 @@ classDiagram
     User "1" --> "0..*" EmailVerificationCode : gera
     User "1" --> "0..*" FinancialGoal : possui
     FinancialGoal "1" --> "0..*" FinancialGoalTransactions : contém
+    FinancialGoalTransactions --> FinancialGoal : pertence a
 
-    User ..> Email : usa
-    User ..> Password : usa
+    User --> Email : compõe
+    User --> Password : compõe
     FinancialGoal ..> FinancialGoalStatus : status
     FinancialGoalTransactions ..> TransactionType : tipo
 ```
@@ -299,28 +311,33 @@ classDiagram
 ## 🌐 Como Executar o Projeto
 
 ### Pré-requisitos
+
 - .NET 10 SDK
 - Entity Framework CLI: `dotnet tool install --global dotnet-ef`
 
 ### Passos
 
 1. Clone o repositório:
+
    ```bash
    git clone https://github.com/seuusuario/financialbox.git
    cd financialbox
    ```
 
 2. Restaure as dependências:
+
    ```bash
    dotnet restore
    ```
 
 3. Execute as migrations para criar o banco SQLite:
+
    ```bash
    dotnet ef database update --project src/FinancialBox.Infrastructure --startup-project src/FinancialBox.Presentation
    ```
 
 4. Execute a aplicação:
+
    ```bash
    dotnet run --project src/FinancialBox.Presentation
    ```

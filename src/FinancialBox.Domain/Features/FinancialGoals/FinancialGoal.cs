@@ -19,7 +19,7 @@ public class FinancialGoal : AggregateRoot
 
     protected FinancialGoal() {}
 
-    public FinancialGoal(string title, decimal targetAmount, Guid userId, DateTime? deadline = null)
+    private FinancialGoal(string title, decimal targetAmount, Guid userId, DateTime? deadline = null)
     {
         Title = title;
         TargetAmount = targetAmount;
@@ -29,6 +29,9 @@ public class FinancialGoal : AggregateRoot
         CoverImagePath = string.Empty;
         IdealMonthlyContribution = CalculateIdealMonthlyContribution();
     }
+
+    public static FinancialGoal Create(string title, decimal targetAmount, Guid userId, DateTime? deadline = null)
+        => new(title, targetAmount, userId, deadline);
 
     public void UpdateTitle(string newTitle)
     {
