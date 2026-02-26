@@ -171,9 +171,128 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 
 ## 🧩 Diagrama UML de Classes
 
-<p align="center">
-  <img src="./FinancialBox_UML_Class_Diagram.png" alt="Diagrama de Classes do FinancialBox" width="600"/>
-</p>
+```mermaid
+classDiagram
+    direction TB
+
+    class BaseEntity {
+        <<abstract>>
+        +Guid Id
+        +DateTime CreatedAt
+        +DateTime? UpdatedAt
+    }
+
+    class AggregateRoot {
+        <<abstract>>
+        -List~IDomainEvent~ _domainEvents
+        +IReadOnlyCollection~IDomainEvent~ DomainEvents
+        #AddDomainEvent(domainEvent)
+        +ClearDomainEvents()
+    }
+
+    class User {
+        +string FirstName
+        +string LastName
+        +Email Email
+        +Password Password
+        +bool IsEmailConfirmed
+        +ICollection~Role~ Roles
+        +Create(firstName, lastName, email, password)$ User
+        +UpdateName(firstName, lastName)
+        +UpdatePassword(newPassword)
+        +UpdateEmail(newEmail)
+        +ConfirmEmail()
+        +AddRole(role)
+        +RemoveRole(roleId)
+        +HasRole(roleId) bool
+        +GetFullName() string
+    }
+
+    class Role {
+        +string Name
+        +string DefaultName$
+        +Rename(name)
+    }
+
+    class EmailVerificationCode {
+        +Guid UserId
+        +string CodeHash
+        +DateTime ExpiresAt
+        +DateTime? UsedAt
+        +int Attempts
+        +Create(userId, email, plainCode, codeHash, expiresAt)$ EmailVerificationCode
+        +CanValidate(utcNow, maxAttempts) bool
+        +RegisterFailedAttempt()
+        +MarkAsUsed(utcNow)
+    }
+
+    class FinancialGoal {
+        +string Title
+        +decimal TargetAmount
+        +DateTime? Deadline
+        +decimal? IdealMonthlyContribution
+        +FinancialGoalStatus Status
+        +string CoverImagePath
+        +Guid UserId
+        +bool IsDeleted
+        +ICollection~FinancialGoalTransactions~ Transactions
+        +UpdateTitle(newTitle)
+        +UpdateCoverImage(newPath)
+        +MarkAsDeleted()
+    }
+
+    class FinancialGoalTransactions {
+        +decimal Amount
+        +TransactionType Type
+        +DateTime TransactionDate
+        +bool IsDeleted
+        +Guid FinancialGoalId
+        +MarkAsDeleted()
+    }
+
+    class Email {
+        <<value object>>
+        +string Address
+        +Create(address)$ Result~Email~
+    }
+
+    class Password {
+        <<value object>>
+        +string Hash
+        +FromHash(hash)$ Password
+    }
+
+    class FinancialGoalStatus {
+        <<enumeration>>
+        InProgress = 1
+        Completed = 2
+        Cancelled = 3
+        OnHold = 4
+    }
+
+    class TransactionType {
+        <<enumeration>>
+        Deposit = 1
+        Withdraw = 2
+    }
+
+    BaseEntity <|-- AggregateRoot
+    AggregateRoot <|-- User
+    AggregateRoot <|-- Role
+    AggregateRoot <|-- EmailVerificationCode
+    AggregateRoot <|-- FinancialGoal
+    BaseEntity <|-- FinancialGoalTransactions
+
+    User "1" --> "0..*" Role : possui
+    User "1" --> "0..*" EmailVerificationCode : gera
+    User "1" --> "0..*" FinancialGoal : possui
+    FinancialGoal "1" --> "0..*" FinancialGoalTransactions : contém
+
+    User ..> Email : usa
+    User ..> Password : usa
+    FinancialGoal ..> FinancialGoalStatus : status
+    FinancialGoalTransactions ..> TransactionType : tipo
+```
 
 ---
 
