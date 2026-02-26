@@ -2,9 +2,9 @@
 
 ## 📖 Sobre o Projeto
 
-**FinancialBox** é um sistema de gerenciamento de metas financeiras inspirado no recurso de "Caixinhas" do Nubank. Ele permite que os usuários criem, gerenciem e acompanhem objetivos financeiros de forma eficiente, oferecendo recursos robustos para controle de transações, validação de dados e geração de relatórios.
+**FinancialBox** é um sistema de gerenciamento de metas financeiras inspirado no recurso de "Caixinhas" do Nubank. Ele permite que os usuários criem, gerenciem e acompanhem objetivos financeiros de forma eficiente, oferecendo recursos robustos para controle de transações, validação de dados e autenticação segura.
 
-> 🧑‍🎓 Este projeto está sendo desenvolvido como parte do meu **Trabalho de Conclusão de Curso (TCC)**, com foco na construção de uma aplicação full-stack escalável, bem arquitetada e de fácil manutenção, utilizando práticas modernas de desenvolvimento.
+> 🧑‍🎓 Este projeto está sendo desenvolvido como parte do meu **Trabalho de Conclusão de Curso (TCC)**, com foco na construção de uma aplicação back-end escalável, bem arquitetada e de fácil manutenção, utilizando práticas modernas de desenvolvimento.
 
 ---
 
@@ -14,33 +14,31 @@
 
 A engenharia de software oferece ferramentas e metodologias fundamentais para o desenvolvimento de soluções confiáveis e eficazes. Com o crescimento da demanda por controle financeiro digital, os usuários buscam alternativas práticas para gerenciar seus objetivos. Embora bancos digitais tenham evoluído, ainda são escassas as plataformas acessíveis e personalizáveis com esse propósito.
 
-Entre os recursos mais procurados está o conceito de “caixinhas financeiras”, popularizado por fintechs como o Nubank. No entanto, poucas soluções permitem um gerenciamento completo, que envolva aportes, simulações, acompanhamento e relatórios.
+Entre os recursos mais procurados está o conceito de "caixinhas financeiras", popularizado por fintechs como o Nubank. No entanto, poucas soluções permitem um gerenciamento completo, que envolva aportes, simulações, acompanhamento e relatórios.
 
-Este projeto visa desenvolver um sistema full-stack de gerenciamento de metas financeiras, com funcionalidades como cadastro, simulação de crescimento, controle de transações, upload de imagem de capa e geração de relatórios.
+Este projeto visa desenvolver um sistema back-end de gerenciamento de metas financeiras, com funcionalidades como autenticação de usuários, cadastro e controle de caixas financeiras, registro de transações e geração de relatórios.
 
-Para isso, serão realizadas atividades como levantamento de requisitos, modelagem das entidades (caixa, transação), desenvolvimento de uma API com ASP.NET Core, criação da interface com Blazor, validação com FluentValidation, uso de Clean Architecture e persistência de dados com SQLite.
-
-A proposta busca oferecer uma solução moderna, funcional e adaptável à rotina de pessoas que desejam ter maior controle sobre suas finanças pessoais, promovendo disciplina financeira e independência tecnológica.
+Para isso, serão realizadas atividades como levantamento de requisitos, modelagem das entidades (usuário, caixa, transação), desenvolvimento de uma API RESTful com ASP.NET Core, validação com FluentValidation, uso de Clean Architecture e persistência de dados com SQLite.
 
 ### 2. Especificações Iniciais do Software
 
 #### 2.1 Escopo do Produto
 
-O sistema será uma aplicação full-stack para gerenciamento de metas financeiras. Permitirá ao usuário criar caixinhas, simular crescimento com aportes e rendimentos, registrar transações, anexar imagens de capa e visualizar relatórios. Toda a lógica será implementada via ASP.NET Core API, com interface em Blazor e banco de dados SQLite com suporte do Entity Framework Core.
+O sistema será uma API RESTful para gerenciamento de metas financeiras. Permitirá ao usuário se cadastrar, autenticar, criar caixinhas, registrar transações, simular crescimento com aportes e rendimentos e visualizar relatórios. Toda a lógica será implementada via ASP.NET Core, com banco de dados SQLite e suporte do Entity Framework Core.
 
 #### 2.2 Funcionalidades do Produto
 
+- Registro e autenticação de usuários com confirmação de e-mail;
 - Cadastro, visualização, edição e exclusão de caixas financeiras;
 - Cadastro e listagem de transações vinculadas a cada caixa;
 - Simulação de crescimento com base em aportes mensais e rendimentos;
 - Upload de imagem de capa para cada caixa;
 - Cálculo automático do valor total da caixa via transações;
-- Geração de relatórios sobre a evolução das caixas;
-- Interface responsiva e interativa via Blazor.
+- Geração de relatórios sobre a evolução das caixas.
 
 #### 2.3 Ambiente e Tecnologias
 
-O sistema será desenvolvido com **ASP.NET Core** no back-end e **Blazor** no front-end. O banco de dados utilizado será o **SQLite**, com acesso via **Entity Framework Core**. A validação de dados será feita com **FluentValidation**. A arquitetura utilizará os padrões **Repository**, **Unit of Work**, **CQRS** e será baseada em **Clean Architecture**. O ambiente de desenvolvimento será Windows com Visual Studio, e a aplicação será acessada via navegadores modernos.
+O sistema será desenvolvido com **ASP.NET Core** no back-end. O banco de dados utilizado será o **SQLite**, com acesso via **Entity Framework Core**. A validação de dados será feita com **FluentValidation**. A arquitetura utilizará os padrões **Repository**, **Unit of Work**, **CQRS**, **Outbox** e será baseada em **Clean Architecture**. O ambiente de desenvolvimento será Windows com Visual Studio, e a aplicação será acessada via navegadores modernos ou clientes HTTP.
 
 ### 3. Metodologia de Desenvolvimento
 
@@ -54,22 +52,28 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 
 ## 🚀 Funcionalidades
 
-### Gerenciamento de Caixas
+### ✅ Implementadas
 
-- Criar, editar, listar, excluir e visualizar objetivos financeiros.
-- Simular crescimento com base em aportes mensais e rendimentos.
+#### Autenticação
+- Registro de usuários com hash seguro de senha.
+- Login com geração de JWT Bearer token.
+- Confirmação de e-mail via código de verificação.
+- Reenvio de código de confirmação.
+
+#### Domínio
+- Modelo de `FinancialGoal` (Caixa) com cálculo automático de contribuição mensal ideal.
+- Modelo de `FinancialGoalTransactions` (Transação) com soft delete.
+- Value Objects: `Email` e `Password`.
+- Sistema de `Role` vinculado ao usuário.
+
+### 🔜 Planejadas
+
+- CRUD completo de caixas financeiras via API.
+- CRUD de transações via API.
 - Upload de imagem de capa para cada caixa.
-- Cálculo automático do valor total da caixa com transações.
-
-### Gerenciamento de Transações
-
-- Criar, excluir, listar e visualizar transações.
-- Validação de valores (até duas casas decimais, sem negativos).
-- Tipos suportados: `Deposit` e `Withdraw`.
-
-### Relatórios
-
-- Geração de relatórios detalhados com a evolução das caixas financeiras.
+- Simulação de crescimento com base em aportes mensais.
+- Geração de relatórios sobre a evolução das caixas.
+- Testes automatizados com xUnit.
 
 ---
 
@@ -77,23 +81,27 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 
 ### Stack
 
-- **ASP.NET Core API**
-- **Blazor (WebAssembly)**
+- **ASP.NET Core API** (.NET 10)
 - **SQLite** com **Entity Framework Core**
+- **MailKit** para envio de e-mails (SMTP)
+- **JWT** para autenticação
 
-### Arquitetura
+### Arquitetura e Padrões
 
 - **Clean Architecture**
-- **CQRS**
+- **CQRS** com Mediator customizado (sem dependência de MediatR)
 - **Repository Pattern**
 - **Unit of Work Pattern**
-- **FluentValidation**
-- **Middleware** para tratamento de exceções
-- **InputModel / ViewModel / DTOs**
-- **IEntityTypeConfiguration**
+- **Outbox Pattern** para processamento confiável de Domain Events
+- **Result Pattern** (`Result<T>`, `Error`, `ErrorType`)
+- **FluentValidation** com Pipeline Behavior de validação
+- **Value Objects** (`Email`, `Password`)
 - **Domain Events**
-- **Hosted Services**
-- **xUnit** para testes automatizados
+- **Hosted Services** (Outbox Processor)
+- **Interceptors** do EF Core (AuditInterceptor)
+- **Middleware** para tratamento global de exceções
+- **API Versioning** (v1)
+- **IEntityTypeConfiguration** para mapeamento de entidades
 
 ---
 
@@ -108,28 +116,47 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 ### Caixas
 
 - Status possíveis: `InProgress`, `Completed`, `Canceled`, `OnHold`.
-- Pode conter prazo final e contribuição mensal ideal.
+- Pode conter prazo final e contribuição mensal ideal (calculada automaticamente).
 - Todas as transações relacionadas devem ser rastreadas.
+
+### Usuários
+
+- E-mail deve ser confirmado para uso completo da plataforma.
+- Senha armazenada com hash seguro.
+- Sistema de roles para controle de acesso.
 
 ---
 
 ## 📦 Entidades
 
+### User (Usuário)
+
+| Property            | Type         | Description                              |
+|---------------------|--------------|------------------------------------------|
+| `Id`                | `Guid`       | Identificador único.                     |
+| `FirstName`         | `string`     | Primeiro nome.                           |
+| `LastName`          | `string`     | Sobrenome.                               |
+| `Email`             | `Email`      | Value Object de e-mail.                  |
+| `Password`          | `Password`   | Value Object de senha (hash seguro).     |
+| `IsEmailConfirmed`  | `bool`       | Indica se o e-mail foi confirmado.       |
+| `Roles`             | `Collection` | Papéis atribuídos ao usuário.            |
+
 ### Financial Goal (Caixa)
 
 | Property                    | Type         | Description                                         |
-|----------------------------|--------------|-----------------------------------------------------|
-| `Id`                       | `Guid`       | Identificador único da Caixa.                       |
-| `Title`                    | `string`     | Título do objetivo financeiro.                      |
-| `TargetAmount`             | `decimal`    | Valor alvo a ser atingido.                          |
-| `Deadline`                 | `datetime?`  | Prazo final da meta (opcional).                     |
-| `IdealMonthlyContribution`| `decimal?`   | Contribuição mensal recomendada.                    |
-| `Status`                   | `enum`       | Status da Caixa.                                    |
-| `Transactions`             | `Collection` | Transações associadas à Caixa.                      |
-| `CreatedAt`                | `datetime`   | Data de criação.                                    |
-| `IsDeleted`                | `bool`       | Indica exclusão lógica (soft delete).               |
+|-----------------------------|--------------|-----------------------------------------------------|
+| `Id`                        | `Guid`       | Identificador único da Caixa.                       |
+| `Title`                     | `string`     | Título do objetivo financeiro.                      |
+| `TargetAmount`              | `decimal`    | Valor alvo a ser atingido.                          |
+| `Deadline`                  | `datetime?`  | Prazo final da meta (opcional).                     |
+| `IdealMonthlyContribution`  | `decimal?`   | Contribuição mensal recomendada (calculada auto).   |
+| `Status`                    | `enum`       | Status da Caixa.                                    |
+| `CoverImagePath`            | `string`     | Caminho da imagem de capa.                          |
+| `UserId`                    | `Guid`       | Referência ao usuário dono da caixa.                |
+| `Transactions`              | `Collection` | Transações associadas à Caixa.                      |
+| `IsDeleted`                 | `bool`       | Indica exclusão lógica (soft delete).               |
 
-### Transaction
+### Transaction (Transação)
 
 | Property           | Type         | Description                                         |
 |--------------------|--------------|-----------------------------------------------------|
@@ -137,14 +164,12 @@ Serão adotadas boas práticas como versionamento de código, testes automatizad
 | `Amount`           | `decimal`    | Valor da transação.                                 |
 | `Type`             | `enum`       | Tipo: `Deposit` ou `Withdraw`.                      |
 | `TransactionDate`  | `datetime`   | Data da transação (pode ser retroativa).            |
-| `CreatedAt`        | `datetime`   | Data de criação do registro.                        |
+| `FinancialGoalId`  | `Guid`       | Referência à caixa vinculada.                       |
 | `IsDeleted`        | `bool`       | Indica exclusão lógica (soft delete).               |
 
 ---
 
 ## 🧩 Diagrama UML de Classes
-
-O seguinte diagrama UML representa visualmente as principais classes e enumerações do sistema:
 
 <p align="center">
   <img src="./FinancialBox_UML_Class_Diagram.png" alt="Diagrama de Classes do FinancialBox" width="600"/>
