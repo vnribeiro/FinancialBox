@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using FinancialBox.Application.Features.Auth.Errors;
 
 namespace FinancialBox.Presentation.Extensions;
 
