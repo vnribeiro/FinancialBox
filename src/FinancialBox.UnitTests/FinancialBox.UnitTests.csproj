@@ -15,6 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FinancialBox.Application\FinancialBox.Application.csproj" />
+    <ProjectReference Include="..\FinancialBox.Domain\FinancialBox.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
