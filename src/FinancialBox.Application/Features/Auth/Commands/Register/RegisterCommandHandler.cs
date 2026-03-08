@@ -2,9 +2,9 @@ using FinancialBox.Application.Abstractions;
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
-using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Users.Errors;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.Domain.Primitives;
 using Microsoft.Extensions.Options;
@@ -31,7 +31,7 @@ public sealed class RegisterCommandHandler(
             return Result<RegisterResponse>.Failure(emailResult.Errors);
 
         if (await userRepository.EmailExistsAsync(emailResult.Data.Address, cancellationToken))
-            return AuthErrors.EmailAlreadyExists;
+            return UserErrors.EmailAlreadyInUse;
 
         var password = Password.FromHash(secretHasherService.Hash(request.Password));
 
