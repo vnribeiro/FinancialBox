@@ -1,3 +1,4 @@
+using FinancialBox.Domain.Features.Users.Errors;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.UnitTests.Domain.Users;
@@ -26,7 +27,7 @@ public class EmailTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Email.Empty", result.Errors[0].Code);
+        Assert.Equal(EmailErrors.Empty.Code, result.Errors[0].Code);
     }
 
     [Theory]
@@ -41,6 +42,6 @@ public class EmailTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Email.InvalidFormat", result.Errors[0].Code);
+        Assert.Equal(EmailErrors.InvalidFormat.Code, result.Errors[0].Code);
     }
 }

@@ -1,4 +1,5 @@
 using FinancialBox.Application.Features.Auth.Commands.ConfirmEmail;
+using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;
@@ -72,7 +73,7 @@ public class ConfirmEmailCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.InvalidOrExpiredCode", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
     }
 
     [Fact]
@@ -99,7 +100,7 @@ public class ConfirmEmailCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.InvalidOrExpiredCode", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class ConfirmEmailCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.InvalidOrExpiredCode", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
     }
 
     [Fact]
@@ -130,7 +131,7 @@ public class ConfirmEmailCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.InvalidOrExpiredCode", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
         Assert.Equal(1, code.Attempts);
         Assert.Equal(1, _unitOfWork.CommitCount);
     }

@@ -9,6 +9,7 @@ using System.Text;
 using FinancialBox.Infrastructure.Options;
 using FinancialBox.Presentation.Swagger;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -42,7 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddAuthenticationConfiguration(builder);
 
         // Registers default CORS policy
-        services.AddCorsConfiguration(builder.Configuration);
+        services.AddCorsConfiguration(builder.Configuration, builder.Environment);
 
         // Configure routing to use lowercase URLs for consistency and SEO benefits
         builder.Services.AddRouting(options =>
@@ -176,7 +177,7 @@ public static class ServiceCollectionExtensions
     /// In development (no origins configured), all origins are allowed.
     /// </summary>
     /// <returns>The updated service collection.</returns>
-    private static IServiceCollection AddCorsConfiguration(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddCorsConfiguration(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
@@ -189,10 +190,12 @@ public static class ServiceCollectionExtensions
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
-                else
+                else if (environment.IsDevelopment())
                     builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
+                else
+                    throw new InvalidOperationException("Cors:AllowedOrigins must be configured outside Development.");
             });
         });
 

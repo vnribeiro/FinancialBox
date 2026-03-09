@@ -1,4 +1,4 @@
-﻿using FinancialBox.Domain.Primitives;
+using FinancialBox.Domain.Primitives;
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
@@ -20,7 +20,7 @@ public sealed class LoginCommandHandler(
         if (emailResult.IsFailure)
             return Result<LoginResponse>.Failure(emailResult.Errors);
 
-        var user = await userRepository.GetByEmailAsync(emailResult.Data.Address, cancellationToken);
+        var user = await userRepository.GetByEmailWithRolesAsync(emailResult.Data.Address, cancellationToken);
 
         if (user is null)
             return AuthErrors.InvalidCredentials;

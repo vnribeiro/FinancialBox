@@ -1,6 +1,7 @@
 using FinancialBox.Application.Features.Auth.Commands.Register;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Users.Errors;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.UnitTests.Application.Fakes;
 using Microsoft.Extensions.Options;
@@ -55,7 +56,7 @@ public class RegisterCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.EmailAlreadyExists", result.Errors[0].Code);
+        Assert.Equal(UserErrors.EmailAlreadyInUse.Code, result.Errors[0].Code);
     }
 
     [Fact]

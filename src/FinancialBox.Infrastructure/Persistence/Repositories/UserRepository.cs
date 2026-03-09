@@ -1,4 +1,4 @@
-﻿using FinancialBox.Application.Abstractions.Repositories;
+using FinancialBox.Application.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
 using FinancialBox.Domain.Features.Users;
 
@@ -12,6 +12,13 @@ internal sealed class UserRepository(AppDbContext context) :
     public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return _context.Users
+            .FirstOrDefaultAsync(user => user.Email.Address == email, cancellationToken);
+    }
+
+    public Task<User?> GetByEmailWithRolesAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return _context.Users
+            .Include(user => user.Roles)
             .FirstOrDefaultAsync(user => user.Email.Address == email, cancellationToken);
     }
 

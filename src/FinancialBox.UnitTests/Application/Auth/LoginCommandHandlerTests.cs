@@ -1,4 +1,5 @@
 using FinancialBox.Application.Features.Auth.Commands.Login;
+using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.UnitTests.Application.Fakes;
@@ -44,7 +45,7 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.InvalidCredentials", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidCredentials.Code, result.Errors[0].Code);
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.InvalidCredentials", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidCredentials.Code, result.Errors[0].Code);
     }
 
     [Fact]
@@ -73,7 +74,7 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.EmailNotConfirmed", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.EmailNotConfirmed.Code, result.Errors[0].Code);
     }
 
     [Fact]

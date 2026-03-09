@@ -1,4 +1,5 @@
 using FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
+using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;
@@ -96,7 +97,7 @@ public class ResendConfirmationCommandHandlerTests
         var result = await _handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.ResendLimitReached", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.ResendLimitReached.Code, result.Errors[0].Code);
     }
 
     [Fact]
@@ -137,7 +138,7 @@ public class ResendConfirmationCommandHandlerTests
         var result = await handler.Handle(command, default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Auth.ResendLimitReached", result.Errors[0].Code);
+        Assert.Equal(AuthErrors.ResendLimitReached.Code, result.Errors[0].Code);
     }
 
     [Fact]

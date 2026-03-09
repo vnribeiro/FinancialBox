@@ -28,6 +28,9 @@ public class FakeUserRepository : IUserRepository
     public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         => Task.FromResult(_users.FirstOrDefault(u => u.Email.Address == email));
 
+    public Task<User?> GetByEmailWithRolesAsync(string email, CancellationToken cancellationToken = default)
+        => Task.FromResult(_users.FirstOrDefault(u => u.Email.Address == email));
+
     public Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default)
         => Task.FromResult(_users.Any(u => u.Email.Address == email));
 }
