@@ -52,6 +52,7 @@ public class Mediator(IServiceProvider provider, ILogger<Mediator> logger) : IMe
             catch (Exception ex)
             {
                 logger.LogError(ex, "Handler {HandlerName} failed for event {EventName}", handler!.GetType().Name, eventType.Name);
+                throw;
             }
         }
     }

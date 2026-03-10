@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // Register the audit interceptor as a singleton since it is stateless and can be shared across DbContext instances
         services.AddSingleton<AuditInterceptor>();
 
         services.AddDbContext<AppDbContext>((sp, options) =>
@@ -35,7 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Register options
+        // Register options with validation
         services.AddOptions<SecureHashOptions>()
                 .BindConfiguration(SecureHashOptions.SectionName)
                 .Validate(o => o.Iterations > 0, "SecureHash:Iterations must be greater than zero.")
@@ -44,7 +45,13 @@ public static class ServiceCollectionExtensions
                 .ValidateOnStart();
 
         services.AddOptions<SmtpOptions>()
-            .BindConfiguration(SmtpOptions.SectionName);
+            .BindConfiguration(SmtpOptions.SectionName)
+            .Validate(o => !string.IsNullOrWhiteSpace(o.Host), "Smtp:Host is required.")
+            .Validate(o => o.Port > 0, "Smtp:Port must be greater than zero.")
+            .Validate(o => !string.IsNullOrWhiteSpace(o.Username), "Smtp:Username is required.")
+            .Validate(o => !string.IsNullOrWhiteSpace(o.Password), "Smtp:Password is required.")
+            .Validate(o => !string.IsNullOrWhiteSpace(o.FromAddress), "Smtp:FromAddress is required.")
+            .ValidateOnStart();
 
         // Register services
         services.AddSingleton<ISecureHashService, SecureHashService>();

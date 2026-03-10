@@ -3,12 +3,12 @@ using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Application.Features.Auth.Errors;
+using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.Domain.Primitives;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
 
 namespace FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
 
@@ -46,11 +46,10 @@ public sealed class ResendConfirmationCommandHandler(
         if (countLastHour >= _emailVerificationOptions.MaxSendsPerHour)
             return AuthErrors.ResendLimitReached;
 
-        var otp = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
-        var otpHash = secureHashService.Hash(otp);
+        var (plainCode, codeHash) = OtpGenerator.Generate(secureHashService);
         var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
 
-        var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, otp, otpHash, expiresAt);
+        var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, plainCode, codeHash, expiresAt);
         await emailVerificationCodeRepository.AddAsync(emailVerificationCode, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
@@ -58,3 +57,5 @@ public sealed class ResendConfirmationCommandHandler(
         return Result.Success();
     }
 }
+
+

@@ -54,8 +54,13 @@ internal sealed class OutboxProcessor(
                 message.ProcessedAtUtc = DateTime.UtcNow;
                 message.Error = null;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
             {
+                /* Without this filter, a shutdown-triggered OperationCanceledException would be caught as a real failure,
+                 * incorrectly incrementing RetryCount and setting Error on the message.
+                 * The filter ensures only genuine failures (or cancellations unrelated to shutdown) are treated as errors.
+                 */
+
                 message.RetryCount++;
                 message.Error = ex.Message;
                 logger.LogError(ex, "Failed to process outbox message {MessageId} of type {Type} (attempt {RetryCount}/{MaxRetries})",

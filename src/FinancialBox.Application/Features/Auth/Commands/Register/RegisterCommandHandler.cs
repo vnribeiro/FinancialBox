@@ -2,13 +2,13 @@ using FinancialBox.Application.Abstractions;
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
+using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.Errors;
 using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.Domain.Primitives;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
@@ -41,14 +41,15 @@ public sealed class RegisterCommandHandler(
 
         await userRepository.AddAsync(user, cancellationToken);
 
-        var otp = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
-        var otpHash = secretHasherService.Hash(otp);
+        var (plainCode, codeHash) = OtpGenerator.Generate(secretHasherService);
         var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
 
-        var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, otp, otpHash, expiresAt);
+        var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, plainCode, codeHash, expiresAt);
         await emailVerificationCodeRepository.AddAsync(emailVerificationCode, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
         return Result<RegisterResponse>.Success(new RegisterResponse(user.Id, user.Email.Address));
     }
 }
+
+
