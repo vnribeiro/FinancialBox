@@ -13,6 +13,7 @@ public class ResendConfirmationCommandHandlerTests
     private readonly FakeUserRepository _userRepository = new();
     private readonly FakeEmailVerificationCodeRepository _codeRepository = new();
     private readonly FakeSecureHashService _hashService = new();
+    private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly ResendConfirmationCommandHandler _handler;
 
@@ -33,6 +34,7 @@ public class ResendConfirmationCommandHandlerTests
             _userRepository,
             _codeRepository,
             _hashService,
+            _emailService,
             options);
     }
 
@@ -62,7 +64,6 @@ public class ResendConfirmationCommandHandlerTests
 
         var result = await _handler.Handle(command, default);
 
-        // Silent success to avoid user enumeration
         Assert.True(result.IsSuccess);
         Assert.Equal(0, _unitOfWork.CommitCount);
     }
@@ -86,9 +87,8 @@ public class ResendConfirmationCommandHandlerTests
     {
         var user = CreateUnconfirmedUser();
 
-        // Code created just now — still within cooldown window
         var recentCode = EmailVerificationCode.Create(
-            user.Id, "user@example.com", "123456", "hash",
+            user.Id, "hash",
             DateTime.UtcNow.AddMinutes(15));
         _codeRepository.Seed(recentCode);
 
@@ -105,23 +105,14 @@ public class ResendConfirmationCommandHandlerTests
     {
         var user = CreateUnconfirmedUser();
 
-        // 5 codes all created more than CooldownSeconds ago (bypass cooldown),
-        // but still within the last hour (trigger max sends)
-        // We can't set CreatedAt directly, so we simulate by seeding many codes
-        // and relying on CountSentByUserIdAfterAsync counting them.
-        // Since CreatedAt = UtcNow, they are within the last hour.
-        // To bypass cooldown, we need no "most recent" code — but they exist.
-        // Instead, seed MaxSendsPerHour codes and set no latest code via a subclass.
         for (int i = 0; i < MaxSendsPerHour; i++)
         {
             var code = EmailVerificationCode.Create(
-                user.Id, "user@example.com", $"code{i}", $"hash{i}",
+                user.Id, $"hash{i}",
                 DateTime.UtcNow.AddMinutes(15));
             _codeRepository.Seed(code);
         }
 
-        // Use a fresh repository that returns null for GetMostRecentByUserIdAsync
-        // so we bypass the cooldown check and hit the MaxSendsPerHour check.
         var repoWithNullLatest = new FakeEmailVerificationCodeRepositoryWithNullLatest(_codeRepository);
         var options = Options.Create(new EmailVerificationOptions
         {
@@ -131,7 +122,7 @@ public class ResendConfirmationCommandHandlerTests
         });
 
         var handler = new ResendConfirmationCommandHandler(
-            _unitOfWork, _userRepository, repoWithNullLatest, _hashService, options);
+            _unitOfWork, _userRepository, repoWithNullLatest, _hashService, _emailService, options);
 
         var command = new ResendConfirmationCommand("user@example.com");
 
@@ -154,7 +145,17 @@ public class ResendConfirmationCommandHandlerTests
         Assert.Equal(1, _unitOfWork.CommitCount);
     }
 
-    // Helper to simulate null latest code while still counting existing ones
+    [Fact]
+    public async Task Should_SendVerificationEmail_When_NoRecentCodeExists()
+    {
+        CreateUnconfirmedUser();
+
+        await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
+
+        Assert.Single(_emailService.VerificationCodesSent);
+        Assert.Equal("user@example.com", _emailService.VerificationCodesSent[0].To);
+    }
+
     private sealed class FakeEmailVerificationCodeRepositoryWithNullLatest(
         FakeEmailVerificationCodeRepository inner)
         : FakeEmailVerificationCodeRepository

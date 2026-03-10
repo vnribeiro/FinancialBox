@@ -14,6 +14,7 @@ public class RegisterCommandHandlerTests
     private readonly FakeRoleRepository _roleRepository = new();
     private readonly FakeEmailVerificationCodeRepository _codeRepository = new();
     private readonly FakeSecureHashService _hashService = new();
+    private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly RegisterCommandHandler _handler;
 
@@ -30,6 +31,7 @@ public class RegisterCommandHandlerTests
             _roleRepository,
             _codeRepository,
             _hashService,
+            _emailService,
             options);
     }
 
@@ -90,5 +92,16 @@ public class RegisterCommandHandlerTests
 
         var codes = await _codeRepository.GetAllAsync();
         Assert.Single(codes);
+    }
+
+    [Fact]
+    public async Task Should_SendVerificationEmail_When_RegistrationSucceeds()
+    {
+        var command = new RegisterCommand("John", "Doe", "new@example.com", "Password1!");
+
+        await _handler.Handle(command, default);
+
+        Assert.Single(_emailService.VerificationCodesSent);
+        Assert.Equal("new@example.com", _emailService.VerificationCodesSent[0].To);
     }
 }

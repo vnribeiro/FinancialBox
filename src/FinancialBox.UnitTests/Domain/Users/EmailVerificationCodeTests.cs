@@ -8,7 +8,7 @@ public class EmailVerificationCodeTests
     private const int MaxAttempts = 3;
 
     private static EmailVerificationCode CreateCode(DateTime expiresAt)
-        => EmailVerificationCode.Create(UserId, "user@example.com", "123456", "hashed_code", expiresAt);
+        => EmailVerificationCode.Create(UserId, "hashed_code", expiresAt);
 
     [Fact]
     public void Should_AllowValidation_When_CodeIsNotUsed_NotExpired_And_BelowMaxAttempts()
@@ -69,11 +69,11 @@ public class EmailVerificationCodeTests
     }
 
     [Fact]
-    public void Should_RaiseDomainEvent_When_Created()
+    public void Should_NotRaiseDomainEvent_When_Created()
     {
         var code = CreateCode(DateTime.UtcNow.AddMinutes(10));
 
-        Assert.Single(code.DomainEvents);
+        Assert.Empty(code.DomainEvents);
     }
 
     [Fact]

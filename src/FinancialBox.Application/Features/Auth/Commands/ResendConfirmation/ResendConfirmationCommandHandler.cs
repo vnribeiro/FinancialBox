@@ -16,6 +16,7 @@ public sealed class ResendConfirmationCommandHandler(
     IUserRepository userRepository,
     IEmailVerificationCodeRepository emailVerificationCodeRepository,
     ISecureHashService secureHashService,
+    IEmailService emailService,
     IOptions<EmailVerificationOptions> emailVerificationOptions)
     : IRequestHandler<ResendConfirmationCommand, Result>
 {
@@ -49,13 +50,12 @@ public sealed class ResendConfirmationCommandHandler(
         var codeHash = secureHashService.Hash(plainCode);
         var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
 
-        var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, plainCode, codeHash, expiresAt);
+        var emailVerificationCode = EmailVerificationCode.Create(user.Id, codeHash, expiresAt);
         await emailVerificationCodeRepository.AddAsync(emailVerificationCode, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
+        await emailService.SendVerificationCodeAsync(user.Email.Address, plainCode, cancellationToken);
 
         return Result.Success();
     }
 }
-
-

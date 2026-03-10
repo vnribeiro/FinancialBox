@@ -1,5 +1,4 @@
 using FinancialBox.Domain.Common;
-using FinancialBox.Domain.Features.Users.Events;
 
 namespace FinancialBox.Domain.Features.Users;
 
@@ -35,10 +34,8 @@ public class EmailVerificationCode : AggregateRoot
         UsedAt = utcNow;
     }
 
-    public static EmailVerificationCode Create(Guid userId, string email, string plainCode, string codeHash, DateTime expiresAt)
+    public static EmailVerificationCode Create(Guid userId, string codeHash, DateTime expiresAt)
     {
-        var code = new EmailVerificationCode(userId, codeHash, expiresAt);
-        code.AddDomainEvent(new EmailVerificationCodeCreatedEvent(userId, email, plainCode));
-        return code;
+        return new EmailVerificationCode(userId, codeHash, expiresAt);
     }
 }

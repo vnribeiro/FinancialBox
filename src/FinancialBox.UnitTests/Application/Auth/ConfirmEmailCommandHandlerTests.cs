@@ -45,12 +45,7 @@ public class ConfirmEmailCommandHandlerTests
 
     private EmailVerificationCode CreateValidCode(Guid userId, string plainCode = "123456")
     {
-        var code = EmailVerificationCode.Create(
-            userId,
-            "user@example.com",
-            plainCode,
-            _hashService.Hash(plainCode),
-            DateTime.UtcNow.AddMinutes(15));
+        var code = EmailVerificationCode.Create(userId, _hashService.Hash(plainCode), DateTime.UtcNow.AddMinutes(15));
         _codeRepository.Seed(code);
         return code;
     }
@@ -107,9 +102,7 @@ public class ConfirmEmailCommandHandlerTests
     public async Task Should_ReturnInvalidOrExpiredCode_When_CodeIsExpired()
     {
         var user = CreateUnconfirmedUser();
-        var expiredCode = EmailVerificationCode.Create(
-            user.Id, "user@example.com", "123456", _hashService.Hash("123456"),
-            DateTime.UtcNow.AddMinutes(-1)); // already expired
+        var expiredCode = EmailVerificationCode.Create(user.Id, _hashService.Hash("123456"), DateTime.UtcNow.AddMinutes(-1)); // already expired
         _codeRepository.Seed(expiredCode);
 
         var command = new ConfirmEmailCommand("user@example.com", "123456");
