@@ -3,7 +3,6 @@ using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Application.Features.Auth.Errors;
-using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.ValueObjects;
@@ -46,7 +45,8 @@ public sealed class ResendConfirmationCommandHandler(
         if (countLastHour >= _emailVerificationOptions.MaxSendsPerHour)
             return AuthErrors.ResendLimitReached;
 
-        var (plainCode, codeHash) = OtpGenerator.Generate(secureHashService);
+        var plainCode = OtpGenerator.Generate();
+        var codeHash = secureHashService.Hash(plainCode);
         var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
 
         var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, plainCode, codeHash, expiresAt);

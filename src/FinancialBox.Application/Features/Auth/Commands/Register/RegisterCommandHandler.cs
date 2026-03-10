@@ -2,7 +2,6 @@ using FinancialBox.Application.Abstractions;
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
-using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Options;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.Errors;
@@ -17,7 +16,7 @@ public sealed class RegisterCommandHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IEmailVerificationCodeRepository emailVerificationCodeRepository,
-    ISecureHashService secretHasherService,
+    ISecureHashService secureHashService,
     IOptions<EmailVerificationOptions> emailVerificationOptions)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
@@ -33,7 +32,7 @@ public sealed class RegisterCommandHandler(
         if (await userRepository.EmailExistsAsync(emailResult.Data.Address, cancellationToken))
             return UserErrors.EmailAlreadyInUse;
 
-        var password = Password.FromHash(secretHasherService.Hash(request.Password));
+        var password = Password.FromHash(secureHashService.Hash(request.Password));
 
         var role = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
         var user = User.Create(request.FirstName, request.LastName, emailResult.Data, password);
@@ -41,7 +40,8 @@ public sealed class RegisterCommandHandler(
 
         await userRepository.AddAsync(user, cancellationToken);
 
-        var (plainCode, codeHash) = OtpGenerator.Generate(secretHasherService);
+        var plainCode = OtpGenerator.Generate();
+        var codeHash = secureHashService.Hash(plainCode);
         var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
 
         var emailVerificationCode = EmailVerificationCode.Create(user.Id, user.Email.Address, plainCode, codeHash, expiresAt);
