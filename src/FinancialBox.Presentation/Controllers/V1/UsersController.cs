@@ -12,9 +12,9 @@ namespace FinancialBox.Presentation.Controllers.V1;
 [ApiController]
 [ApiVersion(1.0)]
 [Route("api/v{apiVersion:apiVersion}/[controller]")]
+[Authorize(Roles = "User")]
 public class UsersController(IMediator mediator) : ControllerBase
 {
-    [Authorize(Roles = "User")]
     [HttpGet("me")]
     [ProducesResponseType(typeof(ApiResponse<GetMeResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status401Unauthorized)]
