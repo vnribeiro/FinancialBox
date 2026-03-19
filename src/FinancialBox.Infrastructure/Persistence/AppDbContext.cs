@@ -1,3 +1,4 @@
+using FinancialBox.Domain.Features.Accounts;
 using FinancialBox.Domain.Features.FinancialGoals;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Infrastructure.Persistence.Outbox;
@@ -8,7 +9,7 @@ namespace FinancialBox.Infrastructure.Persistence;
 internal sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; } = null!;
-    public DbSet<EmailVerificationCode> EmailVerificationCodes { get; set; } = null!;
+    public DbSet<Opt> EmailVerificationCodes { get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<FinancialGoal> FinancialGoals { get; set; } = null!;
     public DbSet<FinancialGoalTransactions> Transactions { get; set; } = null!;

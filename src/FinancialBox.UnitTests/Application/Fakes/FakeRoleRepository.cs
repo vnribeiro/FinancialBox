@@ -1,5 +1,5 @@
 using FinancialBox.Application.Abstractions.Repositories;
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.UnitTests.Application.Fakes;
 

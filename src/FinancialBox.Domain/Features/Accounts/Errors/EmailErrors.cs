@@ -1,6 +1,6 @@
 using FinancialBox.Domain.Primitives;
 
-namespace FinancialBox.Domain.Features.Users.Errors;
+namespace FinancialBox.Domain.Features.Accounts.Errors;
 
 public static class EmailErrors
 {

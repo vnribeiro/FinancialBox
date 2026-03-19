@@ -1,7 +1,7 @@
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Features.Auth.Errors;
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Features.Users;
-using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.UnitTests.Application.Fakes;
 
 namespace FinancialBox.UnitTests.Application.Auth;

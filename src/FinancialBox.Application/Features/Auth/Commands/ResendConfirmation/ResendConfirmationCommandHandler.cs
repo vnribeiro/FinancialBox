@@ -3,8 +3,8 @@ using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Application.Features.Auth.Errors;
-using FinancialBox.Domain.Features.Users;
-using FinancialBox.Domain.Features.Users.ValueObjects;
+using FinancialBox.Domain.Features.Accounts;
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Primitives;
 using Microsoft.Extensions.Options;
 
@@ -49,7 +49,7 @@ public sealed class ResendConfirmationCommandHandler(
         var codeHash = secureHashService.Hash(plainCode);
         var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
 
-        var emailVerificationCode = EmailVerificationCode.Create(user.Id, codeHash, expiresAt);
+        var emailVerificationCode = Opt.Create(user.Id, codeHash, expiresAt);
         await emailVerificationCodeRepository.AddAsync(emailVerificationCode, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);

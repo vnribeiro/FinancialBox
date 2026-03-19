@@ -1,31 +1,31 @@
 using FinancialBox.Application.Abstractions.Repositories;
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.UnitTests.Application.Fakes;
 
 public class FakeEmailVerificationCodeRepository : IEmailVerificationCodeRepository
 {
-    private readonly List<EmailVerificationCode> _codes = [];
+    private readonly List<Opt> _codes = [];
 
-    public void Seed(EmailVerificationCode code) => _codes.Add(code);
+    public void Seed(Opt code) => _codes.Add(code);
 
-    public Task<EmailVerificationCode?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<Opt?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => Task.FromResult(_codes.FirstOrDefault(c => c.Id == id));
 
-    public Task<IEnumerable<EmailVerificationCode>> GetAllAsync(int pageNumber = 1, int pageSize = 25, CancellationToken cancellationToken = default)
-        => Task.FromResult<IEnumerable<EmailVerificationCode>>(_codes);
+    public Task<IEnumerable<Opt>> GetAllAsync(int pageNumber = 1, int pageSize = 25, CancellationToken cancellationToken = default)
+        => Task.FromResult<IEnumerable<Opt>>(_codes);
 
-    public Task AddAsync(EmailVerificationCode entity, CancellationToken cancellationToken = default)
+    public Task AddAsync(Opt entity, CancellationToken cancellationToken = default)
     {
         _codes.Add(entity);
         return Task.CompletedTask;
     }
 
-    public void Update(EmailVerificationCode entity) { }
+    public void Update(Opt entity) { }
 
-    public void Remove(EmailVerificationCode entity) => _codes.Remove(entity);
+    public void Remove(Opt entity) => _codes.Remove(entity);
 
-    public virtual Task<EmailVerificationCode?> GetMostRecentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public virtual Task<Opt?> GetMostRecentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         => Task.FromResult(
             _codes.Where(c => c.UserId == userId)
                   .OrderByDescending(c => c.CreatedAt)

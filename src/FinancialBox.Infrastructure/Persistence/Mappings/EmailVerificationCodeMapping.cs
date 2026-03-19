@@ -1,12 +1,13 @@
+using FinancialBox.Domain.Features.Accounts;
 using FinancialBox.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
-public class EmailVerificationCodeMapping : IEntityTypeConfiguration<EmailVerificationCode>
+public class EmailVerificationCodeMapping : IEntityTypeConfiguration<Opt>
 {
-    public void Configure(EntityTypeBuilder<EmailVerificationCode> builder)
+    public void Configure(EntityTypeBuilder<Opt> builder)
     {
         builder
             .ToTable("EmailVerificationCodes");

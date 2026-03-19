@@ -1,8 +1,8 @@
 using FinancialBox.Domain.Primitives;
 using System.Text.RegularExpressions;
-using FinancialBox.Domain.Features.Users.Errors;
+using FinancialBox.Domain.Features.Accounts.Errors;
 
-namespace FinancialBox.Domain.Features.Users.ValueObjects;
+namespace FinancialBox.Domain.Features.Accounts.ValueObjects;
 
 public sealed class Email : IEquatable<Email>
 {

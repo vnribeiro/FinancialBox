@@ -1,4 +1,4 @@
-namespace FinancialBox.Domain.Features.Users.ValueObjects;
+namespace FinancialBox.Domain.Features.Accounts.ValueObjects;
 
 public sealed class Password : IEquatable<Password>
 {

@@ -1,4 +1,4 @@
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

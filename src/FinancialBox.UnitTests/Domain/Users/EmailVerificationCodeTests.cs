@@ -1,4 +1,4 @@
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.UnitTests.Domain.Users;
 
@@ -7,8 +7,8 @@ public class EmailVerificationCodeTests
     private static readonly Guid UserId = Guid.NewGuid();
     private const int MaxAttempts = 3;
 
-    private static EmailVerificationCode CreateCode(DateTime expiresAt)
-        => EmailVerificationCode.Create(UserId, "hashed_code", expiresAt);
+    private static Opt CreateCode(DateTime expiresAt)
+        => Opt.Create(UserId, "hashed_code", expiresAt);
 
     [Fact]
     public void Should_AllowValidation_When_CodeIsNotUsed_NotExpired_And_BelowMaxAttempts()

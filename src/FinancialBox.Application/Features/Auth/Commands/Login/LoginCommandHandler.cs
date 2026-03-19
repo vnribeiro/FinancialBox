@@ -2,8 +2,8 @@ using FinancialBox.Domain.Primitives;
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
-using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.Application.Features.Auth.Errors;
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
 

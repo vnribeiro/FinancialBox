@@ -1,6 +1,6 @@
 using FinancialBox.Domain.Common;
 
-namespace FinancialBox.Domain.Features.Users;
+namespace FinancialBox.Domain.Features.Accounts;
 
 public class Role : AggregateRoot
 {  

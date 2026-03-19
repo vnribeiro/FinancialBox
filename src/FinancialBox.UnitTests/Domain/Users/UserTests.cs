@@ -1,5 +1,5 @@
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Features.Users;
-using FinancialBox.Domain.Features.Users.ValueObjects;
 
 namespace FinancialBox.UnitTests.Domain.Users;
 

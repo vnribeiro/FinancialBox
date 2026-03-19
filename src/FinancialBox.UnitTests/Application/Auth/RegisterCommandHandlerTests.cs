@@ -1,8 +1,8 @@
 using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Features.Auth.Commands.Register;
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Features.Users;
 using FinancialBox.Domain.Features.Users.Errors;
-using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.UnitTests.Application.Fakes;
 using Microsoft.Extensions.Options;
 

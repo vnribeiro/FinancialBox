@@ -1,9 +1,9 @@
-﻿using FinancialBox.Domain.Features.Users;
+﻿using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.Application.Abstractions.Repositories;
 
-public interface IEmailVerificationCodeRepository : IRepository<EmailVerificationCode>
+public interface IEmailVerificationCodeRepository : IRepository<Opt>
 {
-    Task<EmailVerificationCode?> GetMostRecentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<Opt?> GetMostRecentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<int> CountSentByUserIdAfterAsync(Guid userId, DateTime after, CancellationToken cancellationToken = default);
 }

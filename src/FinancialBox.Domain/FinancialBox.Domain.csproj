@@ -6,5 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="Features\Accounts\Account.cs" />
+  </ItemGroup>
+
 
 </Project>

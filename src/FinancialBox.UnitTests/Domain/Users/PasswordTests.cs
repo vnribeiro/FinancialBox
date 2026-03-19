@@ -1,4 +1,4 @@
-using FinancialBox.Domain.Features.Users.ValueObjects;
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 
 namespace FinancialBox.UnitTests.Domain.Users;
 

@@ -1,15 +1,15 @@
 ﻿using FinancialBox.Application.Abstractions.Repositories;
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinancialBox.Infrastructure.Persistence.Repositories;
 
 internal sealed class EmailVerificationCodeRepository(AppDbContext context)
-    : Repository<EmailVerificationCode>(context), IEmailVerificationCodeRepository
+    : Repository<Opt>(context), IEmailVerificationCodeRepository
 {
     private readonly AppDbContext _context = context;
 
-    public Task<EmailVerificationCode?> GetMostRecentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public Task<Opt?> GetMostRecentByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return _context.EmailVerificationCodes
             .Where(code => code.UserId == userId)

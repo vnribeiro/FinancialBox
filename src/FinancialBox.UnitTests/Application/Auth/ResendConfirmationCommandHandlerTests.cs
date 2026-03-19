@@ -1,8 +1,9 @@
 using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
 using FinancialBox.Application.Features.Auth.Errors;
+using FinancialBox.Domain.Features.Accounts;
+using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Features.Users;
-using FinancialBox.Domain.Features.Users.ValueObjects;
 using FinancialBox.UnitTests.Application.Fakes;
 using Microsoft.Extensions.Options;
 
@@ -87,7 +88,7 @@ public class ResendConfirmationCommandHandlerTests
     {
         var user = CreateUnconfirmedUser();
 
-        var recentCode = EmailVerificationCode.Create(
+        var recentCode = Opt.Create(
             user.Id, "hash",
             DateTime.UtcNow.AddMinutes(15));
         _codeRepository.Seed(recentCode);
@@ -107,7 +108,7 @@ public class ResendConfirmationCommandHandlerTests
 
         for (int i = 0; i < MaxSendsPerHour; i++)
         {
-            var code = EmailVerificationCode.Create(
+            var code = Opt.Create(
                 user.Id, $"hash{i}",
                 DateTime.UtcNow.AddMinutes(15));
             _codeRepository.Seed(code);
@@ -160,9 +161,9 @@ public class ResendConfirmationCommandHandlerTests
         FakeEmailVerificationCodeRepository inner)
         : FakeEmailVerificationCodeRepository
     {
-        public override Task<EmailVerificationCode?> GetMostRecentByUserIdAsync(
+        public override Task<Opt?> GetMostRecentByUserIdAsync(
             Guid userId, CancellationToken cancellationToken = default)
-            => Task.FromResult<EmailVerificationCode?>(null);
+            => Task.FromResult<Opt?>(null);
 
         public override Task<int> CountSentByUserIdAfterAsync(
             Guid userId, DateTime after, CancellationToken cancellationToken = default)
