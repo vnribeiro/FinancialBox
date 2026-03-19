@@ -6,10 +6,15 @@ namespace FinancialBox.Domain.Features.Accounts.ValueObjects;
 
 public sealed class Email : IEquatable<Email>
 {
-    public string Address { get; }
-
-    public static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+    /// <summary>
+    /// Validates email format by ensuring it contains a local part, an '@' symbol,
+    /// and a domain with at least one dot. Whitespace is not allowed in any part.
+    /// Example: user@domain.com
+    /// </summary>
+    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    public string Address { get; }
 
     private Email(string address) => Address = address;
 
@@ -19,7 +24,7 @@ public sealed class Email : IEquatable<Email>
             return EmailErrors.Empty;
 
         return !EmailRegex.IsMatch(address) ?
-            EmailErrors.InvalidFormat : 
+            EmailErrors.InvalidFormat :
             Result<Email>.Success(new Email(address));
     }
 
