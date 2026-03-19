@@ -23,9 +23,6 @@ internal sealed class AuditInterceptor : SaveChangesInterceptor
 
         foreach (var entry in context.ChangeTracker.Entries<BaseEntity>())
         {
-            if (entry.State == EntityState.Added)
-                entry.Property(nameof(BaseEntity.CreatedAt)).CurrentValue = now;
-
             if (entry.State == EntityState.Modified)
                 entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = now;
         }
