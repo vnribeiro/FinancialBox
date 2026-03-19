@@ -10,13 +10,9 @@ public class Role : AggregateRoot
 
     protected Role() {}
 
-    public Role(string name)
-    {
-        Name = name;
-    }
+    private Role(string name) => Name = name;
 
-    public void Rename(string name)
-    {
-        Name = name;
-    }
+    public static Role Create(string name) => new(name);
+
+    public void Rename(string name) => Name = name;
 }

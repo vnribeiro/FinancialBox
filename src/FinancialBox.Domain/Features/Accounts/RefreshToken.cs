@@ -9,9 +9,9 @@ public class RefreshToken : AggregateRoot
     public DateTime ExpiresAt { get; private set; }
     public DateTime? RevokedAt { get; private set; }
 
-    public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
+    public bool IsExpired(DateTime utcNow) => utcNow >= ExpiresAt;
     public bool IsRevoked => RevokedAt is not null;
-    public bool IsActive => !IsExpired && !IsRevoked;
+    public bool IsActive(DateTime utcNow) => !IsExpired(utcNow) && !IsRevoked;
 
     protected RefreshToken() {}
 

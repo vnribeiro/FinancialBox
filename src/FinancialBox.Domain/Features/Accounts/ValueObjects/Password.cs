@@ -9,7 +9,13 @@ public sealed class Password : IEquatable<Password>
         Hash = hash;
     }
 
-    public static Password FromHash(string hash) => new(hash);
+    public static Password FromHash(string hash)
+    {
+        if (string.IsNullOrWhiteSpace(hash))
+            throw new ArgumentException("Hash cannot be empty.", nameof(hash));
+            
+        return new(hash);
+    }
 
     public bool Equals(Password? other)
         => other is not null && Hash == other.Hash;
