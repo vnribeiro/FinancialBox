@@ -45,14 +45,14 @@ public sealed class ResendConfirmationCommandHandler(
         if (countLastHour >= _options.EmailConfirmation.MaxSendsPerHour)
             return AuthErrors.ResendLimitReached;
 
-        var plainToken = Guid.NewGuid().ToString();
-        var tokenHash = hasherService.Hash(plainToken);
+        var rawToken = Guid.NewGuid().ToString();
+        var tokenHash = hasherService.Hash(rawToken);
         var expiresAt = utcNow.AddMinutes(_options.EmailConfirmation.ExpirationMinutes);
 
         account.AddEmailConfirmationToken(EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt));
 
         await unitOfWork.CommitAsync(cancellationToken);
-        await emailService.SendConfirmationLinkAsync(account.Email.Address, plainToken, cancellationToken);
+        await emailService.SendConfirmationLinkAsync(account.Email.Address, rawToken, cancellationToken);
 
         return Result.Success();
     }
