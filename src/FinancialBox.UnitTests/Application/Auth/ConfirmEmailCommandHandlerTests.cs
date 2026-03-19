@@ -9,34 +9,29 @@ namespace FinancialBox.UnitTests.Application.Auth;
 public class ConfirmEmailCommandHandlerTests
 {
     private readonly FakeAccountRepository _accountRepository = new();
-    private readonly FakeEmailConfirmationTokenRepository _tokenRepository = new();
     private readonly FakeHasherService _hasherService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly ConfirmEmailCommandHandler _handler;
 
     public ConfirmEmailCommandHandlerTests()
     {
-        _handler = new ConfirmEmailCommandHandler(
-            _unitOfWork,
-            _accountRepository,
-            _tokenRepository,
-            _hasherService);
+        _handler = new ConfirmEmailCommandHandler(_unitOfWork, _accountRepository, _hasherService);
     }
 
-    private Account CreateAccount(string email = "user@example.com")
+    private Account CreateAccountWithToken(string plainToken, bool expired = false, bool used = false)
     {
         var account = Account.Create(
-            Email.Create(email).Data,
+            Email.Create("user@example.com").Data,
             Password.FromHash("hash"));
+
+        var expiresAt = expired ? DateTime.UtcNow.AddMinutes(-1) : DateTime.UtcNow.AddMinutes(30);
+        var token = EmailConfirmationToken.Create(account.Id, _hasherService.Hash(plainToken), expiresAt);
+
+        if (used) token.MarkAsUsed(DateTime.UtcNow.AddMinutes(-1));
+
+        account.AddEmailConfirmationToken(token);
         _accountRepository.Seed(account);
         return account;
-    }
-
-    private EmailConfirmationToken CreateValidToken(Guid accountId, string plainToken = "test-token")
-    {
-        var token = EmailConfirmationToken.Create(accountId, _hasherService.Hash(plainToken), DateTime.UtcNow.AddMinutes(30));
-        _tokenRepository.Seed(token);
-        return token;
     }
 
     [Fact]
@@ -51,9 +46,7 @@ public class ConfirmEmailCommandHandlerTests
     [Fact]
     public async Task Should_ReturnInvalidOrExpiredToken_When_TokenIsExpired()
     {
-        var account = CreateAccount();
-        var expiredToken = EmailConfirmationToken.Create(account.Id, _hasherService.Hash("my-token"), DateTime.UtcNow.AddMinutes(-1));
-        _tokenRepository.Seed(expiredToken);
+        CreateAccountWithToken("my-token", expired: true);
 
         var result = await _handler.Handle(new ConfirmEmailCommand("my-token"), default);
 
@@ -64,9 +57,7 @@ public class ConfirmEmailCommandHandlerTests
     [Fact]
     public async Task Should_ReturnInvalidOrExpiredToken_When_TokenAlreadyUsed()
     {
-        var account = CreateAccount();
-        var token = CreateValidToken(account.Id, "valid-token");
-        token.MarkAsUsed(DateTime.UtcNow.AddMinutes(-1));
+        CreateAccountWithToken("valid-token", used: true);
 
         var result = await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
@@ -77,8 +68,7 @@ public class ConfirmEmailCommandHandlerTests
     [Fact]
     public async Task Should_ConfirmEmail_When_TokenIsValid()
     {
-        var account = CreateAccount();
-        CreateValidToken(account.Id, "valid-token");
+        var account = CreateAccountWithToken("valid-token");
 
         var result = await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
@@ -90,9 +80,8 @@ public class ConfirmEmailCommandHandlerTests
     [Fact]
     public async Task Should_ReturnSuccess_Without_Commit_When_EmailAlreadyConfirmed()
     {
-        var account = CreateAccount();
+        var account = CreateAccountWithToken("valid-token");
         account.ConfirmEmail();
-        CreateValidToken(account.Id, "valid-token");
 
         var result = await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
@@ -103,11 +92,11 @@ public class ConfirmEmailCommandHandlerTests
     [Fact]
     public async Task Should_MarkTokenAsUsed_When_ConfirmationSucceeds()
     {
-        var account = CreateAccount();
-        var token = CreateValidToken(account.Id, "valid-token");
+        var account = CreateAccountWithToken("valid-token");
 
         await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
+        var token = account.EmailConfirmationTokens.First();
         Assert.NotNull(token.UsedAt);
     }
 }

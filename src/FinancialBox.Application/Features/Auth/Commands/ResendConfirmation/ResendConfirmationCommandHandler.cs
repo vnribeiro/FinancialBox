@@ -13,7 +13,6 @@ namespace FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
 public sealed class ResendConfirmationCommandHandler(
     IUnitOfWork unitOfWork,
     IAccountRepository accountRepository,
-    IEmailConfirmationTokenRepository tokenRepository,
     IHasherService hasherService,
     IEmailService emailService,
     IOptions<AuthOptions> options)
@@ -28,19 +27,20 @@ public sealed class ResendConfirmationCommandHandler(
         if (emailResult.IsFailure)
             return Result.Failure(emailResult.Errors);
 
-        var account = await accountRepository.GetByEmailAsync(emailResult.Data.Address, cancellationToken);
+        var account = await accountRepository.GetByEmailWithConfirmationTokensAsync(emailResult.Data.Address, cancellationToken);
 
         if (account is null || account.IsEmailConfirmed)
             return Result.Success();
 
         var utcNow = DateTime.UtcNow;
+        var tokens = account.EmailConfirmationTokens;
 
-        var latestToken = await tokenRepository.GetMostRecentByAccountIdAsync(account.Id, cancellationToken);
+        var latestToken = tokens.OrderByDescending(t => t.CreatedAt).FirstOrDefault();
 
         if (latestToken is not null && latestToken.CreatedAt >= utcNow.AddSeconds(-_options.EmailConfirmation.CooldownSeconds))
             return AuthErrors.ResendLimitReached;
 
-        var countLastHour = await tokenRepository.CountSentByAccountIdAfterAsync(account.Id, utcNow.AddHours(-1), cancellationToken);
+        var countLastHour = tokens.Count(t => t.CreatedAt >= utcNow.AddHours(-1));
 
         if (countLastHour >= _options.EmailConfirmation.MaxSendsPerHour)
             return AuthErrors.ResendLimitReached;
@@ -49,8 +49,7 @@ public sealed class ResendConfirmationCommandHandler(
         var tokenHash = hasherService.Hash(plainToken);
         var expiresAt = utcNow.AddMinutes(_options.EmailConfirmation.ExpirationMinutes);
 
-        var confirmationToken = EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt);
-        await tokenRepository.AddAsync(confirmationToken, cancellationToken);
+        account.AddEmailConfirmationToken(EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt));
 
         await unitOfWork.CommitAsync(cancellationToken);
         await emailService.SendConfirmationLinkAsync(account.Email.Address, plainToken, cancellationToken);

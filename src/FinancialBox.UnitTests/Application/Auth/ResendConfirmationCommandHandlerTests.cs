@@ -11,7 +11,6 @@ namespace FinancialBox.UnitTests.Application.Auth;
 public class ResendConfirmationCommandHandlerTests
 {
     private readonly FakeAccountRepository _accountRepository = new();
-    private readonly FakeEmailConfirmationTokenRepository _tokenRepository = new();
     private readonly FakeHasherService _hasherService = new();
     private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
@@ -33,19 +32,12 @@ public class ResendConfirmationCommandHandlerTests
         });
 
         _handler = new ResendConfirmationCommandHandler(
-            _unitOfWork,
-            _accountRepository,
-            _tokenRepository,
-            _hasherService,
-            _emailService,
-            options);
+            _unitOfWork, _accountRepository, _hasherService, _emailService, options);
     }
 
     private Account CreateUnconfirmedAccount(string email = "user@example.com")
     {
-        var account = Account.Create(
-            Email.Create(email).Data,
-            Password.FromHash("hash"));
+        var account = Account.Create(Email.Create(email).Data, Password.FromHash("hash"));
         _accountRepository.Seed(account);
         return account;
     }
@@ -82,8 +74,8 @@ public class ResendConfirmationCommandHandlerTests
     public async Task Should_ReturnResendLimitReached_When_CooldownNotExpired()
     {
         var account = CreateUnconfirmedAccount();
-        var recentToken = EmailConfirmationToken.Create(account.Id, "hash", DateTime.UtcNow.AddMinutes(30));
-        _tokenRepository.Seed(recentToken);
+        account.AddEmailConfirmationToken(
+            EmailConfirmationToken.Create(account.Id, "hash", DateTime.UtcNow.AddMinutes(30)));
 
         var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
@@ -96,25 +88,11 @@ public class ResendConfirmationCommandHandlerTests
     {
         var account = CreateUnconfirmedAccount();
 
-        for (int i = 0; i < MaxSendsPerHour; i++)
-            _tokenRepository.Seed(EmailConfirmationToken.Create(account.Id, $"hash{i}", DateTime.UtcNow.AddMinutes(30)));
+        for (var i = 0; i < MaxSendsPerHour; i++)
+            account.AddEmailConfirmationToken(
+                EmailConfirmationToken.Create(account.Id, $"hash{i}", DateTime.UtcNow.AddMinutes(-30 + i)));
 
-        var repoWithNullLatest = new FakeEmailConfirmationTokenRepositoryWithNullLatest(_tokenRepository);
-
-        var options = Options.Create(new AuthOptions
-        {
-            EmailConfirmation = new AuthOptions.EmailConfirmationSettings
-            {
-                CooldownSeconds = CooldownSeconds,
-                MaxSendsPerHour = MaxSendsPerHour,
-                ExpirationMinutes = 30
-            }
-        });
-
-        var handler = new ResendConfirmationCommandHandler(
-            _unitOfWork, _accountRepository, repoWithNullLatest, _hasherService, _emailService, options);
-
-        var result = await handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
+        var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
         Assert.True(result.IsFailure);
         Assert.Equal(AuthErrors.ResendLimitReached.Code, result.Errors[0].Code);
@@ -140,18 +118,5 @@ public class ResendConfirmationCommandHandlerTests
 
         Assert.Single(_emailService.ConfirmationLinksSent);
         Assert.Equal("user@example.com", _emailService.ConfirmationLinksSent[0].To);
-    }
-
-    private sealed class FakeEmailConfirmationTokenRepositoryWithNullLatest(
-        FakeEmailConfirmationTokenRepository inner)
-        : FakeEmailConfirmationTokenRepository
-    {
-        public override Task<EmailConfirmationToken?> GetMostRecentByAccountIdAsync(
-            Guid accountId, CancellationToken cancellationToken = default)
-            => Task.FromResult<EmailConfirmationToken?>(null);
-
-        public override Task<int> CountSentByAccountIdAfterAsync(
-            Guid accountId, DateTime after, CancellationToken cancellationToken = default)
-            => inner.CountSentByAccountIdAfterAsync(accountId, after, cancellationToken);
     }
 }

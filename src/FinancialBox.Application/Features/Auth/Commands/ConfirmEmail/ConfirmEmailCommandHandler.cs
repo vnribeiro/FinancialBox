@@ -10,19 +10,13 @@ namespace FinancialBox.Application.Features.Auth.Commands.ConfirmEmail;
 public sealed class ConfirmEmailCommandHandler(
     IUnitOfWork unitOfWork,
     IAccountRepository accountRepository,
-    IEmailConfirmationTokenRepository tokenRepository,
     IHasherService hasherService)
     : IRequestHandler<ConfirmEmailCommand, Result>
 {
     public async Task<Result> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
         var tokenHash = hasherService.Hash(request.Token);
-        var confirmationToken = await tokenRepository.GetByTokenHashAsync(tokenHash, cancellationToken);
-
-        if (confirmationToken is null || !confirmationToken.CanValidate(DateTime.UtcNow))
-            return AuthErrors.InvalidOrExpiredToken;
-
-        var account = await accountRepository.GetByIdAsync(confirmationToken.AccountId, cancellationToken);
+        var account = await accountRepository.GetByConfirmationTokenHashAsync(tokenHash, cancellationToken);
 
         if (account is null)
             return AuthErrors.InvalidOrExpiredToken;
@@ -30,7 +24,12 @@ public sealed class ConfirmEmailCommandHandler(
         if (account.IsEmailConfirmed)
             return Result.Success();
 
-        confirmationToken.MarkAsUsed(DateTime.UtcNow);
+        var token = account.EmailConfirmationTokens.First(t => t.TokenHash == tokenHash);
+
+        if (!token.CanValidate(DateTime.UtcNow))
+            return AuthErrors.InvalidOrExpiredToken;
+
+        token.MarkAsUsed(DateTime.UtcNow);
         account.ConfirmEmail();
 
         await unitOfWork.CommitAsync(cancellationToken);

@@ -13,7 +13,6 @@ public class RegisterCommandHandlerTests
     private readonly FakeAccountRepository _accountRepository = new();
     private readonly FakeUserRepository _userRepository = new();
     private readonly FakeRoleRepository _roleRepository = new();
-    private readonly FakeEmailConfirmationTokenRepository _tokenRepository = new();
     private readonly FakeHasherService _hasherService = new();
     private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
@@ -32,7 +31,6 @@ public class RegisterCommandHandlerTests
             _userRepository,
             _roleRepository,
             _hasherService,
-            _tokenRepository,
             _emailService,
             options);
     }
@@ -47,9 +45,7 @@ public class RegisterCommandHandlerTests
     [Fact]
     public async Task Should_ReturnEmailAlreadyExists_When_EmailIsTaken()
     {
-        var existing = Account.Create(
-            Email.Create("taken@example.com").Data,
-            Password.FromHash("hash"));
+        var existing = Account.Create(Email.Create("taken@example.com").Data, Password.FromHash("hash"));
         _accountRepository.Seed(existing);
 
         var result = await _handler.Handle(new RegisterCommand("John", "Doe", "taken@example.com", "Password1!"), default);
@@ -79,8 +75,8 @@ public class RegisterCommandHandlerTests
     {
         await _handler.Handle(new RegisterCommand("John", "Doe", "new@example.com", "Password1!"), default);
 
-        var tokens = await _tokenRepository.GetAllAsync();
-        Assert.Single(tokens);
+        var account = _accountRepository.All().First(a => a.Email.Address == "new@example.com");
+        Assert.Single(account.EmailConfirmationTokens);
     }
 
     [Fact]

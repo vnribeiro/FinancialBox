@@ -67,7 +67,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
-        services.AddScoped<IEmailConfirmationTokenRepository, EmailConfirmationTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

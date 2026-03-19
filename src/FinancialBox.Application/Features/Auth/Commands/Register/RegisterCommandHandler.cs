@@ -17,7 +17,6 @@ public sealed class RegisterCommandHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IHasherService hasherService,
-    IEmailConfirmationTokenRepository tokenRepository,
     IEmailService emailService,
     IOptions<AuthOptions> options)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
@@ -43,8 +42,7 @@ public sealed class RegisterCommandHandler(
         var plainToken = Guid.NewGuid().ToString();
         var tokenHash = hasherService.Hash(plainToken);
         var expiresAt = DateTime.UtcNow.AddMinutes(_authOptions.EmailConfirmation.ExpirationMinutes);
-        var confirmationToken = EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt);
-        await tokenRepository.AddAsync(confirmationToken, cancellationToken);
+        account.AddEmailConfirmationToken(EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt));
 
         var user = User.Create(account.Id, request.FirstName, request.LastName);
 

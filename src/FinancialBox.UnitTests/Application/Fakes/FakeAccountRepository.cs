@@ -8,6 +8,7 @@ public class FakeAccountRepository : IAccountRepository
     private readonly List<Account> _accounts = [];
 
     public void Seed(Account account) => _accounts.Add(account);
+    public IEnumerable<Account> All() => _accounts;
 
     public Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => Task.FromResult(_accounts.FirstOrDefault(a => a.Id == id));
@@ -33,6 +34,9 @@ public class FakeAccountRepository : IAccountRepository
 
     public Task<Account?> GetByEmailWithConfirmationTokensAsync(string email, CancellationToken cancellationToken = default)
         => Task.FromResult(_accounts.FirstOrDefault(a => a.Email.Address == email));
+
+    public Task<Account?> GetByConfirmationTokenHashAsync(string tokenHash, CancellationToken cancellationToken = default)
+        => Task.FromResult(_accounts.FirstOrDefault(a => a.EmailConfirmationTokens.Any(t => t.TokenHash == tokenHash)));
 
     public Task<Account?> GetByIdWithRefreshTokensAsync(Guid id, CancellationToken cancellationToken = default)
         => Task.FromResult(_accounts.FirstOrDefault(a => a.Id == id));
