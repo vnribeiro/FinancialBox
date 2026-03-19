@@ -33,8 +33,8 @@ public class RoleMapping : IEntityTypeConfiguration<Role>
         var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         builder.HasData(
-            new { Id = Guid.Parse("d9aa09b9-0a41-4f9d-8c6b-6f4f3df7a6f9"), Name = "Admin", CreatedAt = seedDate, UpdatedAt = (DateTime?)null },
-            new { Id = Guid.Parse("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"), Name = "User", CreatedAt = seedDate, UpdatedAt = (DateTime?)null }
+            new { Id = Guid.Parse("d9aa09b9-0a41-4f9d-8c6b-6f4f3df7a6f9"), Name = "Admin", CreatedAt = seedDate, UpdatedAt = (DateTime?) null },
+            new { Id = Guid.Parse("7d2b9c56-1a2d-4c1e-9a62-9e2b7c1f2d0e"), Name = "User", CreatedAt = seedDate, UpdatedAt = (DateTime?) null }
         );
     }
 }

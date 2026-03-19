@@ -9,7 +9,9 @@ namespace FinancialBox.Infrastructure.Persistence;
 internal sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; } = null!;
-    public DbSet<Opt> EmailVerificationCodes { get; set; } = null!;
+    public DbSet<Account> Accounts { get; set; } = null!;
+    public DbSet<Otp> Otps { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<FinancialGoal> FinancialGoals { get; set; } = null!;
     public DbSet<FinancialGoalTransactions> Transactions { get; set; } = null!;

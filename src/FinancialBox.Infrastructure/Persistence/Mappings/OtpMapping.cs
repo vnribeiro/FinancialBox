@@ -1,22 +1,21 @@
 using FinancialBox.Domain.Features.Accounts;
-using FinancialBox.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
-public class EmailVerificationCodeMapping : IEntityTypeConfiguration<Opt>
+public class OtpMapping : IEntityTypeConfiguration<Otp>
 {
-    public void Configure(EntityTypeBuilder<Opt> builder)
+    public void Configure(EntityTypeBuilder<Otp> builder)
     {
         builder
-            .ToTable("EmailVerificationCodes");
+            .ToTable("Otps");
 
         builder
             .HasKey(x => x.Id);
 
         builder
-            .Property(x => x.UserId)
+            .Property(x => x.AccountId)
             .IsRequired();
 
         builder
@@ -37,20 +36,20 @@ public class EmailVerificationCodeMapping : IEntityTypeConfiguration<Opt>
             .HasDefaultValue(0);
 
         builder
+            .HasIndex(x => x.AccountId);
+
+        // Relationship to Account is FK only — load Account separately via IAccountRepository when needed.
+        builder
+            .HasOne<Account>()
+            .WithMany()
+            .HasForeignKey(x => x.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
             .Property(x => x.CreatedAt)
             .IsRequired();
 
         builder
             .Property(x => x.UpdatedAt);
-
-        builder
-            .HasIndex(x => x.UserId);
-
-        // Relationship to User is FK only — load User separately via IUserRepository when needed.
-        builder
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }
