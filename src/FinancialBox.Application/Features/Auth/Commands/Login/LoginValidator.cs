@@ -1,4 +1,3 @@
-using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FluentValidation;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
@@ -9,8 +8,8 @@ public class LoginValidator : AbstractValidator<LoginCommand>
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithErrorCode("Email.Empty").WithMessage("Email is required.")
-            .Matches(Email.EmailRegex).WithErrorCode("Email.InvalidFormat").WithMessage("Email is invalid.")
-            .MaximumLength(255).WithErrorCode("Email.TooLong").WithMessage("Email must be at most 255 characters long.");
+            .MaximumLength(255).WithErrorCode("Email.TooLong").WithMessage("Email must be at most 255 characters long.")
+            .EmailAddress().WithErrorCode("Email.Invalid").WithMessage("Email must be a valid email address.");
 
         RuleFor(x => x.Password)
             .NotEmpty().WithErrorCode("Password.Empty").WithMessage("Password is required.")
