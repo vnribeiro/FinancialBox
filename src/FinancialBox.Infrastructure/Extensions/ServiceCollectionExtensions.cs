@@ -78,15 +78,16 @@ public static class ServiceCollectionExtensions
     /// <returns>The updated service collection.</returns>
     private static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddOptions<SecureHashOptions>()
-            .BindConfiguration(SecureHashOptions.SectionName)
-            .Validate(o => o.Iterations > 0, "SecureHash:Iterations must be greater than zero.")
-            .Validate(o => o.SaltSize > 0, "SecureHash:SaltSize must be greater than zero.")
-            .Validate(o => o.SubkeySize > 0, "SecureHash:SubkeySize must be greater than zero.")
+        services.AddOptions<HasherOptions>()
+            .BindConfiguration(HasherOptions.SectionName)
+            .Validate(o => o.Iterations > 0, "Hasher:Iterations must be greater than zero.")
+            .Validate(o => o.SaltSize > 0, "Hasher:SaltSize must be greater than zero.")
+            .Validate(o => o.SubkeySize > 0, "Hasher:SubkeySize must be greater than zero.")
             .ValidateOnStart();
 
         services.AddSingleton<IJwtService, JwtService>();
-        services.AddSingleton<ISecureHashService, SecureHashService>();
+        services.AddSingleton<IHasherService, HasherService>();
+        services.AddSingleton<ITokenGeneratorService, TokenGeneratorService>();
 
         return services;
     }

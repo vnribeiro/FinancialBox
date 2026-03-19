@@ -23,7 +23,7 @@ public class ResendConfirmationCommandHandlerTests
 
     public ResendConfirmationCommandHandlerTests()
     {
-        var options = Options.Create(new EmailVerificationOptions
+        var options = Options.Create(new OtpOptions
         {
             CooldownSeconds = CooldownSeconds,
             MaxSendsPerHour = MaxSendsPerHour,
@@ -115,7 +115,7 @@ public class ResendConfirmationCommandHandlerTests
         }
 
         var repoWithNullLatest = new FakeEmailVerificationCodeRepositoryWithNullLatest(_codeRepository);
-        var options = Options.Create(new EmailVerificationOptions
+        var options = Options.Create(new OtpOptions
         {
             CooldownSeconds = CooldownSeconds,
             MaxSendsPerHour = MaxSendsPerHour,

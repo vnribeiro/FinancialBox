@@ -1,51 +1,44 @@
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.DomainEvents;
+using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MediatorImpl = FinancialBox.Application.Mediator.Mediator;
 
-namespace FinancialBox.Application.Extensions
+namespace FinancialBox.Application.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services)
-        {
-            // Get the assembly of the Application layer
-            var applicationAssembly = typeof(LoginCommand).Assembly;
+        var assembly = typeof(LoginCommand).Assembly;
 
-            // Register custom Mediator implementation
-            services.AddScoped<IMediator, MediatorImpl>();
+        services.AddScoped<IMediator, MediatorImpl>();
 
-            // Register FluentValidation validators from the Application layer
-            services.AddValidatorsFromAssembly(applicationAssembly);
+        services.AddValidatorsFromAssembly(assembly);
 
-            // Register all IRequestHandler<TRequest, TResponse> implementations
-            services.Scan(scan => scan
-                .FromAssemblies(applicationAssembly)
-                .AddClasses(c => c.AssignableTo(typeof(IRequestHandler<,>)))
-                .AsImplementedInterfaces()
-                .WithScopedLifetime());
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(c => c.AssignableTo(typeof(IRequestHandler<,>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
-            // Automatically register all IPipelineBehavior<TRequest, TResponse> implementations
-            services.Scan(scan => scan
-                .FromAssemblies(applicationAssembly)
-                .AddClasses(x => x.AssignableTo(typeof(IPipelineBehavior<,>)))
-                .AsImplementedInterfaces()
-                .WithScopedLifetime());
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(c => c.AssignableTo(typeof(IPipelineBehavior<,>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
-            // Register all IDomainEventHandler<TEvent> implementations from Application
-            services.Scan(scan => scan
-                .FromAssemblies(applicationAssembly)
-                .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
-                .AsImplementedInterfaces()
-                .WithScopedLifetime());
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(c => c.AssignableTo(typeof(IDomainEventHandler<>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
-            //// Register options
-            //services.AddOptions<EmailVerificationOptions>()
-            //    .BindConfiguration(EmailVerificationOptions.SectionName);
+        services.AddOptions<AuthOptions>()
+            .BindConfiguration(AuthOptions.SectionName);
 
-            return services;
-        }
+        return services;
     }
 }

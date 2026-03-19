@@ -20,7 +20,7 @@ public class RegisterCommandHandlerTests
 
     public RegisterCommandHandlerTests()
     {
-        var options = Options.Create(new EmailVerificationOptions
+        var options = Options.Create(new OtpOptions
         {
             CodeExpirationMinutes = 15
         });

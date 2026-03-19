@@ -16,10 +16,10 @@ public sealed class ResendConfirmationCommandHandler(
     IEmailVerificationCodeRepository emailVerificationCodeRepository,
     ISecureHashService secureHashService,
     IEmailService emailService,
-    IOptions<EmailVerificationOptions> emailVerificationOptions)
+    IOptions<OtpOptions> emailVerificationOptions)
     : IRequestHandler<ResendConfirmationCommand, Result>
 {
-    private readonly EmailVerificationOptions _emailVerificationOptions = emailVerificationOptions.Value;
+    private readonly OtpOptions _emailVerificationOptions = emailVerificationOptions.Value;
 
     public async Task<Result> Handle(ResendConfirmationCommand request, CancellationToken cancellationToken)
     {

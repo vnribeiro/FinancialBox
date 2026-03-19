@@ -1,8 +1,8 @@
 ﻿namespace FinancialBox.Infrastructure.Services.Options;
 
-internal sealed class SecureHashOptions
+internal sealed class HasherOptions
 {
-    public const string SectionName = "SecureHash";
+    public const string SectionName = "Hasher";
 
     public int Iterations { get; set; }
     public int SaltSize { get; set; }

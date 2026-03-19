@@ -4,15 +4,23 @@ using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Domain.Features.Accounts.ValueObjects;
+using FinancialBox.Domain.Features.Accounts;
+using FinancialBox.Application.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Application.Features.Auth.Commands.Login;
 
 public sealed class LoginCommandHandler(
-    IUserRepository userRepository,
-    ISecureHashService secretHasherService,
-    IJwtService jwtService)
+    IUnitOfWork unitOfWork,
+    IAccountRepository accountRepository,
+    IJwtService jwtService,
+    IHasherService hasherService,
+    ITokenGeneratorService tokenGeneratorService,
+    IOptions<AuthOptions> options)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {
+    private readonly AuthOptions _authOptions = options.Value;
+
     public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var emailResult = Email.Create(request.Email);
@@ -20,23 +28,31 @@ public sealed class LoginCommandHandler(
         if (emailResult.IsFailure)
             return Result<LoginResponse>.Failure(emailResult.Errors);
 
-        var user = await userRepository.GetByEmailWithRolesAsync(emailResult.Data.Address, cancellationToken);
+        var account = await accountRepository.GetByEmailWithRolesAsync(emailResult.Data.Address, cancellationToken);
 
-        if (user is null)
+        if (account is null)
             return AuthErrors.InvalidCredentials;
 
-        var passwordIsValid = secretHasherService.Verify(user.Password.Hash, request.Password);
+        var passwordIsValid = hasherService.Verify(account.Password.Hash, request.Password);
 
         if (!passwordIsValid)
             return AuthErrors.InvalidCredentials;
 
-        if (!user.IsEmailConfirmed)
+        if (!account.IsEmailConfirmed)
             return AuthErrors.EmailNotConfirmed;
 
-        var token = jwtService.GenerateToken(user);
+        var token = jwtService.GenerateToken(account);
+
+        var rawRefreshToken = tokenGeneratorService.GenerateRefreshToken();
+        var refreshToken = RefreshToken.Create(account.Id, hasherService.Hash(rawRefreshToken), DateTime.UtcNow.AddDays(_authOptions.RefreshToken.ExpirationDays));
+        account.AddRefreshToken(refreshToken);
+
+        accountRepository.Update(account);
+        await unitOfWork.CommitAsync(cancellationToken);
 
         var response = new LoginResponse(
             token.AccessToken,
+            refreshToken.Token,
             token.ExpiresAtUtc);
 
         return Result<LoginResponse>.Success(response);

@@ -1,5 +1,4 @@
 using FinancialBox.Domain.Features.Accounts;
-using FinancialBox.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -61,13 +60,6 @@ public class AccountMapping : IEntityTypeConfiguration<Account>
                     join.HasKey("AccountId", "RoleId");
                     join.HasIndex("RoleId");
                 });
-
-        // Relationship to User is FK only — load User separately via IUserRepository when needed.
-        builder
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(a => a.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .Property(a => a.CreatedAt)

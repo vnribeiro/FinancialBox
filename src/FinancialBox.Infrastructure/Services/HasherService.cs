@@ -5,31 +5,32 @@ using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Infrastructure.Services;
 
-internal sealed class SecureHashService(IOptions<SecureHashOptions> options) : ISecureHashService
+internal sealed class HasherService(IOptions<HasherOptions> options) : IHasherService
 {
     private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA256;
-    private readonly SecureHashOptions _options = options.Value;
+    private readonly HasherOptions _options = options.Value;
 
-    public string Hash(string plaintext)
+    public string Hash(string raw)
     {
         var salt = RandomNumberGenerator.GetBytes(_options.SaltSize);
-        var subkey = Rfc2898DeriveBytes.Pbkdf2(
-            plaintext,
-            salt,
-            _options.Iterations,
-            Algorithm,
-            _options.SubkeySize);
 
+        var subkey = Rfc2898DeriveBytes.Pbkdf2(
+            raw, 
+            salt, 
+            _options.Iterations, 
+            Algorithm, 
+            _options.SubkeySize);
+        
         return $"PBKDF2${Algorithm.Name}${_options.Iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(subkey)}";
     }
 
-    public bool Verify(string hash, string plaintext)
+    public bool Verify(string hash, string raw)
     {
         if (!TryParseHash(hash, _options.SaltSize, _options.SubkeySize, out var iterations, out var salt, out var expectedSubkey))
             return false;
 
         var actualSubkey = Rfc2898DeriveBytes.Pbkdf2(
-            plaintext,
+            raw,
             salt,
             iterations,
             Algorithm,
@@ -45,6 +46,7 @@ internal sealed class SecureHashService(IOptions<SecureHashOptions> options) : I
         subkey = [];
 
         var parts = hash.Split('$');
+        
         if (parts.Length != 5)
             return false;
 

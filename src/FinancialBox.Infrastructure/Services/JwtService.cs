@@ -2,10 +2,10 @@
 using System.Security.Claims;
 using System.Text;
 using FinancialBox.Application.Abstractions.Services;
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using JwtOptions = FinancialBox.Infrastructure.Services.Options.JwtOptions;
+using FinancialBox.Infrastructure.Services.Options;
 
 namespace FinancialBox.Infrastructure.Services;
 
@@ -13,19 +13,19 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
 {
     private readonly JwtOptions _options = options.Value;
 
-    public TokenResponse GenerateToken(User user)
+    public JwtToken GenerateToken(Account account)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email.Address),
+            new(JwtRegisteredClaimNames.Sub, account.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, account.Email.Address),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
         
-        var roles = user.Roles.Select(r => r.Name);
+        var roles = account.Roles.Select(r => r.Name);
         claims.AddRange(roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct().
             Select(role => new Claim(ClaimTypes.Role, role)));
 
@@ -40,6 +40,6 @@ internal sealed class JwtService(IOptions<JwtOptions> options) : IJwtService
             signingCredentials: signingCredentials);
 
         var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        return new TokenResponse(accessToken, expiresAtUtc);
+        return new JwtToken(accessToken, expiresAtUtc);
     }
 }

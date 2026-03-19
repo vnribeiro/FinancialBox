@@ -13,44 +13,46 @@ namespace FinancialBox.Application.Features.Auth.Commands.Register;
 
 public sealed class RegisterCommandHandler(
     IUnitOfWork unitOfWork,
+    IAccountRepository accountRepository,
     IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IEmailVerificationCodeRepository emailVerificationCodeRepository,
-    ISecureHashService secureHashService,
+    IHasherService hasherService,
+    ITokenGeneratorService tokenGeneratorService,
     IEmailService emailService,
-    IOptions<EmailVerificationOptions> emailVerificationOptions)
+    IOptions<AuthOptions> options)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
-    private readonly EmailVerificationOptions _emailVerificationOptions = emailVerificationOptions.Value;
+    private readonly AuthOptions _authOptions = options.Value;
 
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var emailResult = Email.Create(request.Email);
-
+        
         if (emailResult.IsFailure)
             return Result<RegisterResponse>.Failure(emailResult.Errors);
 
-        if (await userRepository.EmailExistsAsync(emailResult.Data.Address, cancellationToken))
+        if (await accountRepository.EmailExistsAsync(emailResult.Data.Address, cancellationToken))
             return UserErrors.EmailAlreadyInUse;
 
-        var password = Password.FromHash(secureHashService.Hash(request.Password));
+        var password = Password.FromHash(hasherService.Hash(request.Password));
+        var account = Account.Create(emailResult.Data, password);
 
         var role = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
-        var user = User.Create(request.FirstName, request.LastName, emailResult.Data, password);
-        user.AddRole(role!);
+        account.AddRole(role!);
 
+        var expiresAt = DateTime.UtcNow.AddMinutes(_authOptions.Otp.ExpirationMinutes);
+        var code = tokenGeneratorService.GenerateOtp();
+        var otp = Otp.Create(account.Id, hasherService.Hash(code), expiresAt);
+        account.AddOtp(otp);
+
+        var user = User.Create(account.Id, request.FirstName, request.LastName);
+
+        await accountRepository.AddAsync(account, cancellationToken);
         await userRepository.AddAsync(user, cancellationToken);
-
-        var plainCode = OtpGenerator.Generate();
-        var codeHash = secureHashService.Hash(plainCode);
-        var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
-
-        var emailVerificationCode = Opt.Create(user.Id, codeHash, expiresAt);
-        await emailVerificationCodeRepository.AddAsync(emailVerificationCode, cancellationToken);
-
         await unitOfWork.CommitAsync(cancellationToken);
-        await emailService.SendVerificationCodeAsync(user.Email.Address, plainCode, cancellationToken);
 
-        return Result<RegisterResponse>.Success(new RegisterResponse(user.Id, user.Email.Address));
+        await emailService.SendVerificationCodeAsync(account.Email.Address, code, cancellationToken);
+
+        return Result<RegisterResponse>.Success(new RegisterResponse(account.Id));
     }
 }

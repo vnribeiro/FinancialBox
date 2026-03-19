@@ -21,7 +21,7 @@ public class ConfirmEmailCommandHandlerTests
 
     public ConfirmEmailCommandHandlerTests()
     {
-        var options = Options.Create(new EmailVerificationOptions
+        var options = Options.Create(new OtpOptions
         {
             MaxAttempts = MaxAttempts,
             CodeExpirationMinutes = 15

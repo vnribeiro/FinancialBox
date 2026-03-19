@@ -1,10 +1,8 @@
-﻿using FinancialBox.Domain.Features.Users;
+﻿using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.Application.Abstractions.Services;
 
 public interface IJwtService
 {
-    TokenResponse GenerateToken(User user);
+    JwtToken GenerateToken(Account account);
 }
-
-public sealed record TokenResponse(string AccessToken, DateTime ExpiresAtUtc);

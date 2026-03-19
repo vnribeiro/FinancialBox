@@ -1,6 +1,7 @@
-﻿using FinancialBox.Domain.Features.Users;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using FinancialBox.Domain.Features.Accounts;
+using FinancialBox.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FinancialBox.Infrastructure.Persistence.Mappings;
 
@@ -13,6 +14,16 @@ public class UserMapping : IEntityTypeConfiguration<User>
 
         builder
             .HasKey(u => u.Id);
+
+        builder
+            .Property(u => u.AccountId)
+            .IsRequired();
+
+        builder
+            .HasOne<Account>()
+            .WithOne()
+            .HasForeignKey<User>(u => u.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .Property(u => u.FirstName)

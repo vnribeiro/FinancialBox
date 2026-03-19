@@ -14,10 +14,10 @@ public sealed class ConfirmEmailCommandHandler(
     IUserRepository userRepository,
     IEmailVerificationCodeRepository emailVerificationCodeRepository,
     ISecureHashService secureHashService,
-    IOptions<EmailVerificationOptions> emailVerificationOptions)
+    IOptions<OtpOptions> emailVerificationOptions)
     : IRequestHandler<ConfirmEmailCommand, Result>
 {
-    private readonly EmailVerificationOptions _emailVerificationOptions = emailVerificationOptions.Value;
+    private readonly OtpOptions _emailVerificationOptions = emailVerificationOptions.Value;
 
     public async Task<Result> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
