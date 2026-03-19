@@ -100,6 +100,11 @@ public static class ServiceCollectionExtensions
     /// <returns>The updated service collection.</returns>
     private static IServiceCollection AddEmailServices(this IServiceCollection services)
     {
+        services.AddOptions<AppOptions>()
+            .BindConfiguration(AppOptions.SectionName)
+            .Validate(o => !string.IsNullOrWhiteSpace(o.BaseUrl), "App:BaseUrl is required.")
+            .ValidateOnStart();
+
         services.AddOptions<SmtpOptions>()
             .BindConfiguration(SmtpOptions.SectionName)
             .Validate(o => !string.IsNullOrWhiteSpace(o.Host), "Smtp:Host is required.")
