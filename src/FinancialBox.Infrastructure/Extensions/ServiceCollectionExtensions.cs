@@ -63,6 +63,8 @@ public static class ServiceCollectionExtensions
             options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
         });
 
+        services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();

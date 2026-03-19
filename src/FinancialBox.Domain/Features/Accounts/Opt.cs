@@ -2,7 +2,7 @@ using FinancialBox.Domain.Common;
 
 namespace FinancialBox.Domain.Features.Accounts;
 
-public class Otp : AggregateRoot
+public class Otp : BaseEntity
 {
     public Guid AccountId { get; private set; }
     public string CodeHash { get; private set; } = string.Empty;

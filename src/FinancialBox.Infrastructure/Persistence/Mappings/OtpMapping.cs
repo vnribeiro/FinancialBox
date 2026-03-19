@@ -38,10 +38,9 @@ public class OtpMapping : IEntityTypeConfiguration<Otp>
         builder
             .HasIndex(x => x.AccountId);
 
-        // Relationship to Account is FK only — load Account separately via IAccountRepository when needed.
         builder
             .HasOne<Account>()
-            .WithMany()
+            .WithMany(a => a.Otps)
             .HasForeignKey(x => x.AccountId)
             .OnDelete(DeleteBehavior.Cascade);
 

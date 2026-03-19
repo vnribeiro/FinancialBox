@@ -2,7 +2,7 @@
 
 namespace FinancialBox.Domain.Features.Accounts;
 
-public class RefreshToken : AggregateRoot
+public class RefreshToken : BaseEntity
 {
     public Guid AccountId { get; private set; }
     public string Token { get; private set; } = string.Empty;

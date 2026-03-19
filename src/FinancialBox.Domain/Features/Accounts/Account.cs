@@ -10,6 +10,8 @@ public class Account : AggregateRoot
     public Password Password { get; private set; } = null!;
     public bool IsEmailConfirmed { get; private set; }
     public ICollection<Role> Roles { get; private set; } = [];
+    public ICollection<Otp> Otps { get; private set; } = [];
+    public ICollection<RefreshToken> RefreshTokens { get; private set; } = [];
 
     protected Account() { }
 
