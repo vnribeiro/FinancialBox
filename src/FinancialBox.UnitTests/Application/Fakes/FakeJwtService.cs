@@ -1,10 +1,10 @@
 using FinancialBox.Application.Abstractions.Services;
-using FinancialBox.Domain.Features.Users;
+using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.UnitTests.Application.Fakes;
 
 public class FakeJwtService : IJwtService
 {
-    public TokenResponse GenerateToken(User user)
+    public JwtToken GenerateToken(Account account)
         => new("fake_token", DateTime.UtcNow.AddHours(1));
 }

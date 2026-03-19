@@ -3,4 +3,4 @@ using FinancialBox.Domain.Primitives;
 
 namespace FinancialBox.Application.Features.Auth.Commands.ConfirmEmail;
 
-public sealed record ConfirmEmailCommand(string Email, string Code) : IRequest<Result>;
+public sealed record ConfirmEmailCommand(string Token) : IRequest<Result>;

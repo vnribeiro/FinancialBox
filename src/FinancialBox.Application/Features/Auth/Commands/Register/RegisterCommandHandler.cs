@@ -17,7 +17,7 @@ public sealed class RegisterCommandHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IHasherService hasherService,
-    ITokenGeneratorService tokenGeneratorService,
+    IEmailConfirmationTokenRepository tokenRepository,
     IEmailService emailService,
     IOptions<AuthOptions> options)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
@@ -27,7 +27,7 @@ public sealed class RegisterCommandHandler(
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var emailResult = Email.Create(request.Email);
-        
+
         if (emailResult.IsFailure)
             return Result<RegisterResponse>.Failure(emailResult.Errors);
 
@@ -40,10 +40,11 @@ public sealed class RegisterCommandHandler(
         var role = await roleRepository.GetByNameAsync(Role.DefaultName, cancellationToken);
         account.AddRole(role!);
 
-        var expiresAt = DateTime.UtcNow.AddMinutes(_authOptions.Otp.ExpirationMinutes);
-        var code = tokenGeneratorService.GenerateOtp();
-        var otp = Otp.Create(account.Id, hasherService.Hash(code), expiresAt);
-        account.AddOtp(otp);
+        var plainToken = Guid.NewGuid().ToString();
+        var tokenHash = hasherService.Hash(plainToken);
+        var expiresAt = DateTime.UtcNow.AddMinutes(_authOptions.EmailConfirmation.ExpirationMinutes);
+        var confirmationToken = EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt);
+        await tokenRepository.AddAsync(confirmationToken, cancellationToken);
 
         var user = User.Create(account.Id, request.FirstName, request.LastName);
 
@@ -51,7 +52,7 @@ public sealed class RegisterCommandHandler(
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        await emailService.SendVerificationCodeAsync(account.Email.Address, code, cancellationToken);
+        await emailService.SendConfirmationLinkAsync(account.Email.Address, plainToken, cancellationToken);
 
         return Result<RegisterResponse>.Success(new RegisterResponse(account.Id));
     }

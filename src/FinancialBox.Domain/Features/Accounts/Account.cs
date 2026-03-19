@@ -9,7 +9,7 @@ public class Account : AggregateRoot
     public Password Password { get; private set; } = null!;
     public bool IsEmailConfirmed { get; private set; }
     public ICollection<Role> Roles { get; private set; } = [];
-    public ICollection<Otp> Otps { get; private set; } = [];
+    public ICollection<EmailConfirmationToken> EmailConfirmationTokens { get; private set; } = [];
     public ICollection<RefreshToken> RefreshTokens { get; private set; } = [];
 
     protected Account() { }
@@ -43,7 +43,7 @@ public class Account : AggregateRoot
 
     public bool HasRole(Guid roleId) => Roles.Any(r => r.Id == roleId);
 
-    public void AddOtp(Otp otp) => Otps.Add(otp);
+    public void AddEmailConfirmationToken(EmailConfirmationToken token) => EmailConfirmationTokens.Add(token);
 
     public void AddRefreshToken(RefreshToken refreshToken) => RefreshTokens.Add(refreshToken);
 

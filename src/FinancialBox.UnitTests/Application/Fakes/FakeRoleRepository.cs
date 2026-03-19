@@ -9,7 +9,7 @@ public class FakeRoleRepository : IRoleRepository
 
     public FakeRoleRepository()
     {
-        _roles.Add(new Role(Role.DefaultName));
+        _roles.Add(Role.Create(Role.DefaultName));
     }
 
     public void Seed(Role role) => _roles.Add(role);

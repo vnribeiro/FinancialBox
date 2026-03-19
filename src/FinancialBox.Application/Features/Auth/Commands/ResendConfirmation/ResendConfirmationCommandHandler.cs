@@ -3,6 +3,7 @@ using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Application.Features.Auth.Errors;
+using FinancialBox.Domain.Features.Accounts;
 using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Primitives;
 using Microsoft.Extensions.Options;
@@ -11,14 +12,14 @@ namespace FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
 
 public sealed class ResendConfirmationCommandHandler(
     IUnitOfWork unitOfWork,
-    IUserRepository userRepository,
-    IEmailVerificationCodeRepository emailVerificationCodeRepository,
-    ISecureHashService secureHashService,
+    IAccountRepository accountRepository,
+    IEmailConfirmationTokenRepository tokenRepository,
+    IHasherService hasherService,
     IEmailService emailService,
-    IOptions<OtpOptions> emailVerificationOptions)
+    IOptions<AuthOptions> options)
     : IRequestHandler<ResendConfirmationCommand, Result>
 {
-    private readonly OtpOptions _emailVerificationOptions = emailVerificationOptions.Value;
+    private readonly AuthOptions _options = options.Value;
 
     public async Task<Result> Handle(ResendConfirmationCommand request, CancellationToken cancellationToken)
     {
@@ -27,32 +28,32 @@ public sealed class ResendConfirmationCommandHandler(
         if (emailResult.IsFailure)
             return Result.Failure(emailResult.Errors);
 
-        var user = await userRepository.GetByEmailAsync(emailResult.Data.Address, cancellationToken);
+        var account = await accountRepository.GetByEmailAsync(emailResult.Data.Address, cancellationToken);
 
-        if (user is null || user.IsEmailConfirmed)
+        if (account is null || account.IsEmailConfirmed)
             return Result.Success();
 
         var utcNow = DateTime.UtcNow;
 
-        var latestCode = await emailVerificationCodeRepository.GetMostRecentByUserIdAsync(user.Id, cancellationToken);
+        var latestToken = await tokenRepository.GetMostRecentByAccountIdAsync(account.Id, cancellationToken);
 
-        if (latestCode is not null && latestCode.CreatedAt >= utcNow.AddSeconds(-_emailVerificationOptions.CooldownSeconds))
+        if (latestToken is not null && latestToken.CreatedAt >= utcNow.AddSeconds(-_options.EmailConfirmation.CooldownSeconds))
             return AuthErrors.ResendLimitReached;
 
-        var countLastHour = await emailVerificationCodeRepository.CountSentByUserIdAfterAsync(user.Id, utcNow.AddHours(-1), cancellationToken);
+        var countLastHour = await tokenRepository.CountSentByAccountIdAfterAsync(account.Id, utcNow.AddHours(-1), cancellationToken);
 
-        if (countLastHour >= _emailVerificationOptions.MaxSendsPerHour)
+        if (countLastHour >= _options.EmailConfirmation.MaxSendsPerHour)
             return AuthErrors.ResendLimitReached;
 
-        var plainCode = OtpGenerator.Generate();
-        var codeHash = secureHashService.Hash(plainCode);
-        var expiresAt = DateTime.UtcNow.AddMinutes(_emailVerificationOptions.CodeExpirationMinutes);
+        var plainToken = Guid.NewGuid().ToString();
+        var tokenHash = hasherService.Hash(plainToken);
+        var expiresAt = utcNow.AddMinutes(_options.EmailConfirmation.ExpirationMinutes);
 
-        var emailVerificationCode = Opt.Create(user.Id, codeHash, expiresAt);
-        await emailVerificationCodeRepository.AddAsync(emailVerificationCode, cancellationToken);
+        var confirmationToken = EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt);
+        await tokenRepository.AddAsync(confirmationToken, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
-        await emailService.SendVerificationCodeAsync(user.Email.Address, plainCode, cancellationToken);
+        await emailService.SendConfirmationLinkAsync(account.Email.Address, plainToken, cancellationToken);
 
         return Result.Success();
     }

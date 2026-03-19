@@ -1,49 +1,59 @@
+using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Features.Auth.Commands.Login;
 using FinancialBox.Application.Features.Auth.Errors;
+using FinancialBox.Domain.Features.Accounts;
 using FinancialBox.Domain.Features.Accounts.ValueObjects;
-using FinancialBox.Domain.Features.Users;
 using FinancialBox.UnitTests.Application.Fakes;
+using Microsoft.Extensions.Options;
 
 namespace FinancialBox.UnitTests.Application.Auth;
 
 public class LoginCommandHandlerTests
 {
-    private readonly FakeUserRepository _userRepository = new();
-    private readonly FakeSecureHashService _hashService = new();
+    private readonly FakeAccountRepository _accountRepository = new();
+    private readonly FakeHasherService _hasherService = new();
     private readonly FakeJwtService _jwtService = new();
+    private readonly FakeTokenGeneratorService _tokenGeneratorService = new();
+    private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly LoginCommandHandler _handler;
 
     public LoginCommandHandlerTests()
     {
-        _handler = new LoginCommandHandler(_userRepository, _hashService, _jwtService);
+        var options = Options.Create(new AuthOptions
+        {
+            RefreshToken = new AuthOptions.RefreshTokenSettings { ExpirationDays = 7 }
+        });
+
+        _handler = new LoginCommandHandler(
+            _unitOfWork,
+            _accountRepository,
+            _jwtService,
+            _hasherService,
+            _tokenGeneratorService,
+            options);
     }
 
-    private User CreateConfirmedUser(string email = "user@example.com", string password = "secret")
+    private Account CreateConfirmedAccount(string email = "user@example.com", string password = "secret")
     {
-        var emailVo = Email.Create(email).Data;
-        var passwordVo = Password.FromHash(_hashService.Hash(password));
-        var user = User.Create("John", "Doe", emailVo, passwordVo);
-        user.ConfirmEmail();
-        return user;
+        var account = Account.Create(
+            Email.Create(email).Data,
+            Password.FromHash(_hasherService.Hash(password)));
+        account.ConfirmEmail();
+        _accountRepository.Seed(account);
+        return account;
     }
 
     [Fact]
     public async Task Should_ReturnFailure_When_EmailIsInvalid()
     {
-        var command = new LoginCommand("not-an-email", "password");
-
-        var result = await _handler.Handle(command, default);
-
+        var result = await _handler.Handle(new LoginCommand("not-an-email", "password"), default);
         Assert.True(result.IsFailure);
     }
 
     [Fact]
     public async Task Should_ReturnInvalidCredentials_When_UserNotFound()
     {
-        var command = new LoginCommand("unknown@example.com", "password");
-
-        var result = await _handler.Handle(command, default);
-
+        var result = await _handler.Handle(new LoginCommand("unknown@example.com", "password"), default);
         Assert.True(result.IsFailure);
         Assert.Equal(AuthErrors.InvalidCredentials.Code, result.Errors[0].Code);
     }
@@ -51,13 +61,8 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Should_ReturnInvalidCredentials_When_PasswordIsWrong()
     {
-        var user = CreateConfirmedUser(password: "correct");
-        _userRepository.Seed(user);
-
-        var command = new LoginCommand("user@example.com", "wrong");
-
-        var result = await _handler.Handle(command, default);
-
+        CreateConfirmedAccount(password: "correct");
+        var result = await _handler.Handle(new LoginCommand("user@example.com", "wrong"), default);
         Assert.True(result.IsFailure);
         Assert.Equal(AuthErrors.InvalidCredentials.Code, result.Errors[0].Code);
     }
@@ -65,14 +70,12 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Should_ReturnEmailNotConfirmed_When_EmailIsNotConfirmed()
     {
-        var emailVo = Email.Create("user@example.com").Data;
-        var user = User.Create("John", "Doe", emailVo, Password.FromHash("secret"));
-        _userRepository.Seed(user);
+        var account = Account.Create(
+            Email.Create("user@example.com").Data,
+            Password.FromHash(_hasherService.Hash("secret")));
+        _accountRepository.Seed(account);
 
-        var command = new LoginCommand("user@example.com", "secret");
-
-        var result = await _handler.Handle(command, default);
-
+        var result = await _handler.Handle(new LoginCommand("user@example.com", "secret"), default);
         Assert.True(result.IsFailure);
         Assert.Equal(AuthErrors.EmailNotConfirmed.Code, result.Errors[0].Code);
     }
@@ -80,13 +83,8 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Should_ReturnToken_When_CredentialsAreValid()
     {
-        var user = CreateConfirmedUser(password: "secret");
-        _userRepository.Seed(user);
-
-        var command = new LoginCommand("user@example.com", "secret");
-
-        var result = await _handler.Handle(command, default);
-
+        CreateConfirmedAccount(password: "secret");
+        var result = await _handler.Handle(new LoginCommand("user@example.com", "secret"), default);
         Assert.True(result.IsSuccess);
         Assert.Equal("fake_token", result.Data.AccessToken);
     }

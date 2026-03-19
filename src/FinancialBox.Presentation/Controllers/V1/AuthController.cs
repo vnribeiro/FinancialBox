@@ -36,13 +36,13 @@ public class AuthController(IMediator mediator) : ControllerBase
         return result.Match(response => Created("me", response));
     }
 
-    [HttpPost("confirm-email")]
+    [HttpGet("confirm-email")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult> ConfirmEmail([FromQuery] string token, CancellationToken cancellationToken)
     {
-        var result = await mediator.SendAsync(command, cancellationToken);
+        var result = await mediator.SendAsync(new ConfirmEmailCommand(token), cancellationToken);
 
         return result.Match(Ok);
     }

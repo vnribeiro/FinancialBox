@@ -1,147 +1,113 @@
-using FinancialBox.Application.Features.Auth;
 using FinancialBox.Application.Features.Auth.Commands.ConfirmEmail;
 using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Domain.Features.Accounts;
 using FinancialBox.Domain.Features.Accounts.ValueObjects;
-using FinancialBox.Domain.Features.Users;
 using FinancialBox.UnitTests.Application.Fakes;
-using Microsoft.Extensions.Options;
 
 namespace FinancialBox.UnitTests.Application.Auth;
 
 public class ConfirmEmailCommandHandlerTests
 {
-    private readonly FakeUserRepository _userRepository = new();
-    private readonly FakeEmailVerificationCodeRepository _codeRepository = new();
-    private readonly FakeSecureHashService _hashService = new();
+    private readonly FakeAccountRepository _accountRepository = new();
+    private readonly FakeEmailConfirmationTokenRepository _tokenRepository = new();
+    private readonly FakeHasherService _hasherService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly ConfirmEmailCommandHandler _handler;
 
-    private const int MaxAttempts = 5;
-
     public ConfirmEmailCommandHandlerTests()
     {
-        var options = Options.Create(new OtpOptions
-        {
-            MaxAttempts = MaxAttempts,
-            CodeExpirationMinutes = 15
-        });
-
         _handler = new ConfirmEmailCommandHandler(
             _unitOfWork,
-            _userRepository,
-            _codeRepository,
-            _hashService,
-            options);
+            _accountRepository,
+            _tokenRepository,
+            _hasherService);
     }
 
-    private User CreateUnconfirmedUser(string email = "user@example.com")
+    private Account CreateAccount(string email = "user@example.com")
     {
-        var user = User.Create("John", "Doe",
+        var account = Account.Create(
             Email.Create(email).Data,
             Password.FromHash("hash"));
-        _userRepository.Seed(user);
-        return user;
+        _accountRepository.Seed(account);
+        return account;
     }
 
-    private Opt CreateValidCode(Guid userId, string plainCode = "123456")
+    private EmailConfirmationToken CreateValidToken(Guid accountId, string plainToken = "test-token")
     {
-        var code = Opt.Create(userId, _hashService.Hash(plainCode), DateTime.UtcNow.AddMinutes(15));
-        _codeRepository.Seed(code);
-        return code;
+        var token = EmailConfirmationToken.Create(accountId, _hasherService.Hash(plainToken), DateTime.UtcNow.AddMinutes(30));
+        _tokenRepository.Seed(token);
+        return token;
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_When_EmailIsInvalid()
+    public async Task Should_ReturnInvalidOrExpiredToken_When_TokenNotFound()
     {
-        var command = new ConfirmEmailCommand("bad-email", "123456");
-
-        var result = await _handler.Handle(command, default);
+        var result = await _handler.Handle(new ConfirmEmailCommand("unknown-token"), default);
 
         Assert.True(result.IsFailure);
+        Assert.Equal(AuthErrors.InvalidOrExpiredToken.Code, result.Errors[0].Code);
     }
 
     [Fact]
-    public async Task Should_ReturnInvalidOrExpiredCode_When_UserNotFound()
+    public async Task Should_ReturnInvalidOrExpiredToken_When_TokenIsExpired()
     {
-        var command = new ConfirmEmailCommand("ghost@example.com", "123456");
+        var account = CreateAccount();
+        var expiredToken = EmailConfirmationToken.Create(account.Id, _hasherService.Hash("my-token"), DateTime.UtcNow.AddMinutes(-1));
+        _tokenRepository.Seed(expiredToken);
 
-        var result = await _handler.Handle(command, default);
+        var result = await _handler.Handle(new ConfirmEmailCommand("my-token"), default);
 
         Assert.True(result.IsFailure);
-        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
+        Assert.Equal(AuthErrors.InvalidOrExpiredToken.Code, result.Errors[0].Code);
     }
 
     [Fact]
-    public async Task Should_ReturnSuccess_When_EmailAlreadyConfirmed()
+    public async Task Should_ReturnInvalidOrExpiredToken_When_TokenAlreadyUsed()
     {
-        var user = CreateUnconfirmedUser();
-        user.ConfirmEmail();
+        var account = CreateAccount();
+        var token = CreateValidToken(account.Id, "valid-token");
+        token.MarkAsUsed(DateTime.UtcNow.AddMinutes(-1));
 
-        var command = new ConfirmEmailCommand("user@example.com", "123456");
+        var result = await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
-        var result = await _handler.Handle(command, default);
+        Assert.True(result.IsFailure);
+        Assert.Equal(AuthErrors.InvalidOrExpiredToken.Code, result.Errors[0].Code);
+    }
+
+    [Fact]
+    public async Task Should_ConfirmEmail_When_TokenIsValid()
+    {
+        var account = CreateAccount();
+        CreateValidToken(account.Id, "valid-token");
+
+        var result = await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
+
+        Assert.True(result.IsSuccess);
+        Assert.True(account.IsEmailConfirmed);
+        Assert.Equal(1, _unitOfWork.CommitCount);
+    }
+
+    [Fact]
+    public async Task Should_ReturnSuccess_Without_Commit_When_EmailAlreadyConfirmed()
+    {
+        var account = CreateAccount();
+        account.ConfirmEmail();
+        CreateValidToken(account.Id, "valid-token");
+
+        var result = await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(0, _unitOfWork.CommitCount);
     }
 
     [Fact]
-    public async Task Should_ReturnInvalidOrExpiredCode_When_NoVerificationCodeExists()
+    public async Task Should_MarkTokenAsUsed_When_ConfirmationSucceeds()
     {
-        CreateUnconfirmedUser();
+        var account = CreateAccount();
+        var token = CreateValidToken(account.Id, "valid-token");
 
-        var command = new ConfirmEmailCommand("user@example.com", "123456");
+        await _handler.Handle(new ConfirmEmailCommand("valid-token"), default);
 
-        var result = await _handler.Handle(command, default);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
-    }
-
-    [Fact]
-    public async Task Should_ReturnInvalidOrExpiredCode_When_CodeIsExpired()
-    {
-        var user = CreateUnconfirmedUser();
-        var expiredCode = Opt.Create(user.Id, _hashService.Hash("123456"), DateTime.UtcNow.AddMinutes(-1)); // already expired
-        _codeRepository.Seed(expiredCode);
-
-        var command = new ConfirmEmailCommand("user@example.com", "123456");
-
-        var result = await _handler.Handle(command, default);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
-    }
-
-    [Fact]
-    public async Task Should_ReturnInvalidOrExpiredCode_And_IncrementAttempts_When_CodeIsWrong()
-    {
-        var user = CreateUnconfirmedUser();
-        var code = CreateValidCode(user.Id, plainCode: "123456");
-
-        var command = new ConfirmEmailCommand("user@example.com", "999999");
-
-        var result = await _handler.Handle(command, default);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal(AuthErrors.InvalidOrExpiredCode.Code, result.Errors[0].Code);
-        Assert.Equal(1, code.Attempts);
-        Assert.Equal(1, _unitOfWork.CommitCount);
-    }
-
-    [Fact]
-    public async Task Should_ConfirmEmail_When_CodeIsCorrect()
-    {
-        var user = CreateUnconfirmedUser();
-        CreateValidCode(user.Id, plainCode: "123456");
-
-        var command = new ConfirmEmailCommand("user@example.com", "123456");
-
-        var result = await _handler.Handle(command, default);
-
-        Assert.True(result.IsSuccess);
-        Assert.True(user.IsEmailConfirmed);
-        Assert.Equal(1, _unitOfWork.CommitCount);
+        Assert.NotNull(token.UsedAt);
     }
 }

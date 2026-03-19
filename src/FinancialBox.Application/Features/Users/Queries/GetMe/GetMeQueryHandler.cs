@@ -1,11 +1,11 @@
-﻿using FinancialBox.Domain.Primitives;
+using FinancialBox.Domain.Primitives;
 using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Domain.Features.Users.Errors;
 
 namespace FinancialBox.Application.Features.Users.Queries.GetMe;
 
-public sealed class GetMeQueryHandler(IUserRepository userRepository)
+public sealed class GetMeQueryHandler(IUserRepository userRepository, IAccountRepository accountRepository)
     : IRequestHandler<GetMeQuery, Result<GetMeResponse>>
 {
     public async Task<Result<GetMeResponse>> Handle(GetMeQuery request, CancellationToken cancellationToken)
@@ -15,11 +15,16 @@ public sealed class GetMeQueryHandler(IUserRepository userRepository)
         if (user is null)
             return UserErrors.NotFound;
 
+        var account = await accountRepository.GetByIdAsync(user.AccountId, cancellationToken);
+
+        if (account is null)
+            return UserErrors.NotFound;
+
         var response = new GetMeResponse(
             user.Id,
             user.FirstName,
             user.LastName,
-            user.Email.Address);
+            account.Email.Address);
 
         return Result<GetMeResponse>.Success(response);
     }

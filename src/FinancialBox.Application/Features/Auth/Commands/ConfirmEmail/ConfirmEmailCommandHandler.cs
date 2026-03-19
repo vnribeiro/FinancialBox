@@ -3,51 +3,35 @@ using FinancialBox.Application.Abstractions.Pipeline;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
 using FinancialBox.Application.Features.Auth.Errors;
-using FinancialBox.Domain.Features.Accounts.ValueObjects;
 using FinancialBox.Domain.Primitives;
-using Microsoft.Extensions.Options;
 
 namespace FinancialBox.Application.Features.Auth.Commands.ConfirmEmail;
 
 public sealed class ConfirmEmailCommandHandler(
     IUnitOfWork unitOfWork,
-    IUserRepository userRepository,
-    IEmailVerificationCodeRepository emailVerificationCodeRepository,
-    ISecureHashService secureHashService,
-    IOptions<OtpOptions> emailVerificationOptions)
+    IAccountRepository accountRepository,
+    IEmailConfirmationTokenRepository tokenRepository,
+    IHasherService hasherService)
     : IRequestHandler<ConfirmEmailCommand, Result>
 {
-    private readonly OtpOptions _emailVerificationOptions = emailVerificationOptions.Value;
-
     public async Task<Result> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
-        var emailResult = Email.Create(request.Email);
+        var tokenHash = hasherService.Hash(request.Token);
+        var confirmationToken = await tokenRepository.GetByTokenHashAsync(tokenHash, cancellationToken);
 
-        if (emailResult.IsFailure)
-            return Result.Failure(emailResult.Errors);
+        if (confirmationToken is null || !confirmationToken.CanValidate(DateTime.UtcNow))
+            return AuthErrors.InvalidOrExpiredToken;
 
-        var user = await userRepository.GetByEmailAsync(emailResult.Data.Address, cancellationToken);
+        var account = await accountRepository.GetByIdAsync(confirmationToken.AccountId, cancellationToken);
 
-        if (user is null)
-            return AuthErrors.InvalidOrExpiredCode;
+        if (account is null)
+            return AuthErrors.InvalidOrExpiredToken;
 
-        if (user.IsEmailConfirmed)
+        if (account.IsEmailConfirmed)
             return Result.Success();
 
-        var verificationCode = await emailVerificationCodeRepository.GetMostRecentByUserIdAsync(user.Id, cancellationToken);
-
-        if (verificationCode is null || !verificationCode.CanValidate(DateTime.UtcNow, _emailVerificationOptions.MaxAttempts))
-            return AuthErrors.InvalidOrExpiredCode;
-
-        if (!secureHashService.Verify(verificationCode.CodeHash, request.Code))
-        {
-            verificationCode.RegisterFailedAttempt();
-            await unitOfWork.CommitAsync(cancellationToken);
-            return AuthErrors.InvalidOrExpiredCode;
-        }
-
-        verificationCode.MarkAsUsed(DateTime.UtcNow);
-        user.ConfirmEmail();
+        confirmationToken.MarkAsUsed(DateTime.UtcNow);
+        account.ConfirmEmail();
 
         await unitOfWork.CommitAsync(cancellationToken);
 

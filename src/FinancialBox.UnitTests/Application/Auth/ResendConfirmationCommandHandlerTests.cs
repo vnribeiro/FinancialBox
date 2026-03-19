@@ -3,7 +3,6 @@ using FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
 using FinancialBox.Application.Features.Auth.Errors;
 using FinancialBox.Domain.Features.Accounts;
 using FinancialBox.Domain.Features.Accounts.ValueObjects;
-using FinancialBox.Domain.Features.Users;
 using FinancialBox.UnitTests.Application.Fakes;
 using Microsoft.Extensions.Options;
 
@@ -11,9 +10,9 @@ namespace FinancialBox.UnitTests.Application.Auth;
 
 public class ResendConfirmationCommandHandlerTests
 {
-    private readonly FakeUserRepository _userRepository = new();
-    private readonly FakeEmailVerificationCodeRepository _codeRepository = new();
-    private readonly FakeSecureHashService _hashService = new();
+    private readonly FakeAccountRepository _accountRepository = new();
+    private readonly FakeEmailConfirmationTokenRepository _tokenRepository = new();
+    private readonly FakeHasherService _hasherService = new();
     private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly ResendConfirmationCommandHandler _handler;
@@ -23,47 +22,45 @@ public class ResendConfirmationCommandHandlerTests
 
     public ResendConfirmationCommandHandlerTests()
     {
-        var options = Options.Create(new OtpOptions
+        var options = Options.Create(new AuthOptions
         {
-            CooldownSeconds = CooldownSeconds,
-            MaxSendsPerHour = MaxSendsPerHour,
-            CodeExpirationMinutes = 15
+            EmailConfirmation = new AuthOptions.EmailConfirmationSettings
+            {
+                CooldownSeconds = CooldownSeconds,
+                MaxSendsPerHour = MaxSendsPerHour,
+                ExpirationMinutes = 30
+            }
         });
 
         _handler = new ResendConfirmationCommandHandler(
             _unitOfWork,
-            _userRepository,
-            _codeRepository,
-            _hashService,
+            _accountRepository,
+            _tokenRepository,
+            _hasherService,
             _emailService,
             options);
     }
 
-    private User CreateUnconfirmedUser(string email = "user@example.com")
+    private Account CreateUnconfirmedAccount(string email = "user@example.com")
     {
-        var user = User.Create("John", "Doe",
+        var account = Account.Create(
             Email.Create(email).Data,
             Password.FromHash("hash"));
-        _userRepository.Seed(user);
-        return user;
+        _accountRepository.Seed(account);
+        return account;
     }
 
     [Fact]
     public async Task Should_ReturnFailure_When_EmailIsInvalid()
     {
-        var command = new ResendConfirmationCommand("bad-email");
-
-        var result = await _handler.Handle(command, default);
-
+        var result = await _handler.Handle(new ResendConfirmationCommand("bad-email"), default);
         Assert.True(result.IsFailure);
     }
 
     [Fact]
-    public async Task Should_ReturnSuccess_Silently_When_UserNotFound()
+    public async Task Should_ReturnSuccess_Silently_When_AccountNotFound()
     {
-        var command = new ResendConfirmationCommand("ghost@example.com");
-
-        var result = await _handler.Handle(command, default);
+        var result = await _handler.Handle(new ResendConfirmationCommand("ghost@example.com"), default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(0, _unitOfWork.CommitCount);
@@ -72,12 +69,10 @@ public class ResendConfirmationCommandHandlerTests
     [Fact]
     public async Task Should_ReturnSuccess_Silently_When_EmailAlreadyConfirmed()
     {
-        var user = CreateUnconfirmedUser();
-        user.ConfirmEmail();
+        var account = CreateUnconfirmedAccount();
+        account.ConfirmEmail();
 
-        var command = new ResendConfirmationCommand("user@example.com");
-
-        var result = await _handler.Handle(command, default);
+        var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(0, _unitOfWork.CommitCount);
@@ -86,16 +81,11 @@ public class ResendConfirmationCommandHandlerTests
     [Fact]
     public async Task Should_ReturnResendLimitReached_When_CooldownNotExpired()
     {
-        var user = CreateUnconfirmedUser();
+        var account = CreateUnconfirmedAccount();
+        var recentToken = EmailConfirmationToken.Create(account.Id, "hash", DateTime.UtcNow.AddMinutes(30));
+        _tokenRepository.Seed(recentToken);
 
-        var recentCode = Opt.Create(
-            user.Id, "hash",
-            DateTime.UtcNow.AddMinutes(15));
-        _codeRepository.Seed(recentCode);
-
-        var command = new ResendConfirmationCommand("user@example.com");
-
-        var result = await _handler.Handle(command, default);
+        var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
         Assert.True(result.IsFailure);
         Assert.Equal(AuthErrors.ResendLimitReached.Code, result.Errors[0].Code);
@@ -104,69 +94,64 @@ public class ResendConfirmationCommandHandlerTests
     [Fact]
     public async Task Should_ReturnResendLimitReached_When_MaxSendsPerHourReached()
     {
-        var user = CreateUnconfirmedUser();
+        var account = CreateUnconfirmedAccount();
 
         for (int i = 0; i < MaxSendsPerHour; i++)
-        {
-            var code = Opt.Create(
-                user.Id, $"hash{i}",
-                DateTime.UtcNow.AddMinutes(15));
-            _codeRepository.Seed(code);
-        }
+            _tokenRepository.Seed(EmailConfirmationToken.Create(account.Id, $"hash{i}", DateTime.UtcNow.AddMinutes(30)));
 
-        var repoWithNullLatest = new FakeEmailVerificationCodeRepositoryWithNullLatest(_codeRepository);
-        var options = Options.Create(new OtpOptions
+        var repoWithNullLatest = new FakeEmailConfirmationTokenRepositoryWithNullLatest(_tokenRepository);
+
+        var options = Options.Create(new AuthOptions
         {
-            CooldownSeconds = CooldownSeconds,
-            MaxSendsPerHour = MaxSendsPerHour,
-            CodeExpirationMinutes = 15
+            EmailConfirmation = new AuthOptions.EmailConfirmationSettings
+            {
+                CooldownSeconds = CooldownSeconds,
+                MaxSendsPerHour = MaxSendsPerHour,
+                ExpirationMinutes = 30
+            }
         });
 
         var handler = new ResendConfirmationCommandHandler(
-            _unitOfWork, _userRepository, repoWithNullLatest, _hashService, _emailService, options);
+            _unitOfWork, _accountRepository, repoWithNullLatest, _hasherService, _emailService, options);
 
-        var command = new ResendConfirmationCommand("user@example.com");
-
-        var result = await handler.Handle(command, default);
+        var result = await handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
         Assert.True(result.IsFailure);
         Assert.Equal(AuthErrors.ResendLimitReached.Code, result.Errors[0].Code);
     }
 
     [Fact]
-    public async Task Should_ReturnSuccess_And_CreateNewCode_When_NoRecentCodeExists()
+    public async Task Should_ReturnSuccess_And_CreateNewToken_When_NoRecentTokenExists()
     {
-        CreateUnconfirmedUser();
+        CreateUnconfirmedAccount();
 
-        var command = new ResendConfirmationCommand("user@example.com");
-
-        var result = await _handler.Handle(command, default);
+        var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(1, _unitOfWork.CommitCount);
     }
 
     [Fact]
-    public async Task Should_SendVerificationEmail_When_NoRecentCodeExists()
+    public async Task Should_SendConfirmationLink_When_NoRecentTokenExists()
     {
-        CreateUnconfirmedUser();
+        CreateUnconfirmedAccount();
 
         await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
-        Assert.Single(_emailService.VerificationCodesSent);
-        Assert.Equal("user@example.com", _emailService.VerificationCodesSent[0].To);
+        Assert.Single(_emailService.ConfirmationLinksSent);
+        Assert.Equal("user@example.com", _emailService.ConfirmationLinksSent[0].To);
     }
 
-    private sealed class FakeEmailVerificationCodeRepositoryWithNullLatest(
-        FakeEmailVerificationCodeRepository inner)
-        : FakeEmailVerificationCodeRepository
+    private sealed class FakeEmailConfirmationTokenRepositoryWithNullLatest(
+        FakeEmailConfirmationTokenRepository inner)
+        : FakeEmailConfirmationTokenRepository
     {
-        public override Task<Opt?> GetMostRecentByUserIdAsync(
-            Guid userId, CancellationToken cancellationToken = default)
-            => Task.FromResult<Opt?>(null);
+        public override Task<EmailConfirmationToken?> GetMostRecentByAccountIdAsync(
+            Guid accountId, CancellationToken cancellationToken = default)
+            => Task.FromResult<EmailConfirmationToken?>(null);
 
-        public override Task<int> CountSentByUserIdAfterAsync(
-            Guid userId, DateTime after, CancellationToken cancellationToken = default)
-            => inner.CountSentByUserIdAfterAsync(userId, after, cancellationToken);
+        public override Task<int> CountSentByAccountIdAfterAsync(
+            Guid accountId, DateTime after, CancellationToken cancellationToken = default)
+            => inner.CountSentByAccountIdAfterAsync(accountId, after, cancellationToken);
     }
 }

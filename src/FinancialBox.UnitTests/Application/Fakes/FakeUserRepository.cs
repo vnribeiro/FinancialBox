@@ -24,13 +24,4 @@ public class FakeUserRepository : IUserRepository
     public void Update(User entity) { }
 
     public void Remove(User entity) => _users.Remove(entity);
-
-    public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-        => Task.FromResult(_users.FirstOrDefault(u => u.Email.Address == email));
-
-    public Task<User?> GetByEmailWithRolesAsync(string email, CancellationToken cancellationToken = default)
-        => Task.FromResult(_users.FirstOrDefault(u => u.Email.Address == email));
-
-    public Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default)
-        => Task.FromResult(_users.Any(u => u.Email.Address == email));
 }

@@ -22,10 +22,10 @@ internal sealed class AccountRepository(AppDbContext context) :
             .FirstOrDefaultAsync(a => a.Email.Address == email, cancellationToken);
     }
 
-    public Task<Account?> GetByEmailWithOtpsAsync(string email, CancellationToken cancellationToken = default)
+    public Task<Account?> GetByEmailWithConfirmationTokensAsync(string email, CancellationToken cancellationToken = default)
     {
         return _context.Accounts
-            .Include(a => a.Otps)
+            .Include(a => a.EmailConfirmationTokens)
             .FirstOrDefaultAsync(a => a.Email.Address == email, cancellationToken);
     }
 

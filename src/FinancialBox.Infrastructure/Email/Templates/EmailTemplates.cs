@@ -7,18 +7,18 @@ internal static class EmailTemplates
     private static readonly string ResourcePrefix = $"{typeof(EmailTemplates).Namespace}.Templates";
     private static readonly ConcurrentDictionary<string, string> Cache = new();
 
-    public static EmailMessage VerificationCode(string to, string code) => new(
+    public static EmailMessage ConfirmationLink(string to, string token) => new(
         To: to,
-        Subject: "FinancialBox – Email verification code",
-        HtmlBody: LoadTemplate("VerificationCode.html").Replace("{{code}}", code),
+        Subject: "FinancialBox – Confirm your email address",
+        HtmlBody: $"<p>Click the link below to confirm your email address:</p><p><a href=\"/api/v1/auth/confirm-email?token={token}\">Confirm email</a></p><p>This link expires in 30 minutes.</p>",
         PlainBody: $"""
             Hello,
 
-            Use the code below to verify your email address:
+            Click the link below to confirm your email address:
 
-                {code}
+                /api/v1/auth/confirm-email?token={token}
 
-            This code expires in 15 minutes. If you did not request this, you can safely ignore this email.
+            This link expires in 30 minutes. If you did not create an account, you can safely ignore this email.
 
             — FinancialBox
             """);
