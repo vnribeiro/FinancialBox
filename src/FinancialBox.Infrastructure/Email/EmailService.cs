@@ -1,13 +1,27 @@
+using FluentEmail.Core;
 using FinancialBox.Application.Abstractions.Services;
-using FinancialBox.Infrastructure.Email.Templates;
 
 namespace FinancialBox.Infrastructure.Email;
 
-internal sealed class EmailService(IEmailSender sender) : IEmailService
+internal sealed class EmailService(IFluentEmailFactory emailFactory) : IEmailService
 {
     public Task SendConfirmationLinkAsync(string to, string token, CancellationToken cancellationToken = default)
-        => sender.SendAsync(EmailTemplates.ConfirmationLink(to, token), cancellationToken);
+        => emailFactory.Create()
+            .To(to)
+            .Subject("FinancialBox – Confirm your email address")
+            .UsingTemplateFromEmbedded(
+                "FinancialBox.Infrastructure.Email.Templates.ConfirmationLink.liquid",
+                new { confirmation_url = $"/api/v1/auth/confirm-email?token={token}" },
+                typeof(EmailService).Assembly)
+            .SendAsync(cancellationToken);
 
     public Task SendPasswordResetAsync(string to, string token, CancellationToken cancellationToken = default)
-        => sender.SendAsync(EmailTemplates.PasswordReset(to, token), cancellationToken);
+        => emailFactory.Create()
+            .To(to)
+            .Subject("FinancialBox – Password reset request")
+            .UsingTemplateFromEmbedded(
+                "FinancialBox.Infrastructure.Email.Templates.PasswordReset.liquid",
+                new { token },
+                typeof(EmailService).Assembly)
+            .SendAsync(cancellationToken);
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<body style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;padding:40px;">
+          <tr>
+            <td>
+              <h2 style="margin:0 0 8px;color:#1a1a2e;font-size:22px;">Confirm your email address</h2>
+              <p style="margin:0 0 24px;color:#555;font-size:15px;">Thanks for signing up for FinancialBox. Click the button below to confirm your email address.</p>
+              <div style="text-align:center;margin:32px 0;">
+                <a href="{{ model.confirmation_url }}"
+                   style="background:#1a1a2e;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:6px;font-size:15px;font-weight:bold;display:inline-block;">
+                  Confirm email
+                </a>
+              </div>
+              <p style="margin:0;color:#888;font-size:13px;">This link expires in <strong>30 minutes</strong>. If you did not create an account, you can safely ignore this email.</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:16px 0 0;color:#aaa;font-size:12px;">© FinancialBox</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

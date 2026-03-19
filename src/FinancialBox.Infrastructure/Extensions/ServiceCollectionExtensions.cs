@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using FluentEmail.MailKitSmtp;
 using FinancialBox.Application.Abstractions;
 using FinancialBox.Application.Abstractions.Repositories;
 using FinancialBox.Application.Abstractions.Services;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -107,7 +109,24 @@ public static class ServiceCollectionExtensions
             .Validate(o => !string.IsNullOrWhiteSpace(o.FromAddress), "Smtp:FromAddress is required.")
             .ValidateOnStart();
 
-        services.AddScoped<IEmailSender, MailKitEmailSender>();
+        services.AddOptions<SmtpOptions>().BindConfiguration(SmtpOptions.SectionName);
+
+        using var sp = services.BuildServiceProvider();
+        var smtp = sp.GetRequiredService<IOptions<SmtpOptions>>().Value;
+
+        services
+            .AddFluentEmail(smtp.FromAddress, smtp.FromName)
+            .AddMailKitSender(new SmtpClientOptions
+            {
+                Server = smtp.Host,
+                Port = smtp.Port,
+                User = smtp.Username,
+                Password = smtp.Password,
+                RequiresAuthentication = true,
+                SocketOptions = MailKit.Security.SecureSocketOptions.StartTls
+            })
+            .AddLiquidRenderer();
+
         services.AddScoped<IEmailService, EmailService>();
 
         return services;
