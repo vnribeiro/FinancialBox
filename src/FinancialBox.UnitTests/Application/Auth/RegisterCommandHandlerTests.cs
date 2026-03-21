@@ -14,7 +14,6 @@ public class RegisterCommandHandlerTests
     private readonly FakeUserRepository _userRepository = new();
     private readonly FakeRoleRepository _roleRepository = new();
     private readonly FakeHasherService _hasherService = new();
-    private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly RegisterCommandHandler _handler;
 
@@ -31,7 +30,6 @@ public class RegisterCommandHandlerTests
             _userRepository,
             _roleRepository,
             _hasherService,
-            _emailService,
             options);
     }
 
@@ -80,11 +78,11 @@ public class RegisterCommandHandlerTests
     }
 
     [Fact]
-    public async Task Should_SendConfirmationLink_When_RegistrationSucceeds()
+    public async Task Should_RaiseDomainEvent_When_RegistrationSucceeds()
     {
         await _handler.Handle(new RegisterCommand("John", "Doe", "new@example.com", "Password1!"), default);
 
-        Assert.Single(_emailService.ConfirmationLinksSent);
-        Assert.Equal("new@example.com", _emailService.ConfirmationLinksSent[0].To);
+        var account = _accountRepository.All().First(a => a.Email.Address == "new@example.com");
+        Assert.Single(account.DomainEvents);
     }
 }

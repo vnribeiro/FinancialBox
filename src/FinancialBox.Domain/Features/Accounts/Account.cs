@@ -21,6 +21,9 @@ public class Account : AggregateRoot
         Password = password;
     }
 
+    public static Account Create(Email email, Password password)
+        => new(email, password);
+
     public static Account Register(Email email, Password password, DateTime expiresAt)
     {
         var account = new Account(email, password);
