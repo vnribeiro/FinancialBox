@@ -35,8 +35,8 @@ public class FakeAccountRepository : IAccountRepository
     public Task<Account?> GetByEmailWithConfirmationTokensAsync(string email, CancellationToken cancellationToken = default)
         => Task.FromResult(_accounts.FirstOrDefault(a => a.Email.Address == email));
 
-    public Task<Account?> GetByConfirmationTokenAsync(string token, CancellationToken cancellationToken = default)
-        => Task.FromResult(_accounts.FirstOrDefault(a => a.EmailConfirmationTokens.Any(t => t.Token == token)));
+    public Task<Account?> GetByConfirmationTokenHashAsync(string tokenHash, CancellationToken cancellationToken = default)
+        => Task.FromResult(_accounts.FirstOrDefault(a => a.EmailConfirmationTokens.Any(t => t.TokenHash == tokenHash)));
 
     public Task<Account?> GetByIdWithRefreshTokensAsync(Guid id, CancellationToken cancellationToken = default)
         => Task.FromResult(_accounts.FirstOrDefault(a => a.Id == id));

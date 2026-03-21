@@ -11,6 +11,7 @@ namespace FinancialBox.UnitTests.Application.Auth;
 public class ResendConfirmationCommandHandlerTests
 {
     private readonly FakeAccountRepository _accountRepository = new();
+    private readonly FakeHasherService _hasherService = new();
     private readonly FakeEmailService _emailService = new();
     private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly ResendConfirmationCommandHandler _handler;
@@ -31,7 +32,7 @@ public class ResendConfirmationCommandHandlerTests
         });
 
         _handler = new ResendConfirmationCommandHandler(
-            _unitOfWork, _accountRepository, _emailService, options);
+            _unitOfWork, _accountRepository, _hasherService, _emailService, options);
     }
 
     private Account CreateUnconfirmedAccount(string email = "user@example.com")
@@ -74,7 +75,7 @@ public class ResendConfirmationCommandHandlerTests
     {
         var account = CreateUnconfirmedAccount();
         account.AddEmailConfirmationToken(
-            EmailConfirmationToken.Create(account.Id, DateTime.UtcNow.AddMinutes(30)));
+            EmailConfirmationToken.Create(account.Id, "hash", DateTime.UtcNow.AddMinutes(30)));
 
         var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
@@ -89,7 +90,7 @@ public class ResendConfirmationCommandHandlerTests
 
         for (var i = 0; i < MaxSendsPerHour; i++)
             account.AddEmailConfirmationToken(
-                EmailConfirmationToken.Create(account.Id, DateTime.UtcNow.AddMinutes(-30 + i)));
+                EmailConfirmationToken.Create(account.Id, $"hash{i}", DateTime.UtcNow.AddMinutes(-30 + i)));
 
         var result = await _handler.Handle(new ResendConfirmationCommand("user@example.com"), default);
 
