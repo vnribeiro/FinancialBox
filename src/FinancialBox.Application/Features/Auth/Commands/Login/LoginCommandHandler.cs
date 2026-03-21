@@ -41,19 +41,20 @@ public sealed class LoginCommandHandler(
         if (!account.IsEmailConfirmed)
             return AuthErrors.EmailNotConfirmed;
 
-        var token = jwtService.GenerateToken(account);
+        var jwtToken = jwtService.GenerateToken(account);
 
-        var rawRefreshToken = tokenGeneratorService.GenerateRefreshToken();
-        var refreshToken = RefreshToken.Create(account.Id, hasherService.Hash(rawRefreshToken), DateTime.UtcNow.AddDays(_authOptions.RefreshToken.ExpirationDays));
+        var base64Token = tokenGeneratorService.GenerateRefreshToken();
+        var expiresAt = DateTime.UtcNow.AddDays(_authOptions.RefreshToken.ExpirationDays);
+        var refreshToken = RefreshToken.Create(account.Id, base64Token, expiresAt);
         account.AddRefreshToken(refreshToken);
 
         accountRepository.Update(account);
         await unitOfWork.CommitAsync(cancellationToken);
 
         var response = new LoginResponse(
-            token.AccessToken,
+            jwtToken.AccessToken,
             refreshToken.Token,
-            token.ExpiresAtUtc);
+            jwtToken.ExpiresAtUtc);
 
         return Result<LoginResponse>.Success(response);
     }
