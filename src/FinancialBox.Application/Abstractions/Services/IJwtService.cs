@@ -1,4 +1,5 @@
-﻿using FinancialBox.Domain.Features.Accounts;
+﻿using FinancialBox.Application.Features.Auth;
+using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.Application.Abstractions.Services;
 

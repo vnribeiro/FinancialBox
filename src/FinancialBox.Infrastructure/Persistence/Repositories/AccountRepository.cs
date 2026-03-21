@@ -29,11 +29,11 @@ internal sealed class AccountRepository(AppDbContext context) :
             .FirstOrDefaultAsync(a => a.Email.Address == email, cancellationToken);
     }
 
-    public Task<Account?> GetByConfirmationTokenHashAsync(string tokenHash, CancellationToken cancellationToken = default)
+    public Task<Account?> GetByConfirmationTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         return _context.Accounts
             .Include(a => a.EmailConfirmationTokens)
-            .FirstOrDefaultAsync(a => a.EmailConfirmationTokens.Any(t => t.TokenHash == tokenHash), cancellationToken);
+            .FirstOrDefaultAsync(a => a.EmailConfirmationTokens.Any(t => t.Token == token), cancellationToken);
     }
 
     public Task<Account?> GetByIdWithRefreshTokensAsync(Guid id, CancellationToken cancellationToken = default)

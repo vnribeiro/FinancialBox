@@ -1,4 +1,5 @@
 using FinancialBox.Application.Abstractions.Services;
+using FinancialBox.Application.Features.Auth;
 using FinancialBox.Domain.Features.Accounts;
 
 namespace FinancialBox.UnitTests.Application.Fakes;

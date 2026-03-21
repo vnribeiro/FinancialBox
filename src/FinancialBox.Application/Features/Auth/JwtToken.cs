@@ -1,3 +1,3 @@
-namespace FinancialBox.Application.Abstractions.Services;
+namespace FinancialBox.Application.Features.Auth;
 
 public sealed record JwtToken(string AccessToken, DateTime ExpiresAtUtc);

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using FinancialBox.Application.Abstractions.Services;
+using FinancialBox.Application.Features.Auth;
 using FinancialBox.Domain.Features.Accounts;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

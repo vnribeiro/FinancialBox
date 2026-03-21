@@ -13,7 +13,6 @@ namespace FinancialBox.Application.Features.Auth.Commands.ResendConfirmation;
 public sealed class ResendConfirmationCommandHandler(
     IUnitOfWork unitOfWork,
     IAccountRepository accountRepository,
-    IHasherService hasherService,
     IEmailService emailService,
     IOptions<AuthOptions> options)
     : IRequestHandler<ResendConfirmationCommand, Result>
@@ -45,14 +44,12 @@ public sealed class ResendConfirmationCommandHandler(
         if (countLastHour >= _options.EmailConfirmation.MaxSendsPerHour)
             return AuthErrors.ResendLimitReached;
 
-        var rawToken = Guid.NewGuid().ToString();
-        var tokenHash = hasherService.Hash(rawToken);
         var expiresAt = utcNow.AddMinutes(_options.EmailConfirmation.ExpirationMinutes);
-
-        account.AddEmailConfirmationToken(EmailConfirmationToken.Create(account.Id, tokenHash, expiresAt));
+        var emailConfirmationToken = EmailConfirmationToken.Create(account.Id, expiresAt);
+        account.AddEmailConfirmationToken(emailConfirmationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
-        await emailService.SendConfirmationLinkAsync(account.Email.Address, rawToken, cancellationToken);
+        await emailService.SendConfirmationLinkAsync(account.Email.Address, emailConfirmationToken.Token, cancellationToken);
 
         return Result.Success();
     }
