@@ -19,9 +19,16 @@ public class RefreshTokenMapping : IEntityTypeConfiguration<RefreshToken>
             .IsRequired();
 
         builder
+            .HasIndex(x => x.AccountId);
+
+        builder
             .Property(x => x.Token)
             .IsRequired()
-            .HasMaxLength(500);
+            .HasMaxLength(100);
+
+        builder
+            .HasIndex(x => x.Token)
+            .IsUnique();
 
         builder
             .Property(x => x.ExpiresAt)
@@ -29,13 +36,6 @@ public class RefreshTokenMapping : IEntityTypeConfiguration<RefreshToken>
 
         builder
             .Property(x => x.RevokedAt);
-
-        builder
-            .HasIndex(x => x.Token)
-            .IsUnique();
-
-        builder
-            .HasIndex(x => x.AccountId);
 
         builder
             .HasOne<Account>()

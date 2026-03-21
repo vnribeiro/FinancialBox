@@ -15,6 +15,13 @@ public class FinancialGoalTransactionMapping : IEntityTypeConfiguration<Financia
             .HasKey(t => t.Id);
 
         builder
+            .Property(t => t.CreatedAt)
+            .IsRequired();
+
+        builder
+            .Property(t => t.UpdatedAt);
+
+        builder
             .Property(t => t.Amount)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
@@ -31,12 +38,6 @@ public class FinancialGoalTransactionMapping : IEntityTypeConfiguration<Financia
             .Property(t => t.IsDeleted)
             .HasDefaultValue(false);
 
-        builder
-            .Property(t => t.CreatedAt)
-            .IsRequired();
-
-        builder
-            .Property(t => t.UpdatedAt);
     }
 }
 
