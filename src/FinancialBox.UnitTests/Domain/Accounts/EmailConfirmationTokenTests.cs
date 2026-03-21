@@ -7,7 +7,7 @@ public class EmailConfirmationTokenTests
     private static readonly Guid AccountId = Guid.NewGuid();
 
     private static EmailConfirmationToken CreateToken(DateTime expiresAt)
-        => EmailConfirmationToken.Create(AccountId, "hashed_token", expiresAt);
+        => EmailConfirmationToken.Create(AccountId, expiresAt);
 
     [Fact]
     public void Should_AllowValidation_When_TokenIsNotUsedAndNotExpired()
